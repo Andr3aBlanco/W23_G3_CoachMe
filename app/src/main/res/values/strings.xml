@@ -1,5 +1,4 @@
 <resources>
     <string name="app_name">CoachMe</string>
-    <string name="text">this is the new text</string>
     <string name="statsTitle">this is the new text</string>
 </resources>
