@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CoachMe</string>
+    <string name="text">This is a test text for branching</string>
 </resources>
