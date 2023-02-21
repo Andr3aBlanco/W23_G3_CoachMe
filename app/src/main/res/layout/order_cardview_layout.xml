@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:layout_marginBottom="10dp"
+    android:id="@+id/card_container"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="8dp"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:background="#FE685E"
+        >
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="0.5">
+
+            <TextView
+                android:id="@+id/txtViewProductTitle"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="TextView"
+                android:textSize="15dp"
+                android:textColor="#F0F0F0"
+                android:fontFamily="@font/barlow_bold"
+                android:gravity = "center_vertical|left|start"
+                android:paddingLeft="10dp"
+                />
+
+            <TextView
+                android:id="@+id/txtViewProductDetail"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="TextView"
+                android:textSize="15dp"
+                android:textColor="#F0F0F0"
+                android:fontFamily="@font/barlow_medium"
+                android:gravity = "center_vertical|left|start"
+                android:paddingLeft="10dp"
+                />
+
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtViewProductPrice"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="0.15"
+            android:text="$20.99"
+            android:textSize="15dp"
+            android:textColor="#F0F0F0"
+            android:fontFamily="@font/barlow_medium"
+            android:gravity="center"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_weight="0.15"
+            android:gravity="center"
+            >
+
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/cbSelectedProduct"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.15"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btnCancelOrder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:src="@drawable/ic_delete_black_36dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
+
+
