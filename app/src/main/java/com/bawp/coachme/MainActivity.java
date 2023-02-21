@@ -1,12 +1,15 @@
 package com.bawp.coachme;
 
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bawp.coachme.databinding.ActivityMainBinding;
+import com.bawp.coachme.presentation.order.OrdersFragment;
+import com.bawp.coachme.utils.UserSingleton;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,12 +20,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        UserSingleton.getInstance().setUserId("-NOjpL1jiGcc80qBrFIl");
+
         //bind
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         binding.bottomNavigationView.setBackground(null);
-
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
 
@@ -66,4 +70,5 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
 
     }
+
 }

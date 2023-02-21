@@ -1,11 +1,202 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/purple_500"
-    tools:context=".OrdersFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#502051"
+    android:orientation="vertical"
+    tools:context=".presentation.order.OrdersFragment">
 
+    <!--
+        Progress Bar to change the visibility of the detail
+        while we are retrieving the data from Firebase
+    -->
+    <ProgressBar
+        android:id="@+id/pbOrderList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        />
 
+    <!--
+        Main Layout for the Shopping Cart
+    -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/llOrderLayout">
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp"
+            android:textSize="25dp"
+            android:textColor="#FE685E"
+            android:drawableLeft="@drawable/ic_shopping_cart_black_24dp"
+            android:fontFamily="@font/barlow_bold"
+            android:text="Shopping Cart"/>
+
+        <!--
+            FrameLayout to display the CardViews
+        -->
+        <FrameLayout
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:id="@+id/orderFragmentContainer"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#FE685E"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="20dp"/>
+
+        <!--
+            Final detail of the order
+        -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="@drawable/rounded_corner_background"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="10dp"
+                >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.8"
+                    android:text="SubTotal:"
+                    android:textColor="#FE685E"
+                    android:fontFamily="@font/barlowcondensed_regular"
+                    android:textSize="20dp"
+                    />
+
+                <TextView
+                    android:id="@+id/txtViewSubTotal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.2"
+                    android:text="$ 20.99"
+                    android:textColor="#FE685E"
+                    android:fontFamily="@font/barlowcondensed_regular"
+                    android:gravity="center_vertical|right|end"
+                    android:textSize="20dp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="10dp"
+                >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.8"
+                    android:text="Tax:"
+                    android:textColor="#FE685E"
+                    android:fontFamily="@font/barlowcondensed_regular"
+                    android:textSize="20dp"
+                    />
+
+                <TextView
+                    android:id="@+id/txtViewTax"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.2"
+                    android:text="$ 20.99"
+                    android:textColor="#FE685E"
+                    android:fontFamily="@font/barlowcondensed_regular"
+                    android:gravity="center_vertical|right|end"
+                    android:textSize="20dp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="10dp"
+                >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:text="Total:"
+                    android:textColor="#FE685E"
+                    android:fontFamily="@font/barlow_bold"
+                    android:textSize="25dp"
+                    />
+
+                <TextView
+                    android:id="@+id/txtViewTotal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:text="$ 20.99"
+                    android:textColor="#FE685E"
+                    android:fontFamily="@font/barlow_bold"
+                    android:gravity="center_vertical|right|end"
+                    android:textSize="25dp"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!--
+            Buttons
+        -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Back"
+                android:layout_weight="0.5"
+                android:backgroundTint="#FE685E"
+                android:fontFamily="@font/barlow_bold"
+                android:layout_marginRight="10dp"
+                android:drawableLeft="@drawable/ic_arrow_back_white_18dp"
+                app:cornerRadius="10dp"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Checkout"
+                android:layout_weight="0.5"
+                android:backgroundTint="#FE685E"
+                android:fontFamily="@font/barlow_bold"
+                android:layout_marginLeft="10dp"
+                android:drawableLeft="@drawable/ic_payment_white_18dp"
+                app:cornerRadius="10dp"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>
