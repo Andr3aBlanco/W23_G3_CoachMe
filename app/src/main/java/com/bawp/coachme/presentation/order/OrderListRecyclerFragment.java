@@ -20,7 +20,10 @@ package com.bawp.coachme.presentation.order;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,6 +39,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.compose.material.icons.Icons;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,6 +48,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bawp.coachme.R;
 import com.bawp.coachme.model.Appointment;
 import com.bawp.coachme.model.Order;
+import com.bawp.coachme.model.SelfWorkoutPlanByUser;
+import com.bawp.coachme.utils.UserSingleton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -129,11 +136,14 @@ public class OrderListRecyclerFragment extends Fragment {
                             DataSnapshot dsResult = (DataSnapshot) task.getResult();
                             Appointment appObj = dsResult.getValue(Appointment.class);
                             appObj.setStatus(2); //cancelled
+                            appObj.setPaymentDate(null);
+                            appObj.setPaymentId(null);
                             appRef.child(orderId).setValue(appObj);
                             orderList.remove(orderPosition);
                             notifyDataSetChanged();
                             parentFragment.updateSubtotalAfterCancelling();
                             Toast.makeText(getContext(),"Appointment has been cancelled",Toast.LENGTH_SHORT).show();
+                            updateUIByOrderListSize();
                         }else{
                             Exception error = task.getException();
                             System.out.println("At least one task failed: " + error.getMessage());
@@ -142,7 +152,56 @@ public class OrderListRecyclerFragment extends Fragment {
                 });
 
             }else{
-                Log.d("FIREBASE","WorkoutPlan pending code");
+
+                FirebaseDatabase CoachMeDatabaseInstance = FirebaseDatabase.getInstance();
+                DatabaseReference CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
+                DatabaseReference swpRef = CoachMeDatabaseRef.child("selfWorkoutPlansByUser");
+
+                Query swpQuery = swpRef.orderByChild("customerId").equalTo(UserSingleton.getInstance().getUserId());
+                Task swpRefTask = swpQuery.get();
+
+                swpRefTask.addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if(task.isSuccessful()){
+                            DataSnapshot dsResult = (DataSnapshot) task.getResult();
+                            for (DataSnapshot ds: dsResult.getChildren()){
+
+                                SelfWorkoutPlanByUser swpObj = ds.getValue(SelfWorkoutPlanByUser.class);
+                                Log.d("FIREBASE",swpObj.getSelfworkoutplanId());
+                                Log.d("FIREBASE",orderId);
+                                String swpKey = ds.getKey();
+                                if (swpObj.getSelfworkoutplanId().equals(orderId)){
+                                    //cancel it!
+                                    swpObj.setStatus(2);
+                                    swpObj.setPaymentDate(null);
+                                    swpObj.setPaymentId(null);
+                                    swpRef.child(swpKey).setValue(swpObj);
+                                    orderList.remove(orderPosition);
+                                    notifyDataSetChanged();
+                                    parentFragment.updateSubtotalAfterCancelling();
+                                    Toast.makeText(getContext(),"Self-workout purchase has been cancelled",Toast.LENGTH_SHORT).show();
+                                    updateUIByOrderListSize();
+                                }
+                            }
+
+                        }else{
+                            Exception error = task.getException();
+                            System.out.println("At least one task failed: " + error.getMessage());
+                        }
+                    }
+                });
+
+            }
+        }
+
+        public void updateUIByOrderListSize(){
+            if(orderList.size()>0){
+                orderFragment.flOrderFragmentContainer.setVisibility(View.VISIBLE);
+                orderFragment.llNoItemsInCart.setVisibility(View.GONE);
+            }else{
+                orderFragment.flOrderFragmentContainer.setVisibility(View.GONE);
+                orderFragment.llNoItemsInCart.setVisibility(View.VISIBLE);
             }
         }
 
@@ -155,7 +214,17 @@ public class OrderListRecyclerFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull OrderListRecyclerFragment.RecyclerViewHolder holder, int position) {
+
+            Drawable drawableFitness = ContextCompat.getDrawable(getContext(),R.drawable.baseline_fitness_center_18);
+            Drawable drawableGymnastic = ContextCompat.getDrawable(getContext(),R.drawable.baseline_sports_gymnastics_24);
             holder.mTxtViewProductTitle.setText(orderList.get(position).getProductTitle());
+            if (orderList.get(position).getProductType() == 1){
+                holder.mTxtViewProductTitle.setCompoundDrawablesWithIntrinsicBounds(drawableGymnastic,null,null,null);
+            }else{
+                holder.mTxtViewProductTitle.setCompoundDrawablesWithIntrinsicBounds(drawableFitness,null,null,null);
+            }
+
+            holder.mTxtViewProductTitle.setCompoundDrawablePadding(8);
             holder.mTxtViewProductDetail.setText(orderList.get(position).getProductDescription());
             holder.mCbSelectedProduct.setChecked(true);
 
@@ -195,10 +264,12 @@ public class OrderListRecyclerFragment extends Fragment {
                         double newSubtotal = orderFragment.subTotal + Double.parseDouble(holder.mTxtViewProductPrice.getText().toString().replace("$",""));
                         orderFragment.subTotal = newSubtotal;
                         orderFragment.calculateTotalPrice();
+                        orderList.get(holder.getAdapterPosition()).setSelected(true);
                     }else{
                         double newSubtotal = orderFragment.subTotal - Double.parseDouble(holder.mTxtViewProductPrice.getText().toString().replace("$",""));
                         orderFragment.subTotal = newSubtotal;
                         orderFragment.calculateTotalPrice();
+                        orderList.get(holder.getAdapterPosition()).setSelected(false);
                     }
                 }
             });

@@ -23,17 +23,20 @@ public class Order {
     private int productType; //1: appointment, 2: self-workout
     private String productDescription;
     private double totalPrice;
+    private boolean isSelected;
 
     public Order(){
 
     }
 
-    public Order(String orderId,String productTitle, int productType, String productDescription, double totalPrice){
+    public Order(String orderId,String productTitle, int productType, String productDescription, double totalPrice,
+                 boolean isSelected){
         this.orderId = orderId;
         this.productTitle = productTitle;
         this.productType = productType;
         this.productDescription = productDescription;
         this.totalPrice = totalPrice;
+        this.isSelected = isSelected;
     }
 
     public String getOrderId() {
@@ -74,5 +77,13 @@ public class Order {
 
     public void setTotalPrice(double totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }

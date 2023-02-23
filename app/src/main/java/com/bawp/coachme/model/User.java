@@ -16,9 +16,10 @@
  * - role: Role object associated to the role of the user (customer/trainer)
  * - serviceTypes: List<String> of types of services a trainer offers (CrossFit, Cycling)
  * - specialConditions: List<String> of special conditions of a customer (specific types of body pain, etc)
+ * - stripeCustomerId: For customers, this is the customer Id from Stripe Database
  *
  * @author Luis Miguel Miranda
- * @version 1.0
+ * @version 1.0.1
  */
 package com.bawp.coachme.model;
 
@@ -44,6 +45,7 @@ public class User {
 
     private List<String> serviceTypes;
     private List<String> specialConditions;
+    private String stripeCustomerId;
 
     public User(){
 
@@ -151,6 +153,22 @@ public class User {
 
     public void setServiceTypes(List<String> serviceTypes) {
         this.serviceTypes = serviceTypes;
+    }
+
+    public List<String> getSpecialConditions() {
+        return specialConditions;
+    }
+
+    public void setSpecialConditions(List<String> specialConditions) {
+        this.specialConditions = specialConditions;
+    }
+
+    public String getStripeCustomerId() {
+        return stripeCustomerId;
+    }
+
+    public void setStripeCustomerId(String stripeCustomerId) {
+        this.stripeCustomerId = stripeCustomerId;
     }
 
     @Override

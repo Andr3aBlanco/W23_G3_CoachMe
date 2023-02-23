@@ -42,7 +42,7 @@
                 android:textSize="15dp"
                 android:textColor="#F0F0F0"
                 android:fontFamily="@font/barlow_medium"
-                android:gravity = "center_vertical|left|start"
+                android:gravity = "left|start"
                 android:paddingLeft="10dp"
                 />
 

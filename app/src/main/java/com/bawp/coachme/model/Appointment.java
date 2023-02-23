@@ -17,6 +17,8 @@
  * - location: place where the training session will occur (address)
  * - trainerId: id of the trainer (comes from the Users table)
  * - customerId: id of the customer (comes from the Users table)
+ * - paymentDate: date when the user paid for the self-workout plan
+ * - paymentId: payment id (payment intent id from Stripe)
  *
  * @author Luis Miguel Miranda
  * @version 1.0
@@ -34,6 +36,8 @@ public class Appointment {
     private String location;
     private String trainerId;
     private String customerId;
+    private String paymentId;
+    private Date paymentDate;
 
     public Appointment(){
 
@@ -41,7 +45,8 @@ public class Appointment {
 
     public Appointment(Date bookedDate, String serviceType, int status,
                        double totalPrice, String location,
-                       String trainerId, String customerId) {
+                       String trainerId, String customerId,
+                       String paymentId, Date paymentDate) {
         this.bookedDate = bookedDate;
         this.serviceType = serviceType;
         this.status = status;
@@ -49,6 +54,8 @@ public class Appointment {
         this.location = location;
         this.trainerId = trainerId;
         this.customerId = customerId;
+        this.paymentId = paymentId;
+        this.paymentDate = paymentDate;
     }
 
     public Date getBookedDate() {
@@ -105,6 +112,22 @@ public class Appointment {
 
     public void setCustomerId(String customerId) {
         this.customerId = customerId;
+    }
+
+    public String getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(String paymentId) {
+        this.paymentId = paymentId;
+    }
+
+    public Date getPaymentDate() {
+        return paymentDate;
+    }
+
+    public void setPaymentDate(Date paymentDate) {
+        this.paymentDate = paymentDate;
     }
 
     @Override

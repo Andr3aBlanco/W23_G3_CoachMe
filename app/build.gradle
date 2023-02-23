@@ -13,8 +13,12 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+        buildConfigField "String", "stripeSecretKey", "\"${properties.getProperty('stripeSecretKey')}\""
+        buildConfigField "String", "stripePublishableKey", "\"${properties.getProperty('stripePublishableKey')}\""
     }
 
     buildTypes {
@@ -43,4 +47,9 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation platform('com.google.firebase:firebase-bom:31.2.1')
     implementation 'com.google.firebase:firebase-database'
+    implementation 'com.android.volley:volley:1.2.0'
+    implementation 'com.stripe:stripe-android:20.19.1'
+    implementation 'com.airbnb.android:lottie:4.2.0'
+    implementation "androidx.compose.material:material-icons-core:1.0.0"
+    implementation "androidx.compose.material:material-icons-extended:1.0.0"
 }
