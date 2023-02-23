@@ -1,3 +1,18 @@
+/**
+ * Class: UserSingleton.java
+ *
+ * Class that will hold the information of the current user, so we can get the userId
+ * between fragments/activities.
+ *
+ * Fields:
+ * - instance: instance of the Class
+ * - userId: user id of the customer/trainer that comes from Firebase Database
+ *
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
+
 package com.bawp.coachme.utils;
 
 public class UserSingleton {
