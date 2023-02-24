@@ -18,8 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:background="@color/white"
-        app:fabCradleMargin="30dp"
-        app:fabCradleRoundedCornerRadius="40dp"
+        app:fabCradleRoundedCornerRadius="50dp"
         >
 
 
@@ -48,6 +47,8 @@
         app:layout_anchorGravity="bottom"
         app:maxImageSize="50dp"
         app:srcCompat="@drawable/baseline_add_24"
-        app:tint="@color/barColor" />
+        app:tint="@color/barColor"
+
+        />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
