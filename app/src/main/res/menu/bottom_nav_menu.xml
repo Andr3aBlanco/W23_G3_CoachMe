@@ -7,7 +7,7 @@
     <item android:title="@string/statsTitle"
         android:id="@+id/menu_stats"
         android:icon="@drawable/baseline_insert_chart_outlined_24"/>
-    <item android:title="@string/addTitle"
+    <item android:title=""
         android:id="@+id/menu_add"
         android:icon="@drawable/baseline_add_24"/>
     <item android:title="@string/ordersTitle"
