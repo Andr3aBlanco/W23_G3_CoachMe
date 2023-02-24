@@ -12,7 +12,7 @@
  * - totalPrice: totalPrice of that item (appointment / self-workout)
  *
  * @author Luis Miguel Miranda
- * @version 1.0
+ * @version 1.0.1
  */
 package com.bawp.coachme.model;
 
