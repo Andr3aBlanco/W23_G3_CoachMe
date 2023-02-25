@@ -51,6 +51,7 @@ import com.bawp.coachme.BuildConfig;
 import com.bawp.coachme.R;
 
 import com.bawp.coachme.model.Appointment;
+import com.bawp.coachme.model.OrderNotifcation;
 import com.bawp.coachme.model.SelfWorkoutPlanByUser;
 import com.bawp.coachme.model.User;
 import com.bawp.coachme.utils.UserSingleton;
@@ -91,7 +92,10 @@ public class OrderPaymentOptionsFragment extends Fragment {
     FirebaseDatabase CoachMeDatabaseInstance;
     DatabaseReference CoachMeDatabaseRef;
     DatabaseReference userRef;
+    DatabaseReference triggerNotificationRef;
     User currentCustomer;
+
+
 
     public OrderPaymentOptionsFragment() {
         // Required empty public constructor
@@ -365,7 +369,7 @@ public class OrderPaymentOptionsFragment extends Fragment {
                             DataSnapshot ds = appDs.child(orderIdArray.get(i));
                             Appointment app = ds.getValue(Appointment.class);
                             app.setPaymentId(paymentIntentId);
-                            app.setPaymentDate(new Date());
+                            app.setPaymentDate(new Date().getTime());
                             app.setStatus(3); //change to active;
 
                             appRef.child(orderIdArray.get(i)).setValue(app);
@@ -388,20 +392,9 @@ public class OrderPaymentOptionsFragment extends Fragment {
 
                     }
 
-                    //Move to Cart Detail
-                    OrderPaymentConfirmedFragment orderConfirmedFragment = new OrderPaymentConfirmedFragment();
+                    //Send the Notification to the Database
+                    sendNotificationTrigger();
 
-                    FragmentManager fm = getParentFragmentManager();
-                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
-
-                    // Replace the current fragment with the new one
-                    fragmentTransaction.replace(R.id.barFrame, orderConfirmedFragment);
-
-                    // Add the transaction to the back stack
-                    fragmentTransaction.addToBackStack(null);
-
-                    // Commit the transaction
-                    fragmentTransaction.commit();
 
                 }else{
                     // At least one task failed
@@ -410,5 +403,33 @@ public class OrderPaymentOptionsFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private void sendNotificationTrigger(){
+
+        triggerNotificationRef = CoachMeDatabaseRef.child("orderNotifications");
+
+        String notificationDescription = "Purchased successfully! Go to CoachMe and see your new item!";
+
+        OrderNotifcation newNotification = new OrderNotifcation("Purchase Completed!",notificationDescription,
+                UserSingleton.getInstance().getUserDeviceToken());
+        triggerNotificationRef.push().setValue(newNotification);
+
+        //Move to Cart Detail
+        OrderPaymentConfirmedFragment orderConfirmedFragment = new OrderPaymentConfirmedFragment();
+
+        FragmentManager fm = getParentFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+        // Replace the current fragment with the new one
+        fragmentTransaction.replace(R.id.barFrame, orderConfirmedFragment);
+
+        // Add the transaction to the back stack
+        fragmentTransaction.addToBackStack(null);
+
+        // Commit the transaction
+        fragmentTransaction.commit();
+
+
     }
 }
