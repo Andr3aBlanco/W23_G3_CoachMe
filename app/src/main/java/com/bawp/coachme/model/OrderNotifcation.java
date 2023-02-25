@@ -1,3 +1,16 @@
+/**
+ * Class: OrderNotification.java
+ *
+ * Class associated with the message notifications for the orders purchased
+ *
+ * Fields:
+ * - title: title of the notification
+ * - description: description of the notification
+ * - deviceToken: device Id which we are going to send the notification
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
 package com.bawp.coachme.model;
 
 public class OrderNotifcation {

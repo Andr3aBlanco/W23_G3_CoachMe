@@ -66,11 +66,6 @@ public class MainActivity extends AppCompatActivity {
         //After loging, we have set the User Id
         UserSingleton.getInstance().setUserId("-NOjpL1jiGcc80qBrFIl");
 
-        /*
-            Activate the messaging service (Push Notification) by getting the
-            device token
-         */
-
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(task -> {
                     if(!task.isSuccessful()){
@@ -83,17 +78,7 @@ public class MainActivity extends AppCompatActivity {
                     DatabaseReference usersRef = database.child("users");
                     UserSingleton.getInstance().setUserDeviceToken(token);
                     usersRef.child(UserSingleton.getInstance().getUserId()).child("deviceToken").setValue(token);
-
-                    //sendPushNotification();
                 });
-
-        //addWorkoutPlans();
-        //addWorkoutPlanToUser("-NOuQesyIu4gk6Qsu3Ti","-NOjpL1jiGcc80qBrFIl");
-        //addWorkoutPlanToUser("-NOuQet72VtKaw2AO3qb","-NOjpL1jiGcc80qBrFIl");
-
-        //Testing a Push Notification Sending
-        addAppointments();
-
 
         //bind
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -135,42 +120,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void addWorkoutPlans(){
-        FirebaseDatabase CoachMeDatabaseInstance = FirebaseDatabase.getInstance();
-        DatabaseReference CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
-        DatabaseReference swpRef = CoachMeDatabaseRef.child("selfWorkoutPlans");
-
-        SelfWorkoutPlan swp1 = new SelfWorkoutPlan("Crossfit Workout Plan",
-                                                    "Crossfit Workout Plan for everyone",
-                                                    190.99);
-
-        SelfWorkoutPlan swp2 = new SelfWorkoutPlan("Cycling Workout Plan",
-                "Cycling Workout Plan - 30days for everyone",
-                89.99);
-        swpRef.push().setValue(swp1);
-        swpRef.push().setValue(swp1);
-        swpRef.push().setValue(swp2);
-
-    }
-
-    private void addWorkoutPlanToUser(String selfworkoutId, String userId) {
-        FirebaseDatabase CoachMeDatabaseInstance = FirebaseDatabase.getInstance();
-        DatabaseReference CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
-        DatabaseReference swpByUserRef = CoachMeDatabaseRef
-                .child("selfWorkoutPlansByUser");
-
-        Task swpByUserRefTask = swpByUserRef.get();
-        swpByUserRefTask.addOnCompleteListener(new OnCompleteListener() {
-            @Override
-            public void onComplete(@NonNull Task task) {
-                DataSnapshot ds = (DataSnapshot) task.getResult();
-                SelfWorkoutPlanByUser obj = new SelfWorkoutPlanByUser(
-                        userId, selfworkoutId, new Date(), 1);
-                swpByUserRef.push().setValue(obj);
-            }
-        });
-
-    }
 
     private void replaceFragment(Fragment fragment){
 
@@ -181,50 +130,5 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void addAppointments(){
-        String userId = UserSingleton.getInstance().getUserId();
-
-        Appointment app = new Appointment(
-                new Date().getTime(),
-                new Date().getTime(),
-                "Cycling",
-                1,
-                100.99,
-                "At home",
-                "-NOjpL1w8KF6d4kWh_yB",
-                userId
-        );
-
-        FirebaseDatabase CoachMeDatabaseInstance = FirebaseDatabase.getInstance();
-        DatabaseReference CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
-        DatabaseReference appRef = CoachMeDatabaseRef
-                .child("appointments");
-        appRef.push().setValue(app);
-
-        DatabaseReference userRef = CoachMeDatabaseRef
-                .child("users");
-
-        DatabaseReference appReminderRef = CoachMeDatabaseRef
-                .child("appointmentReminders");
-
-        userRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                User trainer = task.getResult().child(app.getTrainerId()).getValue(User.class);
-                AppointmentReminder appR = new AppointmentReminder(
-                        "Appointment Comming Up!",
-                        "Appointment with "+trainer.getFirstName(),
-                        app.getBookedDate(),
-                        UserSingleton.getInstance().getUserDeviceToken()
-                        );
-
-                appReminderRef.push().setValue(appR);
-            }
-        });
-
-
-
-
-    }
 
 }

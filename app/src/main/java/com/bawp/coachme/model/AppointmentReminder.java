@@ -1,3 +1,17 @@
+/**
+ * Class: AppointmentReminder.java
+ *
+ * Class associated with the message notifications for the appointment reminders
+ *
+ * Fields:
+ * - title: title of the notification
+ * - description: description of the notification
+ * - deviceToken: device Id which we are going to send the notification
+ * - bookedDate: day where the notification must be sent
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
 package com.bawp.coachme.model;
 
 public class AppointmentReminder {
@@ -34,11 +48,11 @@ public class AppointmentReminder {
         this.description = description;
     }
 
-    public long getDate() {
+    public long getBookedDate() {
         return bookedDate;
     }
 
-    public void setDate(long bookedDate) {
+    public void setBookedDate(long bookedDate) {
         this.bookedDate = bookedDate;
     }
 
