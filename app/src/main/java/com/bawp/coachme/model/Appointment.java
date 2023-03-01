@@ -29,7 +29,8 @@ import java.util.Date;
 
 public class Appointment {
 
-    private Date bookedDate;
+    private long bookedDate;
+    private long registeredDate;
     private String serviceType;
     private int status;
     private double totalPrice;
@@ -37,33 +38,39 @@ public class Appointment {
     private String trainerId;
     private String customerId;
     private String paymentId;
-    private Date paymentDate;
+    private long paymentDate;
 
     public Appointment(){
 
     }
 
-    public Appointment(Date bookedDate, String serviceType, int status,
+    public Appointment(long bookedDate,long registeredDate, String serviceType, int status,
                        double totalPrice, String location,
-                       String trainerId, String customerId,
-                       String paymentId, Date paymentDate) {
+                       String trainerId, String customerId) {
         this.bookedDate = bookedDate;
+        this.registeredDate = registeredDate;
         this.serviceType = serviceType;
         this.status = status;
         this.totalPrice = totalPrice;
         this.location = location;
         this.trainerId = trainerId;
         this.customerId = customerId;
-        this.paymentId = paymentId;
-        this.paymentDate = paymentDate;
     }
 
-    public Date getBookedDate() {
+    public long getBookedDate() {
         return bookedDate;
     }
 
-    public void setBookedDate(Date bookedDate) {
+    public void setBookedDate(long bookedDate) {
         this.bookedDate = bookedDate;
+    }
+
+    public long getRegisteredDate() {
+        return registeredDate;
+    }
+
+    public void setRegisteredDate(long registeredDate) {
+        this.registeredDate = registeredDate;
     }
 
     public String getServiceType() {
@@ -122,11 +129,11 @@ public class Appointment {
         this.paymentId = paymentId;
     }
 
-    public Date getPaymentDate() {
+    public long getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(Date paymentDate) {
+    public void setPaymentDate(long paymentDate) {
         this.paymentDate = paymentDate;
     }
 

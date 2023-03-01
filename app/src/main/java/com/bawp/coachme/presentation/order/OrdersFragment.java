@@ -47,8 +47,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
+import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -176,11 +179,15 @@ public class OrdersFragment extends Fragment {
                         User trainerObj = userResults.child(appObj.getTrainerId()).getValue(User.class);
 
                         if(appObj.getStatus() == 1){
+
+                            Date bookedDate = new Date(appObj.getBookedDate());
+                            DateFormat format = new SimpleDateFormat("EEE, dd/MM/yy HH:mm");
+                            String formattedBookedDate = format.format(bookedDate);
                             orderList.add(
                                     new Order(ds.getKey(),
                                             "TRAINING SESSION with "+trainerObj.getFirstName().toUpperCase(),
                                             1,
-                                            appObj.getServiceType() + " at "+appObj.getBookedDate(),
+                                            appObj.getServiceType() + " Session\n"+formattedBookedDate,
                                             appObj.getTotalPrice(), true)
                             );
                             subTotal += appObj.getTotalPrice();
@@ -275,6 +282,32 @@ public class OrdersFragment extends Fragment {
                 orderTypeArray.add(order.getProductType());
             }
         }
+    }
+
+    public void lookForAppointments(){
+        FirebaseDatabase CoachMeDatabaseInstance = FirebaseDatabase.getInstance();
+        DatabaseReference CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
+
+        DatabaseReference appRef = CoachMeDatabaseRef.child("appointments");
+        DatabaseReference userRef = CoachMeDatabaseRef.child("users");
+
+        List<Task<DataSnapshot>> tasks = new ArrayList<>();
+
+        Query queryAppStatus = appRef.orderByChild("status").equalTo(3);
+
+        tasks.add(queryAppStatus.get());
+        tasks.add(userRef.get());
+
+        Task<List<DataSnapshot>> allTasks = Tasks.whenAllSuccess(tasks);
+
+        allTasks.addOnCompleteListener(new OnCompleteListener<List<DataSnapshot>>() {
+            @Override
+            public void onComplete(@NonNull Task<List<DataSnapshot>> task) {
+
+            }
+        });
+
+
     }
 
 }

@@ -39,7 +39,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
-import androidx.compose.material.icons.Icons;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -136,7 +135,7 @@ public class OrderListRecyclerFragment extends Fragment {
                             DataSnapshot dsResult = (DataSnapshot) task.getResult();
                             Appointment appObj = dsResult.getValue(Appointment.class);
                             appObj.setStatus(2); //cancelled
-                            appObj.setPaymentDate(null);
+                            appObj.setPaymentDate(0);
                             appObj.setPaymentId(null);
                             appRef.child(orderId).setValue(appObj);
                             orderList.remove(orderPosition);
