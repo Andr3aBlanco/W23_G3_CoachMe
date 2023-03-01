@@ -7,4 +7,9 @@
     tools:context=".HomeFragment">
 
 
+    <Button
+        android:id="@+id/bntToMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go to Map " />
 </FrameLayout>
