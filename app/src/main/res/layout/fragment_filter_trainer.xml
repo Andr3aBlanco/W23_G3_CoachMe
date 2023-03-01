@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragTrainerFilter"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:orientation="horizontal"
+    tools:context=".presentation.trainersearch.FragmentFilterTrainer">
+
+    <TextView
+        android:id="@+id/tvDatePicker"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|center_horizontal"
+        android:layout_weight="0.3"
+        android:hint="@string/date" />
+
+    <LinearLayout
+        android:id="@+id/llServicesFilter"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.3"
+        android:orientation="vertical">
+
+        <CheckBox
+            android:id="@+id/cbCrossfit"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:text="@string/crossfit" />
+
+        <CheckBox
+            android:id="@+id/cbPilates"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:text="@string/pilates" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llServicesFilter2"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.3"
+        android:orientation="vertical">
+
+        <CheckBox
+            android:id="@+id/cbYoga"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:text="@string/yoga" />
+
+        <CheckBox
+            android:id="@+id/cbMartials"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:text="@string/martial" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivSearch"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.1"
+        android:src="@drawable/baseline_search_24" />
+</LinearLayout>

@@ -8,4 +8,14 @@
     <string name="navBarAddButton">addWorkout</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tranerNameText">Trainer Name</string>
+    <string name="trainerBioText">Trainer Bio</string>
+    <string name="btnTrainerSeeAppTable">BOOK</string>
+    <string name="tvTrainingRating">Trainer Rating</string>
+    <string name="tvPriceHourText">XX.XX CAD</string>
+    <string name="crossfit">Crossfit</string>
+    <string name="pilates">Pilates</string>
+    <string name="yoga">Yoga</string>
+    <string name="martial">Martial</string>
+    <string name="date">Date</string>
 </resources>

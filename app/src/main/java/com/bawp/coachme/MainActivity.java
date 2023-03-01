@@ -1,6 +1,8 @@
 package com.bawp.coachme;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,23 +13,23 @@ import androidx.fragment.app.FragmentTransaction;
 import com.bawp.coachme.databinding.ActivityMainBinding;
 import com.bawp.coachme.model.SelfWorkoutPlan;
 import com.bawp.coachme.model.SelfWorkoutPlanByUser;
-import com.bawp.coachme.model.User;
 import com.bawp.coachme.presentation.order.OrdersFragment;
+import com.bawp.coachme.presentation.trainersearch.TrainerSearchFragment;
 import com.bawp.coachme.utils.UserSingleton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
 
+    FloatingActionButton floatAdd;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,9 +47,24 @@ public class MainActivity extends AppCompatActivity {
 
         binding.bottomNavigationView.setBackground(null);
 
+        //add button listener
+
+        floatAdd = findViewById(R.id.floatingAdd);
+        floatAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Andrea", "click add");
+                replaceFragment(new TrainerSearchFragment());
+
+            }
+        });
+
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+                Log.d("Andrea"," " + item.getItemId());
+
 
             switch (item.getItemId()){
+
 
                 case R.id.menu_home:
                     replaceFragment(new HomeFragment());
@@ -68,10 +85,6 @@ public class MainActivity extends AppCompatActivity {
 
                     break;
 
-                case R.id.menu_add:
-                    replaceFragment(new HomeFragment());
-
-                    break;
 
             }
 
