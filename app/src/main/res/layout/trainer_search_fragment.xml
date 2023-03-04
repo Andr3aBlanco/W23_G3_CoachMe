@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.trainermap.TrainerSearchFragment">
+
+    <FrameLayout
+        android:id="@+id/outletFilterFragment"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:text="This will be replaced with filter"/>
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_marginTop="120dp"
+        android:orientation="horizontal"
+        android:id="@+id/rgMapListSelector">
+
+        <RadioButton
+            android:id="@+id/rbListView"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="List" />
+
+        <RadioButton
+            android:id="@+id/rbMapView"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Map" />
+    </RadioGroup>
+
+    <FrameLayout
+        android:id="@+id/searchOptContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="200dp"/>
+
+</FrameLayout>

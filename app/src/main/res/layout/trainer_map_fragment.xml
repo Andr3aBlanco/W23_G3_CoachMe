@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.trainermap.TrainerMapFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/hello_blank_fragment" />
+
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/mapTrainersF"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:apiKey="AIzaSyAkm-OeCK3xywaBvOeRGWOGxHF-4iyGfY8"
+        android:clickable="true"
+        android:contentDescription="@string/NoSpeakableText"
+        android:enabled="true"
+        android:focusable="true" />
+
+</FrameLayout>

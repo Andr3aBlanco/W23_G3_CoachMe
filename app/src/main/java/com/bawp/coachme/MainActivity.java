@@ -1,6 +1,8 @@
 package com.bawp.coachme;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +15,8 @@ import com.bawp.coachme.model.SelfWorkoutPlan;
 import com.bawp.coachme.model.SelfWorkoutPlanByUser;
 import com.bawp.coachme.model.User;
 import com.bawp.coachme.presentation.order.OrdersFragment;
+import com.bawp.coachme.presentation.trainermap.TrainerMapFragment;
+import com.bawp.coachme.presentation.trainermap.TrainerSearchFragment;
 import com.bawp.coachme.utils.UserSingleton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -27,11 +31,14 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
+    Button addBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         UserSingleton.getInstance().setUserId("-NOjpL1jiGcc80qBrFIl");
 
@@ -43,7 +50,12 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+
+        binding.floatingAdd.setOnClickListener(v -> replaceFragment(new TrainerMapFragment())); //Change to trainer search working on map now
+
         binding.bottomNavigationView.setBackground(null);
+
+
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
 
