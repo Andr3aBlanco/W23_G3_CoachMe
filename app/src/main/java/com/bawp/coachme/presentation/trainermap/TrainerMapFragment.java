@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.bawp.coachme.R;
 import com.bawp.coachme.model.Trainer;
@@ -51,16 +52,6 @@ public class TrainerMapFragment extends Fragment {
         mapView = (MapView) view.findViewById(R.id.mapTrainersF); //
         mapView.onCreate(savedInstanceState); //
 
-        // Get a list of trainers from your data source
-//        theFilteredTrainers = getTrainers(new GetTrainersCallback() {
-//            @Override
-//            public void onTrainersReceived(List<User> trainers) {
-//                Log.d("Andrea","Trainers received");
-//                Log.d("Andrea", "This is the name of the first: " + theFilteredTrainers.get(0).getFirstName());
-//                 addMarkersForTrainers();
-//            }
-//        });
-
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(@NonNull GoogleMap map) {
@@ -85,52 +76,58 @@ public class TrainerMapFragment extends Fragment {
                     @Override
                     public boolean onMarkerClick(@NonNull Marker marker) {
                         Log.d("ANDREA", "Clicked marker");
-                        return false;
+
+                        String trainerName = marker.getTitle();
+
+                        //Bundle
+                        Bundle bundle = new Bundle();
+                        bundle.putString(TrainerDetailsFragment.ARG_TRAINER_NAME, trainerName );
+
+                        TrainerDetailsFragment fragment = TrainerDetailsFragment.newInstance(trainerName);
+
+                        // Replace the map fragment with the TrainerFragment
+                        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.mapFragmentContainer, fragment);
+                        transaction.addToBackStack(null);
+                        transaction.commit();
+
+
+                        return true;
                     }
                 });
             }
         });
 
-        // Get the list of trainers from the parent activity
-//        trainers = ((TrainerSearchActivity) getActivity()).getTrainers();
-
-
-        //Pulling data from Firebase
-        //This Needs to be moved to the Trainer Search Fragment and passed trough the filter
 
         return view;
     }
 
-//    @Override
-//    public boolean onMarkerClick(@NonNull Marker marker) {
-//
-//        Log.d("ANDREA", "No click yet");
-//
-//        return true;
-//    }
 
-//    @Override
-//    public void onMapReady(@NonNull GoogleMap map) {
-//        googleMap = map;
-//        googleMap.setOnMarkerClickListener(this);
-//
-//        Log.d("Andrea","Map Ready");
-//        checkLocationPermissionAndEnableMyLocation();
-//        addMarkersForTrainers();
-//    }
-
-
-    private void checkLocationPermissionAndEnableMyLocation() {
-        if (ContextCompat.checkSelfPermission(getActivity(), ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-//            googleMap.setMyLocationEnabled(true);
-
-        } else {
-            requestPermissions(new String[]{ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_LOCATION);
-        }
+    @Override
+    public void onResume() {
+        super.onResume();
+        mapView.onResume();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
+
+    //ADDITIONAL METHODS
 
     private void addMarkersForTrainers(List<User> trainers) {
 
@@ -176,9 +173,6 @@ public class TrainerMapFragment extends Fragment {
             }
         });
 
-
-//        trainers.add(new Trainer("John Smith", "Certified Personal Trainer", 40.7128, -74.0060));
-//        trainers.add(new Trainer("Jane Doe", "Fitness Instructor", 51.5074, -0.1278));
     }
 
 
@@ -186,29 +180,26 @@ public class TrainerMapFragment extends Fragment {
         void onTrainersReceived(List<User> trainers);
     }
 
+    private void checkLocationPermissionAndEnableMyLocation() {
+        if (ContextCompat.checkSelfPermission(getActivity(), ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+//            googleMap.setMyLocationEnabled(true);
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        mapView.onResume();
+        } else {
+            requestPermissions(new String[]{ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_LOCATION);
+        }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        mapView.onPause();
-    }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapView.onLowMemory();
+    //Method to get the clicked trainer
+    private User getClickedTrainer(Marker marker) {
+        for (User trainer : theFilteredTrainers) {
+            if (trainer.getFirstName().equals(marker.getTitle())) {
+                return trainer;
+            }
+        }
+        return null;
     }
 
 }
