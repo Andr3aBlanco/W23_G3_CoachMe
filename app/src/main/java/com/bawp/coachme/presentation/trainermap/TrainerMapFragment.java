@@ -78,12 +78,13 @@ public class TrainerMapFragment extends Fragment {
                         Log.d("ANDREA", "Clicked marker");
 
                         String trainerName = marker.getTitle();
+                        String trainerEmail =marker.getSnippet();
 
                         //Bundle
                         Bundle bundle = new Bundle();
                         bundle.putString(TrainerDetailsFragment.ARG_TRAINER_NAME, trainerName );
 
-                        TrainerDetailsFragment fragment = TrainerDetailsFragment.newInstance(trainerName);
+                        TrainerDetailsFragment fragment = TrainerDetailsFragment.newInstance(trainerName, trainerEmail);
 
                         // Replace the map fragment with the TrainerFragment
                         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
@@ -136,8 +137,11 @@ public class TrainerMapFragment extends Fragment {
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(position)
                     .title(trainer.getFirstName())
-                    .snippet(String.valueOf(trainer.getFlatPrice()))
+                    .snippet(trainer.getEmail())
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+
+
+
             googleMap.addMarker(markerOptions);
         }
     }
