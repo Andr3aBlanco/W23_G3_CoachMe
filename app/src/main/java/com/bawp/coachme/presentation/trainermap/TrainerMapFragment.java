@@ -31,7 +31,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class TrainerMapFragment extends Fragment {
@@ -40,6 +42,7 @@ public class TrainerMapFragment extends Fragment {
 
     private GoogleMap googleMap;
     private List<User> theFilteredTrainers;
+    private HashMap<String, User> trainersMapFiltered = new HashMap<>();
 
     private MapView mapView;
 
@@ -62,11 +65,29 @@ public class TrainerMapFragment extends Fragment {
 
 
                 //Chnage
+//                getTrainers(new GetTrainersCallback() {
+//                    @Override
+//                    public void onTrainersReceived(List<User> trainers) {
+//                        Log.d("Andrea", "Trainers received");
+//                        Log.d("Andrea", "This is the name of the first: " + trainers.get(0).getFirstName());
+//                        addMarkersForTrainers(trainers);
+//                    }
+//                });
+
+//                getTrainers(new GetTrainersCallback() {
+//                    @Override
+//                    public void onTrainersReceived(List<User> trainers) {
+//                        Log.d("Andrea", "Trainers received");
+//                        Log.d("Andrea", "This is the name of the first: " + trainers.get(0).getFirstName());
+//                        addMarkersForTrainers(trainers);
+//                    }
+//                });
+
                 getTrainers(new GetTrainersCallback() {
                     @Override
-                    public void onTrainersReceived(List<User> trainers) {
+                    public void onTrainersReceived(HashMap<String,User> trainers) {
                         Log.d("Andrea", "Trainers received");
-                        Log.d("Andrea", "This is the name of the first: " + trainers.get(0).getFirstName());
+//                        Log.d("Andrea", "This is the name of the first: " + trainers.get(0).getFirstName());
                         addMarkersForTrainers(trainers);
                     }
                 });
@@ -78,13 +99,13 @@ public class TrainerMapFragment extends Fragment {
                         Log.d("ANDREA", "Clicked marker");
 
                         String trainerName = marker.getTitle();
-                        String trainerEmail =marker.getSnippet();
+                        String trainerID =marker.getSnippet();
 
                         //Bundle
                         Bundle bundle = new Bundle();
                         bundle.putString(TrainerDetailsFragment.ARG_TRAINER_NAME, trainerName );
 
-                        TrainerDetailsFragment fragment = TrainerDetailsFragment.newInstance(trainerName, trainerEmail);
+                        TrainerDetailsFragment fragment = TrainerDetailsFragment.newInstance(trainerName, trainerID);
 
                         // Replace the map fragment with the TrainerFragment
                         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
@@ -130,14 +151,33 @@ public class TrainerMapFragment extends Fragment {
 
     //ADDITIONAL METHODS
 
-    private void addMarkersForTrainers(List<User> trainers) {
+//    private void addMarkersForTrainers(List<User> trainers) {
+//
+//        for (User trainer : trainers) {
+//            LatLng position = new LatLng(trainer.getLatitudeCoord(), trainer.getLongitudeCoord());
+//            MarkerOptions markerOptions = new MarkerOptions()
+//                    .position(position)
+//                    .title(trainer.getFirstName())
+//                    .snippet(trainer.getEmail())
+//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+//
+//
+//
+//            googleMap.addMarker(markerOptions);
+//        }
+//    }
 
-        for (User trainer : trainers) {
-            LatLng position = new LatLng(trainer.getLatitudeCoord(), trainer.getLongitudeCoord());
+    private void addMarkersForTrainers(HashMap<String, User> trainers) {
+
+        for (Map.Entry<String, User> trainer : trainers.entrySet()) { //ok
+            String key = trainer.getKey();
+            User theTrainer = trainer.getValue();
+
+            LatLng position = new LatLng(theTrainer.getLatitudeCoord(), theTrainer.getLongitudeCoord());
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(position)
-                    .title(trainer.getFirstName())
-                    .snippet(trainer.getEmail())
+                    .title(theTrainer.getFirstName())
+                    .snippet(key) //To pass to trainer details
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
 
 
@@ -147,25 +187,56 @@ public class TrainerMapFragment extends Fragment {
     }
 
     //method for filling theFilteredTrainers
+//    private void getTrainers(GetTrainersCallback callback) {
+//
+//        // Change to data from Firebase
+//        DatabaseReference trainerRef = FirebaseDatabase.getInstance().getReference().child("users");
+//
+//        //Pull with no filter
+//        trainerRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//
+//                List<User> trainers = new ArrayList<>();
+//
+//                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+//                    User user = userSnapshot.getValue(User.class);
+//                    trainers.add(user);
+//                    assert user != null;
+//                    Log.d("Andrea", "Retrieved " + user.getFirstName());
+//                }
+//                // New
+//                callback.onTrainersReceived(trainers);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//                Log.d("Andrea", "onCancelled: " + error.getMessage());
+//            }
+//        });
+//
+//    }
+
+
     private void getTrainers(GetTrainersCallback callback) {
 
-//        List<User> trainers = new ArrayList<>();
         // Change to data from Firebase
         DatabaseReference trainerRef = FirebaseDatabase.getInstance().getReference().child("users");
-
 
         //Pull with no filter
         trainerRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                List<User> trainers = new ArrayList<>();
+                HashMap<String,User> trainers = new HashMap<>();
 
                 for (DataSnapshot userSnapshot : snapshot.getChildren()) {
                     User user = userSnapshot.getValue(User.class);
-                    trainers.add(user);
+                    String userKey = userSnapshot.getKey();
+                    trainers.put(userKey, user); //
+                    trainersMapFiltered.put(userKey,user);
                     assert user != null;
-                    Log.d("Andrea", "Retrived " + user.getFirstName());
+                    Log.d("Andrea", "Retrieved " + user.getFirstName());
                 }
                 // New
                 callback.onTrainersReceived(trainers);
@@ -179,10 +250,14 @@ public class TrainerMapFragment extends Fragment {
 
     }
 
+//    public interface GetTrainersCallback {
+//        void onTrainersReceived(List<User> trainers);
+//    }
 
     public interface GetTrainersCallback {
-        void onTrainersReceived(List<User> trainers);
+        void onTrainersReceived(HashMap<String, User> trainersMap); //Chck this - change in trainer details
     }
+
 
     private void checkLocationPermissionAndEnableMyLocation() {
         if (ContextCompat.checkSelfPermission(getActivity(), ACCESS_FINE_LOCATION)

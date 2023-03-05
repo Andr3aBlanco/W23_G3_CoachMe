@@ -54,15 +54,8 @@ public class TrainerMapActivity extends AppCompatActivity {
             @Override
             public void onMapReady(GoogleMap map) {
                 googleMap = map;
-//                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(TrainerMapActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                    Log.d("ANDREA", "Inside no permission");
-//
-//                    return;
-//                }
+
                 Log.d("Andrea", "Map ready");
-//                googleMap.setMyLocationEnabled(true);
-                // Add markers for trainers
-//                addMarkersForTrainers();
 
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
@@ -101,19 +94,6 @@ public class TrainerMapActivity extends AppCompatActivity {
         mapView.onLowMemory();
     }
 
-//    private void addMarkersForTrainers() {
-//        // Get a list of trainers from your data source
-//        List<Trainer> trainers = getTrainers();
-//        // Loop through the trainers and add a marker for each one
-//        for (Trainer trainer : trainers) {
-//            LatLng position = new LatLng(trainer.getLatitude(), trainer.getLongitude());
-//            MarkerOptions markerOptions = new MarkerOptions()
-//                    .position(position)
-//                    .title(trainer.getName())
-//                    .snippet(trainer.getDescription());
-//            googleMap.addMarker(markerOptions);
-//        }
-//    }
 
     private void addMarkersForTrainers() {
 
@@ -128,15 +108,6 @@ public class TrainerMapActivity extends AppCompatActivity {
         }
     }
 
-//    private List<Trainer> getTrainers() {
-//        // Change to data from Firebase
-//        //
-//        List<Trainer> trainers = new ArrayList<>();
-//        trainers.add(new Trainer("John Smith", "Certified Personal Trainer", 40.7128, -74.0060));
-//        trainers.add(new Trainer("Jane Doe", "Fitness Instructor", 51.5074, -0.1278));
-//        return trainers;
-//    }
-//}
 
     private void getTrainers(GetTrainersCallback callback) {
 
@@ -164,9 +135,6 @@ public class TrainerMapActivity extends AppCompatActivity {
             }
         });
 
-
-//        trainers.add(new Trainer("John Smith", "Certified Personal Trainer", 40.7128, -74.0060));
-//        trainers.add(new Trainer("Jane Doe", "Fitness Instructor", 51.5074, -0.1278));
             callback.onTrainersReceived(theFilteredTrainers);
 
     }

@@ -24,6 +24,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class TrainerDetailsFragment extends Fragment {
@@ -96,13 +97,15 @@ public class TrainerDetailsFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                List<User> trainers = new ArrayList<>();
+//                List<User> trainers = new ArrayList<>();
+                HashMap<String, User> trainers = new HashMap<>();
 
                 for (DataSnapshot userSnapshot : snapshot.getChildren()) {
                     User user = userSnapshot.getValue(User.class);
-                    trainers.add(user);
+                    String userKey = userSnapshot.getKey();
+                    trainers.put(userKey, user);
                     assert user != null;
-                    Log.d("Andrea", "Retrived " + user.getFirstName());
+                    Log.d("Andrea", "Retrived " + trainers.get(userKey).getFirstName());
                 }
                 // New
                 callback.onTrainersReceived(trainers);
