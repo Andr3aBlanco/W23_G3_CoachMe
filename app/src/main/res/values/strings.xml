@@ -1,4 +1,12 @@
 <resources>
-    <string name="app_name">CoachMe</string>
-    <string name="statsTitle">this is the new text</string>
+    <string name="app_name">UserAuthantication</string>
+    <string name="appTitleTextValue">CoachMe</string>
+    <string name="loginConfirmBtnValue">Confirm</string>
+    <string name="registerTextValue">Register</string>
+    <string name="btnGoogleAuthVal">Login With google</string>
+
+    <string name="facebook_app_id">1234</string>
+    <string name="fb_login_protocol_scheme">fb1234</string>
+    <string name="facebook_client_token">56789</string>
+    <string name="btnLogOut">Log Out</string>
 </resources>
