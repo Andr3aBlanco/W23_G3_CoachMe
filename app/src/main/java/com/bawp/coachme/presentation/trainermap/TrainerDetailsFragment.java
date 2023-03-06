@@ -3,6 +3,8 @@ package com.bawp.coachme.presentation.trainermap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+//import androidx.compose.ui.node.LookaheadDelegate;
+import androidx.compose.ui.unit.Density;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -14,8 +16,10 @@ import android.widget.CalendarView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bawp.coachme.R;
+import com.bawp.coachme.model.CustomCalendarView;
 import com.bawp.coachme.model.TrainerSchedule;
 import com.bawp.coachme.model.User;
 import com.google.firebase.database.DataSnapshot;
@@ -25,7 +29,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 public class TrainerDetailsFragment extends Fragment {
 
@@ -40,6 +55,7 @@ public class TrainerDetailsFragment extends Fragment {
     private String trainerID;
 
 
+    CalendarView calendarView;
     //Variables for the trainer info
     User currentTrainer;
 
@@ -47,6 +63,9 @@ public class TrainerDetailsFragment extends Fragment {
     //Map of appointments
     HashMap<String, TrainerSchedule> trainerScheduleHashMap = new HashMap<>();
 
+    HashSet<Date> highlightedDates = new HashSet<>();
+
+    HashMap<String, List<String>> timesForEachDay = new HashMap<>();
 
 
     public TrainerDetailsFragment() {
@@ -85,13 +104,26 @@ public class TrainerDetailsFragment extends Fragment {
         TextView name = view.findViewById(R.id.tvTrainerName);
         ImageButton seeMore = view.findViewById(R.id.btnTrainerSeeAppTable);
         LinearLayout calendarLayout = view.findViewById(R.id.calLayout); //ok
-        CalendarView calendar = view.findViewById(R.id.cvDates);
+        calendarView = view.findViewById(R.id.cvDates); //check this
 
+
+        Calendar currentCalendar = Calendar.getInstance();
+
+        calendarView.setMinDate(currentCalendar.getTimeInMillis());
+
+        Calendar maxCalendar = Calendar.getInstance();
+        maxCalendar.add(Calendar.YEAR, 1);
+        calendarView.setMaxDate(maxCalendar.getTimeInMillis());
+        calendarView.invalidate();
+//        calendarView.setTrainerScheduleHashMap(trainerScheduleHashMap);
 
 
         name.setText(trainerName);
 
         getTrainerSchedule();
+
+
+
 
 
         //click listener for the button
@@ -103,11 +135,10 @@ public class TrainerDetailsFragment extends Fragment {
         });
 
         //on Change listener for the calendar view
-        calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-
-
+                Log.d("Andrea", "changed date");
             }
         });
 
@@ -124,19 +155,57 @@ public class TrainerDetailsFragment extends Fragment {
 //        Task exQqueryGetTrainer = queryGetTrainer.get();
         //Pull with no filter
 
-        scheduleRef.addValueEventListener(new ValueEventListener() {
+        queryGetTrainer.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                for(DataSnapshot ds : snapshot.getChildren()){
+                trainerScheduleHashMap.clear();
+                highlightedDates.clear();
+                timesForEachDay.clear();
+
+                for(DataSnapshot ds : snapshot.getChildren()) {
 
                     TrainerSchedule schedule = ds.getValue(TrainerSchedule.class);
-                    Log.d("Andrea", schedule.getTrainerID());
+                    Log.d("Andrea", "this is the id " + schedule.getTrainerID());
+                    Log.d("Andrea", "this is the slot" + schedule.getTime().toString());
                     String scheduleKey = ds.getKey();
+                    trainerScheduleHashMap.put(scheduleKey, schedule);
+                    highlightedDates.add(schedule.getTime()); //Why the null pointer?
+                }
 
-                    trainerScheduleHashMap.put(scheduleKey,schedule);
-            }
 
+                    //Convert to an array of Date to loop and find if date is contained
+                    Date[] trainerDates = new Date[highlightedDates.size()];
+                    trainerDates = highlightedDates.toArray(trainerDates);
+
+                    //Fill the map for times to each date = date repeats and is the key
+                    for(Date date : trainerDates){
+
+                        LocalDateTime dateTime = null;
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                            dateTime = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+                        }
+                        String dateStr = null;
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                            dateStr = dateTime.toLocalDate().toString();
+                        }
+                        String timeStr = null;
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                            timeStr = dateTime.toLocalTime().toString();
+                        }
+
+                        if (!timesForEachDay.containsKey(dateStr)) {
+                            timesForEachDay.put(dateStr, new ArrayList<>());
+                        }
+                        timesForEachDay.get(dateStr).add(timeStr);
+
+                    }
+
+                    // Print the map
+                    for (Map.Entry<String, List<String>> entry : timesForEachDay.entrySet()) {
+                        System.out.println("Date: " + entry.getKey() + ", Times: " + entry.getValue());
+                    }
+                    //this HashMap is perfect - Beautiful :)
         }
 
             @Override
@@ -146,29 +215,6 @@ public class TrainerDetailsFragment extends Fragment {
 
             }
             });
-//        exQqueryGetTrainer.addOnCompleteListener(new OnCompleteListener() {
-//            @Override
-//            public void onComplete(@NonNull Task task) {
-//
-//                if(exQqueryGetTrainer.isSuccessful()){
-//                    DataSnapshot dsResult = (DataSnapshot) exQqueryGetTrainer.getResult();
-//
-//                    for(DataSnapshot ds : dsResult.getChildren()){
-//
-//                        TrainerSchedule schedule = ds.getValue(TrainerSchedule.class);
-//                        Log.d("Andrea", schedule.getTrainerID());
-//                        String scheduleKey = ds.getKey();
-//
-//                        trainerScheduleHashMap.put(scheduleKey,schedule);
-//                    }
-//                } else{
-//                    Exception error = task.getException();
-//                    Log.d("TRAINER", "Firebase - get trainer Schedule failed");
-//                }
-//
-//
-//            }
-//        });
 
 
     }

@@ -3,6 +3,8 @@ plugins {
     id 'com.google.gms.google-services'
 }
 
+
+
 android {
     namespace 'com.bawp.coachme'
     compileSdk 33
@@ -57,6 +59,8 @@ dependencies {
     implementation "androidx.compose.material:material-icons-extended:1.0.0"
     //noinspection GradleDependency
     implementation 'com.google.android.gms:play-services-location:18.0.0'
+
+
 
 
 
