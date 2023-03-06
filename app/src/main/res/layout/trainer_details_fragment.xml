@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardViewTrainerDetails"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp"
+    tools:context=".presentation.trainermap.TrainerDetailsFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/ivTrainerPic"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            app:srcCompat="@drawable/baseline_person_24" />
+
+        <TextView
+            android:id="@+id/tvTrainerName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tranerNameText"
+            android:layout_toRightOf="@+id/ivTrainerPic"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tvTrainerBio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvTrainerName"
+            android:layout_toRightOf="@id/ivTrainerPic"
+            android:text="@string/trainerBioText" />
+
+        <TextView
+            android:id="@+id/tvPriceHour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/ivTrainerPic"
+            android:layout_below="@id/tvTrainerBio"
+            android:text="@string/tvPriceHourText" />
+
+        <TextView
+            android:id="@+id/tvTrainerRating"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvPriceHour"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_toRightOf="@id/ivTrainerPic"
+            android:text="@string/tvTrainingRating"
+            android:textSize="12sp" />
+
+        <ImageView
+            android:id="@+id/btnCloseCard"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:srcCompat="@drawable/ic_cancel_white_18dp" />
+
+        <ImageButton
+            android:id="@+id/btnTrainerSeeAppTable"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/btnCloseCard"
+            android:layout_marginStart="145dp"
+            android:layout_marginTop="17dp"
+            android:layout_marginEnd="100dp"
+            android:layout_marginBottom="8dp"
+            android:layout_toEndOf="@id/tvTrainerRating"
+            android:backgroundTint="#173F51B5"
+            android:src="@drawable/ic_link_close"
+            android:text="@string/btnTrainerSeeAppTable"
+            android:textColor="#4A4A48"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/calLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvTrainerRating"
+            android:visibility="gone">
+
+            <CalendarView
+                android:id="@+id/cvDates"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8" />
+
+            <ListView
+                android:id="@+id/lvTimes"
+                android:layout_width="0dp"
+                android:layout_height="200dp"
+                android:layout_weight="0.2" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
+
+

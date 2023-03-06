@@ -98,14 +98,19 @@ public class TrainerMapFragment extends Fragment {
                     public boolean onMarkerClick(@NonNull Marker marker) {
                         Log.d("ANDREA", "Clicked marker");
 
-                        String trainerName = marker.getTitle();
+                        //Parameters for the object creation
                         String trainerID =marker.getSnippet();
+                        String trainerName = trainersMapFiltered.get(trainerID).getFirstName() + " " + trainersMapFiltered.get(trainerID).getLastName();
+                        double flatPrice = trainersMapFiltered.get(trainerID).getFlatPrice();
+//                        double rating;
 
                         //Bundle
                         Bundle bundle = new Bundle();
                         bundle.putString(TrainerDetailsFragment.ARG_TRAINER_NAME, trainerName );
+                        bundle.putDouble(TrainerDetailsFragment.ARG_TRAINER_FLATPRICE, flatPrice );
+                        bundle.putString(TrainerDetailsFragment.ARG_TRAINER_ID, trainerID);
 
-                        TrainerDetailsFragment fragment = TrainerDetailsFragment.newInstance(trainerName, trainerID);
+                        TrainerDetailsFragment fragment = TrainerDetailsFragment.newInstance(trainerName, flatPrice, trainerID);
 
                         // Replace the map fragment with the TrainerFragment
                         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();

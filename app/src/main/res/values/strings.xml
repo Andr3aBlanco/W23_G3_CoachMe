@@ -14,4 +14,15 @@
     <string name="tvTrainingRating">Stars</string>
     <string name="tvPriceHourText">XX CAD</string>
     <string name="btnTrainerSeeAppTable">+</string>
+    <string-array name="dummytimes">
+        <item>8am</item>
+        <item>10am</item>
+        <item>11am</item>
+        <item>12am</item>
+        <item>4pm</item>
+        <item>6pm</item>
+        <item>7pm</item>
+        <item>8pm</item>
+        <item>9pm</item>
+    </string-array>
 </resources>
