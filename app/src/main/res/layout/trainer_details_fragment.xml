@@ -92,9 +92,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/tvTrainerRating"
-            android:visibility="visible">
+            android:visibility="gone">
 
-            <CalendarView
+            <com.bawp.coachme.model.CustomCalendarView
                 android:id="@+id/cvDates"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

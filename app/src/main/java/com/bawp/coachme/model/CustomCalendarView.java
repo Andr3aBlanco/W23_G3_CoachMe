@@ -5,66 +5,66 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CalendarView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 public class CustomCalendarView extends CalendarView {
-    private HashMap<String, TrainerSchedule> trainerScheduleHashMap;
+
+    private List<Date> disabledDates;
 
     public CustomCalendarView(Context context) {
         super(context);
+        disabledDates = new ArrayList<>();
     }
 
     public CustomCalendarView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        disabledDates = new ArrayList<>();
     }
 
-    public CustomCalendarView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+    public CustomCalendarView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        disabledDates = new ArrayList<>();
     }
 
-    public void setTrainerScheduleHashMap(HashMap<String, TrainerSchedule> trainerScheduleHashMap) {
-        this.trainerScheduleHashMap = trainerScheduleHashMap;
+    public void setDisabledDates(List<Date> dates) {
+        disabledDates.clear();
+        disabledDates.addAll(dates);
+        invalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Log.d("Andrea", "Inside onDraw");
-        Calendar currentCalendar = Calendar.getInstance();
-        currentCalendar.setTimeInMillis(getDate());
 
-        int currentYear = currentCalendar.get(Calendar.YEAR);
-        int currentMonth = currentCalendar.get(Calendar.MONTH);
-
-        // Iterate through each day of the current month
-        for (int i = 1; i <= currentCalendar.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
-            Calendar dayCalendar = Calendar.getInstance();
-            dayCalendar.set(currentYear, currentMonth, i);
-
-            // Check if the day is contained in the HashMap
-            TrainerSchedule trainerSchedule = trainerScheduleHashMap.get(getDayId(dayCalendar));
-            Log.d("Andrea", "day not found " + dayCalendar);
-            if (trainerSchedule == null) {
-                // If the day is not contained in the HashMap, shade it and make it unclickable
-                int dayOfMonth = dayCalendar.get(Calendar.DAY_OF_MONTH);
-                View dayView = findViewWithTag(dayOfMonth);
-                if (dayView != null) {
-                    dayView.setAlpha(0.5f);
-                    dayView.setClickable(false);
+        // Iterate over all visible cells and disable the ones with a disabled date
+        for (int i = 0; i < getChildCount(); i++) {
+            ViewGroup weekRow = (ViewGroup) getChildAt(i);
+            for (int j = 0; j < weekRow.getChildCount(); j++) {
+                View dayView = weekRow.getChildAt(j);
+                if (dayView instanceof TextView) {
+                    TextView dayTextView = (TextView) dayView;
+                    Date day = new Date((Long) dayTextView.getTag());
+                    if (disabledDates.contains(day)) {
+                        dayTextView.setEnabled(false);
+                        dayTextView.setTextColor(getResources().getColor(android.R.color.darker_gray));
+                    } else {
+                        dayTextView.setEnabled(true);
+                        dayTextView.setTextColor(getResources().getColor(android.R.color.black));
+                    }
                 }
             }
         }
-    }
-
-    private String getDayId(Calendar calendar) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        return dateFormat.format(calendar.getTime());
     }
 }
