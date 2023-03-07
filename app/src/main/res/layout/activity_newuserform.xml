@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context=".NewUserForm">
     <TextView
         android:id="@+id/appTitleText"
         android:layout_width="wrap_content"
@@ -18,14 +18,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/txtusername"
+        android:id="@+id/txtFirstName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="44dp"
         android:layout_marginEnd="32dp"
         android:ems="10"
-        android:hint="username"
+        android:hint="First Name"
         android:inputType="textPersonName"
         android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -34,55 +34,54 @@
         app:layout_constraintTop_toBottomOf="@+id/appTitleText" />
 
     <EditText
-        android:id="@+id/txtpassword"
+        android:id="@+id/txtLastName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="44dp"
         android:layout_marginEnd="32dp"
         android:ems="10"
-        android:hint="Password"
+        android:hint="Last Name"
         android:inputType="textPersonName"
         android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtusername" />
-
-    <Button
-        android:id="@+id/btnregisterConf"
-        android:layout_width="185dp"
-        android:layout_height="59dp"
-        android:layout_marginTop="20dp"
-        android:text="@string/loginConfirmBtnValue"
+        app:layout_constraintTop_toBottomOf="@+id/txtFirstName" />
+    <EditText
+        android:id="@+id/txtAddress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="32dp"
+        android:ems="10"
+        android:hint="Address"
+        android:inputType="textPostalAddress"
+        android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.539"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtpassword" />
+        app:layout_constraintTop_toBottomOf="@+id/txtLastName" />
 
-    <ImageView
-        android:id="@+id/imageFacebookAuth"
-        android:layout_width="101dp"
-        android:layout_height="84dp"
-        android:layout_marginTop="32dp"
+    <EditText
+        android:id="@+id/txtPhoneNumber"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="32dp"
+        android:ems="10"
+        android:hint="Phone Number"
+        android:inputType="text|number"
+        android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.858"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtGoToReg"
-        app:srcCompat="@drawable/facebooklogo" />
+        app:layout_constraintTop_toBottomOf="@+id/txtAddress" />
 
-    <ImageView
-        android:id="@+id/imageGoogleAuth"
-        android:layout_width="99dp"
-        android:layout_height="84dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.288"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtGoToReg"
-        app:srcCompat="@drawable/google_logo" />
     <ProgressBar
-        android:id="@+id/pBar"
+        android:id="@+id/progressBar"
         android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -90,15 +89,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-    <TextView
-        android:id="@+id/txtGoToReg"
-        android:layout_width="148dp"
-        android:layout_height="43dp"
-        android:layout_marginTop="16dp"
-        android:text="Register here."
-        android:textSize="20sp"
+
+    <Button
+        android:id="@+id/btnConfirm"
+        android:layout_width="185dp"
+        android:layout_height="59dp"
+        android:layout_marginTop="44dp"
+        android:text="@string/userDataConfirm"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.543"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnregisterConf" />
+        app:layout_constraintTop_toBottomOf="@+id/txtPhoneNumber" />
 </androidx.constraintlayout.widget.ConstraintLayout>

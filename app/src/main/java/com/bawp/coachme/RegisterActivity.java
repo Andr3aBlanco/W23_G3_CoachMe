@@ -10,18 +10,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-public class Register_Activity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
     EditText userNameRegtxt;
     EditText passwordRegTxt;
-    EditText personName;
+TextView alreadyHaveAccount;
     Button btnRegister;
     FirebaseAuth mAuth;
     ProgressBar progressBar;
@@ -33,27 +33,31 @@ public class Register_Activity extends AppCompatActivity {
 mAuth=FirebaseAuth.getInstance();
         userNameRegtxt=findViewById(R.id.txtRegUsername);
         passwordRegTxt=findViewById(R.id.txtRegPassword);
-        personName=findViewById(R.id.txtRegPName);
+alreadyHaveAccount=findViewById(R.id.txtGoToLogin);
         progressBar=findViewById(R.id.progressBar);
         btnRegister=findViewById(R.id.btnregisterConf);
+
+        alreadyHaveAccount.setOnClickListener((View view)->{
+
+            Intent regIntent=new Intent(RegisterActivity.this, LoginActivity.class);
+            startActivity(regIntent);
+        });
+
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                String email, password,name;
+                String email, password;
                 email = String.valueOf(userNameRegtxt.getText());
                 password = String.valueOf(passwordRegTxt.getText());
-                name = String.valueOf(personName.getText());
+
                 progressBar.setVisibility(View.GONE);
                 if (TextUtils.isEmpty (email)) {
 
-                    Toast.makeText(Register_Activity.this, "Please Enter Email", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, "Please Enter Email", Toast.LENGTH_SHORT).show();
                     return;
                 }if (TextUtils.isEmpty (password)) {
-                    Toast.makeText(Register_Activity.this, "Please Enter Password", Toast.LENGTH_SHORT).show();
-                    return;
-                }if (TextUtils.isEmpty (name)) {
-                    Toast.makeText(Register_Activity.this, "Please Enter name", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, "Please Enter Password", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -64,15 +68,15 @@ mAuth=FirebaseAuth.getInstance();
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
                                     // Sign in success, update UI with the signed-in user's information
-                                    Toast.makeText(Register_Activity.this, "User created", Toast.LENGTH_SHORT).show();
-                                    Intent regIntent=new Intent(Register_Activity.this,Login_in_Activity.class);
+                                    Toast.makeText(RegisterActivity.this, "User created", Toast.LENGTH_SHORT).show();
+                                    Intent regIntent=new Intent(RegisterActivity.this, NewUserForm.class);
                                     startActivity(regIntent);
                                     return;
                                 } else {
                                     // If sign in fails, display a message to the user.
 
 
-                                    Toast.makeText(Register_Activity.this, "Authentication failed.",
+                                    Toast.makeText(RegisterActivity.this, "User Already Exist",
                                             Toast.LENGTH_SHORT).show();
                                     return;
                                 }

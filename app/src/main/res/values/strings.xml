@@ -11,4 +11,6 @@
     <string name="loginConfirmBtnValue">Log In</string>
     <string name="appTitleTextValue">Coach Me</string>
     <string name="btnLogOut">Log Out</string>
+    <string name="userDataConfirm">Confirm</string>
+    <string name="accountExist">Already Have an account? LogIn</string>
 </resources>

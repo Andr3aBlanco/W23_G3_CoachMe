@@ -20,7 +20,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class Login_in_Activity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     Button logInBtn;
     Button jayButton;
@@ -36,7 +36,7 @@ public class Login_in_Activity extends AppCompatActivity {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            Intent intent = new Intent (getApplicationContext(), Main_page_Activity.class);
+            Intent intent = new Intent (getApplicationContext(), NewUserForm.class);
             startActivity (intent);
             finish();
         }}
@@ -55,7 +55,7 @@ public class Login_in_Activity extends AppCompatActivity {
 //
 
         goToRegister.setOnClickListener((View view)->{
-            Intent regIntent=new Intent(Login_in_Activity.this,Register_Activity.class);
+            Intent regIntent=new Intent(LoginActivity.this, RegisterActivity.class);
             startActivity(regIntent);
         });
         //hello word
@@ -68,12 +68,12 @@ public class Login_in_Activity extends AppCompatActivity {
 
             if (TextUtils.isEmpty (email)) {
 
-                Toast.makeText(Login_in_Activity.this, "Please Enter Email", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Please Enter Email", Toast.LENGTH_SHORT).show();
 
 
                 return;
             }if (TextUtils.isEmpty (password)) {
-                Toast.makeText(Login_in_Activity.this, "Please Enter Password", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Please Enter Password", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -84,16 +84,16 @@ public class Login_in_Activity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
-                                Toast.makeText(Login_in_Activity.this, "Loged in",
+                                Toast.makeText(LoginActivity.this, "Loged in",
                                         Toast.LENGTH_SHORT).show();
                                  //starting new Activity when user id password is correct
-                                Intent intent = new Intent (getApplicationContext(), Main_page_Activity.class);
+                                Intent intent = new Intent (getApplicationContext(), NewUserForm.class);
                                 startActivity (intent);
                                 finish();
                             } else {
                                 // If sign in fails, display a message to the user.
 
-                                Toast.makeText(Login_in_Activity.this, "Authentication failed.",
+                                Toast.makeText(LoginActivity.this, "Authentication failed.",
                                         Toast.LENGTH_SHORT).show();
 
                             }

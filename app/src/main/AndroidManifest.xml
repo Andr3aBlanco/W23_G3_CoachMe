@@ -30,7 +30,7 @@
 <!--            </intent-filter>-->
         </activity>
         <activity
-            android:name=".Login_in_Activity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,12 +38,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Register_Activity"
+        <activity android:name=".RegisterActivity"
             android:exported="true">
 
 
         </activity>
-        <activity android:name=".Main_page_Activity"
+        <activity android:name=".NewUserForm"
             android:exported="true">
 
         </activity>
