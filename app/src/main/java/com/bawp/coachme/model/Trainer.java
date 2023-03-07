@@ -1,6 +1,6 @@
 package com.bawp.coachme.model;
 
-public class Trainer {
+public class Trainer extends User{
 
     private String name;
     private String description;

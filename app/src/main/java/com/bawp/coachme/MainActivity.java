@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()){
 
                 case R.id.menu_home:
-                    replaceFragment(new HomeFragment());
+                    replaceFragment(new TrainerSearchFragment());
                     break;
 
                 case R.id.menu_orders:

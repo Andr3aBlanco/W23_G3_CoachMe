@@ -5,37 +5,131 @@
     android:layout_height="match_parent"
     tools:context=".presentation.trainermap.TrainerSearchFragment">
 
-    <FrameLayout
-        android:id="@+id/outletFilterFragment"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:text="This will be replaced with filter"/>
-
-    <RadioGroup
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:layout_marginTop="120dp"
-        android:orientation="horizontal"
-        android:id="@+id/rgMapListSelector">
+        android:background="#EDF6F9">
 
-        <RadioButton
-            android:id="@+id/rbListView"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="List" />
+        <TextView
+            android:id="@+id/tvDateStart"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="5dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="8dp"
+            android:hint="From" />
 
-        <RadioButton
-            android:id="@+id/rbMapView"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="Map" />
-    </RadioGroup>
+        <EditText
+            android:id="@+id/tvDateEnd"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="5dp"
+            android:layout_below="@id/tvDateStart"
+            android:ems="10"
+            android:hint="To"
+            android:inputType="date" />
+
+        <LinearLayout
+            android:id="@+id/llServicesFilter"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_toRightOf="@id/tvDateStart"
+            android:orientation="vertical">
+
+            <CheckBox
+                android:id="@+id/cbCrossfit"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                android:text="@string/crossfit" />
+
+            <CheckBox
+                android:id="@+id/cbPilates"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                android:text="@string/pilates" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llServicesFilter2"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/llServicesFilter"
+            android:orientation="vertical">
+
+            <CheckBox
+                android:id="@+id/cbYoga"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                android:text="@string/yoga" />
+
+            <CheckBox
+                android:id="@+id/cbMartials"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                android:text="@string/martial" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ivSearch"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="4dp"
+            android:src="@drawable/baseline_search_24" />
+
+        <RadioGroup
+            android:id="@+id/rgMapListSelector"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvDateEnd"
+            android:layout_marginLeft="4dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbListView"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:text="List" />
+
+            <RadioButton
+                android:id="@+id/rbMapView"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:checked="true"
+                android:text="Map" />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/txtOrderBy"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/llServicesFilter2"
+            android:layout_toRightOf="@id/rgMapListSelector"
+            android:gravity="center"
+            android:text="@string/txtOrderBy" />
+
+        <Spinner
+            android:id="@+id/spinOrderByOptions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/llServicesFilter2"
+            android:layout_toRightOf="@id/txtOrderBy"
+            android:entries="@array/sortByOptions" />
+    </RelativeLayout>
+
 
     <FrameLayout
         android:id="@+id/searchOptContainer"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="200dp"/>
+        android:layout_height="match_parent"
+        android:layout_marginTop="150dp"
+        android:background="#9C27B0" />
 
 </FrameLayout>

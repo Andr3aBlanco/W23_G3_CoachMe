@@ -2,6 +2,7 @@ package com.bawp.coachme.presentation.trainermap;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
+import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -46,12 +48,22 @@ public class TrainerMapFragment extends Fragment {
 
     private MapView mapView;
 
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+          trainersMapFiltered = (HashMap<String, User>) getArguments().getSerializable("FILTERED_TRAINERS");
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.trainer_map_fragment, container, false);
 
+        Log.d("Andrea", "The map was loaded");
         mapView = (MapView) view.findViewById(R.id.mapTrainersF); //
         mapView.onCreate(savedInstanceState); //
 
@@ -63,34 +75,14 @@ public class TrainerMapFragment extends Fragment {
                 Log.d("Andrea", "Map Ready");
                 checkLocationPermissionAndEnableMyLocation();
 
+                        addMarkersForTrainers(trainersMapFiltered);
 
-                //Chnage
-//                getTrainers(new GetTrainersCallback() {
-//                    @Override
-//                    public void onTrainersReceived(List<User> trainers) {
-//                        Log.d("Andrea", "Trainers received");
-//                        Log.d("Andrea", "This is the name of the first: " + trainers.get(0).getFirstName());
-//                        addMarkersForTrainers(trainers);
-//                    }
-//                });
-
-//                getTrainers(new GetTrainersCallback() {
-//                    @Override
-//                    public void onTrainersReceived(List<User> trainers) {
-//                        Log.d("Andrea", "Trainers received");
-//                        Log.d("Andrea", "This is the name of the first: " + trainers.get(0).getFirstName());
-//                        addMarkersForTrainers(trainers);
-//                    }
-//                });
-
-                getTrainers(new GetTrainersCallback() {
-                    @Override
-                    public void onTrainersReceived(HashMap<String,User> trainers) {
-                        Log.d("Andrea", "Trainers received");
-//                        Log.d("Andrea", "This is the name of the first: " + trainers.get(0).getFirstName());
-                        addMarkersForTrainers(trainers);
-                    }
-                });
+                //Print unfiltered trainers
+                for (Map.Entry<String, User> entry : trainersMapFiltered.entrySet()) {
+                    String key = entry.getKey();
+                    User value = entry.getValue();
+                    System.out.println(key + " = " + value.getFirstName());
+                }
 
 
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -125,7 +117,6 @@ public class TrainerMapFragment extends Fragment {
             }
         });
 
-
         return view;
     }
 
@@ -155,23 +146,6 @@ public class TrainerMapFragment extends Fragment {
     }
 
     //ADDITIONAL METHODS
-
-//    private void addMarkersForTrainers(List<User> trainers) {
-//
-//        for (User trainer : trainers) {
-//            LatLng position = new LatLng(trainer.getLatitudeCoord(), trainer.getLongitudeCoord());
-//            MarkerOptions markerOptions = new MarkerOptions()
-//                    .position(position)
-//                    .title(trainer.getFirstName())
-//                    .snippet(trainer.getEmail())
-//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-//
-//
-//
-//            googleMap.addMarker(markerOptions);
-//        }
-//    }
-
     private void addMarkersForTrainers(HashMap<String, User> trainers) {
 
         for (Map.Entry<String, User> trainer : trainers.entrySet()) { //ok
@@ -191,79 +165,6 @@ public class TrainerMapFragment extends Fragment {
         }
     }
 
-    //method for filling theFilteredTrainers
-//    private void getTrainers(GetTrainersCallback callback) {
-//
-//        // Change to data from Firebase
-//        DatabaseReference trainerRef = FirebaseDatabase.getInstance().getReference().child("users");
-//
-//        //Pull with no filter
-//        trainerRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//
-//                List<User> trainers = new ArrayList<>();
-//
-//                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-//                    User user = userSnapshot.getValue(User.class);
-//                    trainers.add(user);
-//                    assert user != null;
-//                    Log.d("Andrea", "Retrieved " + user.getFirstName());
-//                }
-//                // New
-//                callback.onTrainersReceived(trainers);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Log.d("Andrea", "onCancelled: " + error.getMessage());
-//            }
-//        });
-//
-//    }
-
-
-    private void getTrainers(GetTrainersCallback callback) {
-
-        // Change to data from Firebase
-        DatabaseReference trainerRef = FirebaseDatabase.getInstance().getReference().child("users");
-
-        //Pull with no filter
-        trainerRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                HashMap<String,User> trainers = new HashMap<>();
-
-                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                    User user = userSnapshot.getValue(User.class);
-                    String userKey = userSnapshot.getKey();
-                    trainers.put(userKey, user); //
-                    trainersMapFiltered.put(userKey,user);
-                    assert user != null;
-                    Log.d("Andrea", "Retrieved " + user.getFirstName());
-                }
-                // New
-                callback.onTrainersReceived(trainers);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.d("Andrea", "onCancelled: " + error.getMessage());
-            }
-        });
-
-    }
-
-//    public interface GetTrainersCallback {
-//        void onTrainersReceived(List<User> trainers);
-//    }
-
-    public interface GetTrainersCallback {
-        void onTrainersReceived(HashMap<String, User> trainersMap); //Chck this - change in trainer details
-    }
-
-
     private void checkLocationPermissionAndEnableMyLocation() {
         if (ContextCompat.checkSelfPermission(getActivity(), ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -275,7 +176,6 @@ public class TrainerMapFragment extends Fragment {
         }
     }
 
-
     //Method to get the clicked trainer
     private User getClickedTrainer(Marker marker) {
         for (User trainer : theFilteredTrainers) {
@@ -285,5 +185,7 @@ public class TrainerMapFragment extends Fragment {
         }
         return null;
     }
+
+
 
 }
