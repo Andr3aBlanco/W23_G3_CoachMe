@@ -1,6 +1,7 @@
 package com.bawp.coachme.presentation.trainermap;
 
 import android.Manifest;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -19,20 +21,28 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.bawp.coachme.HomeFragment;
 import com.bawp.coachme.R;
 import com.bawp.coachme.model.User;
 import com.bawp.coachme.presentation.order.OrdersFragment;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -55,7 +65,18 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
 
     //For the filter
     Spinner spinSort;
+    TextView dateFrom;
+    TextView dateTo;
 
+    ImageButton search;
+
+    private DatePickerDialog datePickerDialog;
+
+    //Variables for the search in firebase
+    long initialDate;
+    long endDate;
+
+    List<String> trainerIDs = new ArrayList<>();
 
     //Arrays to store filter results
     private HashMap<String, User> unfilteredTrainers = new HashMap<>();
@@ -129,7 +150,40 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
         rgMapList = view.findViewById(R.id.rgMapListSelector);
         outletMapList = view.findViewById(R.id.searchOptContainer);
         spinSort = view.findViewById(R.id.spinOrderByOptions);
+        dateFrom = view.findViewById(R.id.tvDateStart);
+        dateTo = view.findViewById(R.id.tvDateEnd);
+        search = view.findViewById(R.id.ivSearch);
 
+        //Initialize datePickers
+        // Get the current date
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+
+        dateFrom.setText(dayOfMonth+"/"+month+"/"+year);
+        dateTo.setText(dayOfMonth+"/"+month+"/"+year);
+
+        //set initial dates
+        calendar.set(year,month,dayOfMonth,0,0,0);
+        initialDate = calendar.getTime().getTime();
+        calendar.set(year,month,dayOfMonth,23,59,59);
+        endDate = calendar.getTime().getTime();
+
+        //Cick Listener for the date
+        dateTo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               showDatePickerDialog(dateTo);
+            }
+        });
+
+        dateFrom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog(dateFrom);
+            }
+        });
 
         // Get the location manager and provider
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -194,8 +248,63 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
         });
 
 
-        //Listener for spinner  - Order by
-//        spinSort.setOnItemSelectedListener();
+        //Listener for the search button
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //initialize again the list of trainerIDs
+                trainerIDs = new ArrayList<>();
+                Log.d("Andrea", "This is the leghtn os trainer IDs in the onCLick " + trainerIDs.size());
+                //Create the references
+                DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+
+                //Logic for between dates
+                Query availAppQuery = dbRef.child("trainerSchedules")
+                        .orderByChild("time")
+                        .startAt(initialDate)
+                        .endAt(endDate);
+
+                    Log.d("Andrea", "Inside click search  this is the end time " + endDate + "initial date: " + initialDate);
+                availAppQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot appointmentSnapshot : snapshot.getChildren()) {
+                            String trainerId = appointmentSnapshot.child("trainerID").getValue(String.class);
+                            if (!trainerIDs.contains(trainerId)) {
+                                trainerIDs.add(trainerId); //
+                                // Do i need the list of appointments here?  - pulling again in trainer details -- check again
+                    }}
+                        Log.d("Andrea", "Retrieved " + trainerIDs.size() + " trainers");
+
+                        for(String trainerID : trainerIDs){
+                            dbRef.child("users").child(trainerID).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                                    String key = snapshot.getKey();
+                                    User trainer = snapshot.getValue(User.class);
+                                    filteredTrainers.put(key, trainer); //  this is filtered
+
+
+                                    System.out.println("Retrieved " + trainer.getFirstName());
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                        Log.d("FIREBASE", "Trainer Search - On Trainer by ID CANCELLED");
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.d("FIREBASE", "Trainer Search - On Appointment By Time CANCELLED");
+                    }
+                });
+
+            }
+        });
 
         return view;
     }
@@ -271,6 +380,46 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
     public interface GetTrainersCallback {
         void onTrainersReceived(HashMap<String, User> trainersMap); //Chck this - change in trainer details
     }
+
+
+    //Method for creating the date picker dialog
+    private void showDatePickerDialog(TextView tv) {
+        // Get the current date
+        final Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        // Create a new DatePickerDialog and show it
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                getContext(),
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year1, int monthOfYear, int dayOfMonth) {
+                        // Handle the selected date --- check which one is selected
+                        if(tv.getId() == R.id.tvDateStart){
+                                //Fix start date in miliseconds
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.set(year1, monthOfYear, dayOfMonth, 0, 0, 0);
+                            Log.d("Andrea", "This is the date picked " + calendar.getTime() + " " + calendar.getTime().getTime());
+                            initialDate = calendar.getTime().getTime();
+
+                        }else{
+                                //fix end date in miliseconds
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.set(year1, monthOfYear, dayOfMonth, 23, 59, 59);
+                            Log.d("Andrea", "This is the date picked" + calendar.getTime().getTime());
+                            endDate = calendar.getTime().getTime();
+                        }
+                        String selectedDate = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year1;
+                        tv.setText(selectedDate);
+                    }
+                },
+                year, month, day);
+        datePickerDialog.show();
+    }
+
+
 
 
 }

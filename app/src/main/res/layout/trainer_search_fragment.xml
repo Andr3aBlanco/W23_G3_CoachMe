@@ -15,18 +15,25 @@
             android:layout_width="100dp"
             android:layout_height="40dp"
             android:layout_marginRight="5dp"
+            android:layout_marginTop="2dp"
             android:layout_alignParentStart="true"
             android:layout_marginStart="8dp"
+            android:clickable="true"
+            android:background="?attr/selectableItemBackground"
             android:hint="From" />
 
-        <EditText
+        <TextView
             android:id="@+id/tvDateEnd"
             android:layout_width="100dp"
             android:layout_height="40dp"
             android:layout_marginRight="5dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="2dp"
             android:layout_below="@id/tvDateStart"
             android:ems="10"
             android:hint="To"
+            android:clickable="true"
+            android:background="?attr/selectableItemBackground"
             android:inputType="date" />
 
         <LinearLayout
@@ -76,12 +83,15 @@
                 android:text="@string/martial" />
         </LinearLayout>
 
-        <ImageView
+        <ImageButton
             android:id="@+id/ivSearch"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentEnd="true"
-            android:layout_margin="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
             android:src="@drawable/baseline_search_24" />
 
         <RadioGroup
@@ -118,7 +128,7 @@
         <Spinner
             android:id="@+id/spinOrderByOptions"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_below="@id/llServicesFilter2"
             android:layout_toRightOf="@id/txtOrderBy"
             android:entries="@array/sortByOptions" />
