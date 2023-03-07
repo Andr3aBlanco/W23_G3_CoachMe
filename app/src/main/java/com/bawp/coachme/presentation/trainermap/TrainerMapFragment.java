@@ -78,11 +78,11 @@ public class TrainerMapFragment extends Fragment {
                         addMarkersForTrainers(trainersMapFiltered);
 
                 //Print unfiltered trainers
-                for (Map.Entry<String, User> entry : trainersMapFiltered.entrySet()) {
-                    String key = entry.getKey();
-                    User value = entry.getValue();
-                    System.out.println(key + " = " + value.getFirstName());
-                }
+//                for (Map.Entry<String, User> entry : trainersMapFiltered.entrySet()) {
+//                    String key = entry.getKey();
+//                    User value = entry.getValue();
+//                    System.out.println(key + " = " + value.getFirstName());
+//                }
 
 
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -92,24 +92,19 @@ public class TrainerMapFragment extends Fragment {
 
                         //Parameters for the object creation
                         String trainerID =marker.getSnippet();
-                        String trainerName = trainersMapFiltered.get(trainerID).getFirstName() + " " + trainersMapFiltered.get(trainerID).getLastName();
-                        double flatPrice = trainersMapFiltered.get(trainerID).getFlatPrice();
-//                        double rating;
+                        User userToPass = trainersMapFiltered.get(trainerID);
 
                         //Bundle
                         Bundle bundle = new Bundle();
-                        bundle.putString(TrainerDetailsFragment.ARG_TRAINER_NAME, trainerName );
-                        bundle.putDouble(TrainerDetailsFragment.ARG_TRAINER_FLATPRICE, flatPrice );
-                        bundle.putString(TrainerDetailsFragment.ARG_TRAINER_ID, trainerID);
-
-                        TrainerDetailsFragment fragment = TrainerDetailsFragment.newInstance(trainerName, flatPrice, trainerID);
+                        bundle.putSerializable("TRAINER_TO_DISPLAY", userToPass);
+                        TrainerDetailsFragment detailsFragment = new TrainerDetailsFragment();
+                        detailsFragment.setArguments(bundle);
 
                         // Replace the map fragment with the TrainerFragment
                         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-                        transaction.replace(R.id.mapFragmentContainer, fragment);
+                        transaction.replace(R.id.mapFragmentContainer, detailsFragment);
                         transaction.addToBackStack(null);
                         transaction.commit();
-
 
                         return true;
                     }

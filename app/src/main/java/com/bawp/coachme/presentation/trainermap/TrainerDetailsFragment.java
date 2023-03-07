@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 //import androidx.compose.ui.node.LookaheadDelegate;
+import androidx.cardview.widget.CardView;
 import androidx.compose.ui.unit.Density;
 import androidx.fragment.app.Fragment;
 
@@ -16,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -51,10 +53,7 @@ import java.util.Map;
 
 public class TrainerDetailsFragment extends Fragment {
 
-    public static final String ARG_TRAINER_NAME = "trainer_name";
-    public static final String ARG_TRAINER_EMAIL = "trainer_email";
-    public static final String ARG_TRAINER_FLATPRICE = "trainer_price";
-    public static final String ARG_TRAINER_ID = "trainer_id";
+    public static final User TRAINER_TO_DISPLAY = new User();
 
     private String trainerName;
     private String trainerEmail;
@@ -82,14 +81,14 @@ public class TrainerDetailsFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static TrainerDetailsFragment newInstance(String name, double flatPrice, String trainerID) {
+    public static TrainerDetailsFragment newInstance() {
         TrainerDetailsFragment fragment = new TrainerDetailsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_TRAINER_NAME, name);
-        args.putDouble(ARG_TRAINER_FLATPRICE, flatPrice);
-        args.putString(ARG_TRAINER_ID, trainerID);
-
-        fragment.setArguments(args);
+//        Bundle args = new Bundle();
+//        args.putString(ARG_TRAINER_NAME, name);
+//        args.putDouble(ARG_TRAINER_FLATPRICE, flatPrice);
+//        args.putString(ARG_TRAINER_ID, trainerID);
+//
+//        fragment.setArguments(args);
         return fragment;
     }
 
@@ -97,10 +96,8 @@ public class TrainerDetailsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            trainerName = getArguments().getString(ARG_TRAINER_NAME);
-            trainerEmail = getArguments().getString(ARG_TRAINER_EMAIL);
-            trainerID = getArguments().getString(ARG_TRAINER_ID);
-            flatPrice = getArguments().getDouble(ARG_TRAINER_FLATPRICE);
+            Bundle bundle = getArguments();
+            currentTrainer = (User) bundle.getSerializable("TRAINER_TO_DISPLAY");
         }
     }
 
@@ -110,10 +107,16 @@ public class TrainerDetailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.trainer_details_fragment, container, false);
 
         //Things from the layout
-        TextView name = view.findViewById(R.id.tvTrainerName);
+        TextView tvName = view.findViewById(R.id.tvTrainerName);
+        TextView tvPrice = view.findViewById(R.id.tvPriceHour);
+        TextView tvBio = view.findViewById(R.id.tvTrainerBio);
+        TextView tvRating = view.findViewById(R.id.tvTrainerRating);
+
         ImageButton seeMore = view.findViewById(R.id.btnTrainerSeeAppTable);
         LinearLayout calendarLayout = view.findViewById(R.id.calLayout); //ok
         ListView listViewHours = view.findViewById(R.id.lvTimes);
+        ImageButton closeBtn = view.findViewById(R.id.btnCloseCard);
+        CardView wholeCard = view.findViewById(R.id.cardViewTrainerDetails);
 //        calendarView = view.findViewById(R.id.cvDates); //check this
 
         calendarView = view.findViewById(R.id.cvDates);
@@ -123,7 +126,6 @@ public class TrainerDetailsFragment extends Fragment {
         disabledDates.add(new Date());
         calendarView.setDisabledDates(disabledDates);
 
-
         Calendar currentCalendar = Calendar.getInstance();
         calendarView.setMinDate(currentCalendar.getTimeInMillis());
 
@@ -131,8 +133,14 @@ public class TrainerDetailsFragment extends Fragment {
         maxCalendar.add(Calendar.YEAR, 1);
         calendarView.setMaxDate(maxCalendar.getTimeInMillis());
         calendarView.invalidate();
+
+
 //        calendarView.setTrainerScheduleHashMap(trainerScheduleHashMap);
-        name.setText(trainerName);
+
+        //Set the info in card
+        tvName.setText(currentTrainer.getFirstName() + " " + currentTrainer.getLastName());
+        tvPrice.setText(Double.toString(currentTrainer.getFlatPrice()));
+
 
         getTrainerSchedule();
 
@@ -197,6 +205,14 @@ public class TrainerDetailsFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 String selectedValue = hourList.get(position);
+            }
+        });
+
+        //Click listener for the close button
+        closeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                wholeCard.setVisibility(View.GONE);
             }
         });
 

@@ -60,10 +60,10 @@
             android:text="@string/tvTrainingRating"
             android:textSize="12sp" />
 
-        <ImageView
+        <ImageButton
             android:id="@+id/btnCloseCard"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_marginStart="8dp"
