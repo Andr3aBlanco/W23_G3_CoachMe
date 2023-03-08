@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -37,6 +38,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
@@ -67,6 +69,12 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
     Spinner spinSort;
     TextView dateFrom;
     TextView dateTo;
+
+    CheckBox crossfit;
+    CheckBox yoga;
+    CheckBox martials;
+    CheckBox pilates;
+
 
     ImageButton search;
 
@@ -153,6 +161,10 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
         dateFrom = view.findViewById(R.id.tvDateStart);
         dateTo = view.findViewById(R.id.tvDateEnd);
         search = view.findViewById(R.id.ivSearch);
+        crossfit = view.findViewById(R.id.cbCrossfit);
+        yoga = view.findViewById(R.id.cbYoga);
+        pilates = view.findViewById(R.id.cbPilates);
+        martials = view.findViewById(R.id.cbMartials);
 
         //Initialize datePickers
         // Get the current date
@@ -161,20 +173,20 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
         int month = calendar.get(Calendar.MONTH) + 1;
         int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
 
-        dateFrom.setText(dayOfMonth+"/"+month+"/"+year);
-        dateTo.setText(dayOfMonth+"/"+month+"/"+year);
+        dateFrom.setText(dayOfMonth + "/" + month + "/" + year);
+        dateTo.setText(dayOfMonth + "/" + month + "/" + year);
 
         //set initial dates
-        calendar.set(year,month,dayOfMonth,0,0,0);
+        calendar.set(year, month, dayOfMonth, 0, 0, 0);
         initialDate = calendar.getTime().getTime();
-        calendar.set(year,month,dayOfMonth,23,59,59);
+        calendar.set(year + 1, month, dayOfMonth, 23, 59, 59);
         endDate = calendar.getTime().getTime();
 
         //Cick Listener for the date
         dateTo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               showDatePickerDialog(dateTo);
+                showDatePickerDialog(dateTo);
             }
         });
 
@@ -220,7 +232,7 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                 //Pass the data to MapSearchFragment
                 TrainerMapFragment childMapFragment = new TrainerMapFragment();
                 Bundle args = new Bundle();
-                args.putSerializable("FILTERED_TRAINERS", unfilteredTrainers);
+                args.putSerializable("FILTERED_TRAINERS", unfilteredTrainers);  //how to update this
                 childMapFragment.setArguments(args);
 
                 //At the beginning replace for TrainerMapFragment
@@ -254,47 +266,103 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
             public void onClick(View v) {
                 //initialize again the list of trainerIDs
                 trainerIDs = new ArrayList<>();
-                Log.d("Andrea", "This is the leghtn os trainer IDs in the onCLick " + trainerIDs.size());
+                ArrayList<String> selectedServices = new ArrayList<>();
+
+
                 //Create the references
                 DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
 
-                //Logic for between dates
-                Query availAppQuery = dbRef.child("trainerSchedules")
+                DatabaseReference trainerRef = FirebaseDatabase.getInstance().getReference().child("users");
+                DatabaseReference scheduleRef = FirebaseDatabase.getInstance().getReference().child("trainerSchedules");
+
+
+                //Query based on date
+                Query availAppQuery = scheduleRef
                         .orderByChild("time")
                         .startAt(initialDate)
                         .endAt(endDate);
 
-                    Log.d("Andrea", "Inside click search  this is the end time " + endDate + "initial date: " + initialDate);
+
+                if (crossfit.isChecked()) {
+                    selectedServices.add("Crossfit");
+                    Log.d("Andrea", "Checkbox selected");
+                }
+                if (yoga.isChecked()) {
+                    selectedServices.add("Yoga");
+                    Log.d("Andrea", "Checkbox selected");
+                }
+                if (pilates.isChecked()) {
+                    selectedServices.add("Pilates");
+                    Log.d("Andrea", "Checkbox selected");
+                }
+                if (martials.isChecked()) {
+                    selectedServices.add("Martials");
+                    Log.d("Andrea", "Checkbox selected");
+                }
+
+
+                Log.d("Andrea", "Inside click search  this is the end time " + endDate + "initial date: " + initialDate);
                 availAppQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        //Iterating over the results from trainerShedule
                         for (DataSnapshot appointmentSnapshot : snapshot.getChildren()) {
                             String trainerId = appointmentSnapshot.child("trainerID").getValue(String.class);
                             if (!trainerIDs.contains(trainerId)) {
                                 trainerIDs.add(trainerId); //
                                 // Do i need the list of appointments here?  - pulling again in trainer details -- check again
-                    }}
+                            }
+                        }
                         Log.d("Andrea", "Retrieved " + trainerIDs.size() + " trainers");
 
-                        for(String trainerID : trainerIDs){
-                            dbRef.child("users").child(trainerID).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        //Create query for trainers with services
+                        Query trainerQuery = trainerRef.orderByChild("servicesTypes");
+                        //Listener for
+                        trainerQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                // Iterate through the results of the trainer query
+                                for (DataSnapshot trainerSnapshot : snapshot.getChildren()) {
+                                    // Check if the trainer has appointments within the desired date range
+                                    if (trainerIDs.contains(trainerSnapshot.getKey())) {
+                                        // Check if the trainer's "services" field contains at least one of the values in the "services" list
+                                     List<String> trainerServices = trainerSnapshot.child("serviceTypes").getValue(new GenericTypeIndicator<List<String>>() {
+                                        });
 
-                                    String key = snapshot.getKey();
-                                    User trainer = snapshot.getValue(User.class);
-                                    filteredTrainers.put(key, trainer); //  this is filtered
+                                        System.out.println("selectedServices " + selectedServices.size());
 
-
-                                    System.out.println("Retrieved " + trainer.getFirstName());
+                                        if (selectedServices.isEmpty()) {
+                                            // Add all trainers to the filtered trainers list
+                                            User trainer = trainerSnapshot.getValue(User.class);
+                                            String key = trainerSnapshot.getKey();
+                                            System.out.println("retrieving all trainers");
+                                            System.out.println("Retrieved " + trainer.getFirstName());
+                                            filteredTrainers.put(key, trainer);
+                                        } else {
+                                            for (String service : selectedServices) {
+                                                if (trainerServices.contains(service)) {
+                                                    // Add the trainer to the filtered trainers list
+                                                    User trainer = trainerSnapshot.getValue(User.class);
+                                                    String key = trainerSnapshot.getKey();
+                                                    System.out.println("retrieving with checked box");
+                                                    System.out.println("Retrieved " + trainer.getFirstName());
+                                                    filteredTrainers.put(key, trainer);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-                                        Log.d("FIREBASE", "Trainer Search - On Trainer by ID CANCELLED");
-                                }
-                            });
-                        }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
                     }
 
                     @Override
@@ -397,15 +465,15 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                     @Override
                     public void onDateSet(DatePicker view, int year1, int monthOfYear, int dayOfMonth) {
                         // Handle the selected date --- check which one is selected
-                        if(tv.getId() == R.id.tvDateStart){
-                                //Fix start date in miliseconds
+                        if (tv.getId() == R.id.tvDateStart) {
+                            //Fix start date in miliseconds
                             Calendar calendar = Calendar.getInstance();
                             calendar.set(year1, monthOfYear, dayOfMonth, 0, 0, 0);
                             Log.d("Andrea", "This is the date picked " + calendar.getTime() + " " + calendar.getTime().getTime());
                             initialDate = calendar.getTime().getTime();
 
-                        }else{
-                                //fix end date in miliseconds
+                        } else {
+                            //fix end date in miliseconds
                             Calendar calendar = Calendar.getInstance();
                             calendar.set(year1, monthOfYear, dayOfMonth, 23, 59, 59);
                             Log.d("Andrea", "This is the date picked" + calendar.getTime().getTime());
@@ -418,8 +486,6 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                 year, month, day);
         datePickerDialog.show();
     }
-
-
 
 
 }
