@@ -60,7 +60,6 @@ public class TrainerDetailsFragment extends Fragment {
     private double flatPrice;
     private String trainerID;
 
-
     CustomCalendarView calendarView;
     //Variables for the trainer info
     User currentTrainer;

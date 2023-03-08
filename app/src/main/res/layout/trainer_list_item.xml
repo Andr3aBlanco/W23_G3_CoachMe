@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/ivTrainerPicR"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        app:srcCompat="@drawable/baseline_person_24"
+        />
+
+    <TextView
+        android:id="@+id/tvTrainerNameR"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tranerNameText"
+        android:layout_toRightOf="@+id/ivTrainerPicR"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tvTrainerBioR"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTrainerNameR"
+        android:layout_toRightOf="@id/ivTrainerPicR"
+        android:text="@string/trainerBioText" />
+
+    <TextView
+        android:id="@+id/tvPriceHourR"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/ivTrainerPicR"
+        android:layout_below="@id/tvTrainerBioR"
+        android:text="@string/tvPriceHourText" />
+
+    <TextView
+        android:id="@+id/tvTrainerRatingR"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvPriceHourR"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_toRightOf="@id/ivTrainerPicR"
+        android:text="@string/tvTrainingRating"
+        android:textSize="12sp" />
+
+    <ImageButton
+        android:id="@+id/btnTrainerSeeAppTableR"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="145dp"
+        android:layout_marginTop="17dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="8dp"
+        android:layout_toEndOf="@id/tvTrainerRatingR"
+        android:backgroundTint="#173F51B5"
+        android:src="@drawable/ic_link_close"
+        android:text="Hola"
+        android:textColor="#4A4A48"
+        android:textSize="11sp"
+        android:textStyle="bold"
+
+        />
+
+    <LinearLayout
+        android:id="@+id/calLayoutR"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTrainerRatingR"
+        android:visibility="gone">
+
+        <com.bawp.coachme.model.CustomCalendarView
+            android:id="@+id/cvDatesR"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8" />
+
+        <ListView
+            android:id="@+id/lvTimesR"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:layout_weight="0.2" />
+    </LinearLayout>
+
+
+</RelativeLayout>

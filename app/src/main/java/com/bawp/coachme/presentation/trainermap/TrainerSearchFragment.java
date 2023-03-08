@@ -265,7 +265,7 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
             @Override
             public void onClick(View v) {
                 //initialize again the list of trainerIDs
-                trainerIDs = new ArrayList<>();
+                trainerIDs = new ArrayList<>(); // - HM < TrainerID, List<Appointment> > // only time slots
                 ArrayList<String> selectedServices = new ArrayList<>();
 
 
@@ -312,6 +312,9 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                             if (!trainerIDs.contains(trainerId)) {
                                 trainerIDs.add(trainerId); //
                                 // Do i need the list of appointments here?  - pulling again in trainer details -- check again
+
+                                //Add available appointments info for each trainer
+                                // change from list to HM
                             }
                         }
                         Log.d("Andrea", "Retrieved " + trainerIDs.size() + " trainers");
