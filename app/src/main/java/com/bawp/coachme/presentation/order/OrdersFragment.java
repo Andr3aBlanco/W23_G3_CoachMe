@@ -270,30 +270,4 @@ public class OrdersFragment extends Fragment {
         }
     }
 
-    public void lookForAppointments(){
-        FirebaseDatabase CoachMeDatabaseInstance = FirebaseDatabase.getInstance();
-        DatabaseReference CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
-
-        DatabaseReference appRef = CoachMeDatabaseRef.child("appointments");
-        DatabaseReference userRef = CoachMeDatabaseRef.child("users");
-
-        List<Task<DataSnapshot>> tasks = new ArrayList<>();
-
-        Query queryAppStatus = appRef.orderByChild("status").equalTo(3);
-
-        tasks.add(queryAppStatus.get());
-        tasks.add(userRef.get());
-
-        Task<List<DataSnapshot>> allTasks = Tasks.whenAllSuccess(tasks);
-
-        allTasks.addOnCompleteListener(new OnCompleteListener<List<DataSnapshot>>() {
-            @Override
-            public void onComplete(@NonNull Task<List<DataSnapshot>> task) {
-
-            }
-        });
-
-
-    }
-
 }
