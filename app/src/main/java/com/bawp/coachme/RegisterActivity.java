@@ -69,7 +69,7 @@ alreadyHaveAccount=findViewById(R.id.txtGoToLogin);
                                 if (task.isSuccessful()) {
                                     // Sign in success, update UI with the signed-in user's information
                                     Toast.makeText(RegisterActivity.this, "User created", Toast.LENGTH_SHORT).show();
-                                    Intent regIntent=new Intent(RegisterActivity.this, NewUserForm.class);
+                                    Intent regIntent=new Intent(getApplicationContext(), NewUserForm.class);
                                     startActivity(regIntent);
                                     return;
                                 } else {

@@ -84,8 +84,9 @@ Button confirmDataBtn;
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()){
                             Toast.makeText(NewUserForm.this, "Welcome to CoachMe ", Toast.LENGTH_SHORT).show();
-                            Intent regIntent=new Intent(NewUserForm.this, MainActivity.class);
-                            startActivity(regIntent);
+                            Intent intent=new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(intent);
+                            finish();
 
                         }else{
                             Toast.makeText(NewUserForm.this, "unable to add user details ", Toast.LENGTH_SHORT).show();
@@ -93,7 +94,7 @@ Button confirmDataBtn;
                     }
                 });
 
-                //SignOut from FireBase
+                //SignOut from FireBase **this function i have to add where we select logout account
 //                FirebaseAuth.getInstance().signOut();
 //                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
 //                startActivity (intent);

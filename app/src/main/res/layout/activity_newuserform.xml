@@ -5,12 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".NewUserForm">
+
     <TextView
         android:id="@+id/appTitleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="120dp"
-        android:text="@string/appTitleTextValue"
+        android:text="@string/app_name"
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -95,7 +96,7 @@
         android:layout_width="185dp"
         android:layout_height="59dp"
         android:layout_marginTop="44dp"
-        android:text="@string/userDataConfirm"
+        android:text="@string/btnConfitm"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtPhoneNumber" />

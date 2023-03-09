@@ -8,9 +8,12 @@
     <string name="navBarAddButton">addWorkout</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="loginConfirmBtnValue">Log In</string>
-    <string name="appTitleTextValue">Coach Me</string>
+    <string name="btnLogIn">Log In</string>
     <string name="btnLogOut">Log Out</string>
-    <string name="userDataConfirm">Confirm</string>
-    <string name="accountExist">Already Have an account? LogIn</string>
+    <string name="btnConfitm">Confirm</string>
+    <string name="btnAccountExist">Already Have an account? Click here</string>
+    <string name="txtsignin">Sign in</string>
+    <string name="txtCreateAccount">Create Account</string>
+    <string name="btnNext_">Next</string>
+    <string name="txtCreateCoachmeAccount">Create a Coachme account</string>
 </resources>

@@ -5,12 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".LoginActivity">
+
     <TextView
         android:id="@+id/appTitleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="120dp"
-        android:text="@string/appTitleTextValue"
+        android:layout_marginTop="88dp"
+        android:text="@string/app_name"
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -22,23 +23,23 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="40dp"
         android:layout_marginEnd="32dp"
         android:ems="10"
-        android:hint="username"
+        android:hint="email"
         android:inputType="textPersonName"
         android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appTitleText" />
+        app:layout_constraintTop_toBottomOf="@+id/txtLogin" />
 
     <EditText
         android:id="@+id/txtpassword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
         android:ems="10"
         android:hint="Password"
@@ -53,20 +54,19 @@
         android:id="@+id/btnregisterConf"
         android:layout_width="185dp"
         android:layout_height="59dp"
-        android:layout_marginTop="20dp"
-        android:text="@string/loginConfirmBtnValue"
+        android:layout_marginTop="52dp"
+        android:layout_marginEnd="44dp"
+        android:text="@string/btnLogIn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.539"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtpassword" />
 
     <ImageView
         android:id="@+id/imageFacebookAuth"
         android:layout_width="101dp"
         android:layout_height="84dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.858"
+        app:layout_constraintHorizontal_bias="0.68"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtGoToReg"
         app:srcCompat="@drawable/facebooklogo" />
@@ -75,12 +75,13 @@
         android:id="@+id/imageGoogleAuth"
         android:layout_width="99dp"
         android:layout_height="84dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.288"
+        app:layout_constraintHorizontal_bias="0.266"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtGoToReg"
         app:srcCompat="@drawable/google_logo" />
+
     <ProgressBar
         android:id="@+id/pBar"
         android:visibility="gone"
@@ -90,15 +91,28 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/txtGoToReg"
         android:layout_width="148dp"
         android:layout_height="43dp"
-        android:layout_marginTop="16dp"
-        android:text="Register here."
+        android:layout_marginTop="68dp"
+        android:text="@string/txtCreateAccount"
         android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.543"
+        app:layout_constraintEnd_toStartOf="@+id/btnregisterConf"
+        app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnregisterConf" />
+        app:layout_constraintTop_toBottomOf="@+id/txtpassword" />
+
+    <TextView
+        android:id="@+id/txtLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:text="@string/txtsignin"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appTitleText" />
 </androidx.constraintlayout.widget.ConstraintLayout>
