@@ -10,7 +10,7 @@
         android:id="@+id/appTitleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="88dp"
+        android:layout_marginTop="56dp"
         android:text="@string/app_name"
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -62,22 +62,22 @@
 
     <ImageView
         android:id="@+id/imageFacebookAuth"
-        android:layout_width="101dp"
-        android:layout_height="84dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="70dp"
+        android:layout_height="92dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.68"
+        app:layout_constraintHorizontal_bias="0.618"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtGoToReg"
         app:srcCompat="@drawable/facebooklogo" />
 
     <ImageView
         android:id="@+id/imageGoogleAuth"
-        android:layout_width="99dp"
-        android:layout_height="84dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="60dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="28dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.266"
+        app:layout_constraintHorizontal_bias="0.296"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtGoToReg"
         app:srcCompat="@drawable/google_logo" />
@@ -115,4 +115,15 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appTitleText" />
+
+    <TextView
+        android:id="@+id/txtForgotPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageGoogleAuth" />
 </androidx.constraintlayout.widget.ConstraintLayout>
