@@ -1,36 +1,50 @@
 package com.bawp.coachme.presentation.trainermap;
 
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bawp.coachme.R;
+import com.bawp.coachme.model.Trainer;
 import com.bawp.coachme.model.User;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class TrainerAdapter extends RecyclerView.Adapter<TrainerViewHolder> {
 
-    private List<User> theFilteredTrainers = new ArrayList<>();
-    private List<Double> theTrainerRatings = new ArrayList<>();
+    private List<Trainer> sortedFilteredTrainers;
+
+    public TrainerAdapter(List<Trainer> sortedFilteredTrainers) {
+        this.sortedFilteredTrainers = sortedFilteredTrainers;
+    }
 
     @NonNull
     @Override
     public TrainerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return null;
+
+        // Layout from TrainerDetailsFragment used in the map
+
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.trainer_details_fragment, parent, false);
+
+        return new TrainerViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull TrainerViewHolder holder, int position) {
-        User trainer = theFilteredTrainers.get(position);
-        //asign the thing in the holder
-        holder.tvName.setText(trainer.getFirstName() + " " + trainer.getLastName());
+        Trainer trainer = sortedFilteredTrainers.get(position);
+        // Bind to the holder
+        holder.bind(trainer);
+
 
     }
 
     @Override
     public int getItemCount() {
-        return theFilteredTrainers.size();
+        return sortedFilteredTrainers.size();
     }
 }

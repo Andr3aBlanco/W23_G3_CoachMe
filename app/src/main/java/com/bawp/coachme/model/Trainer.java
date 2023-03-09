@@ -1,48 +1,57 @@
 package com.bawp.coachme.model;
 
+import java.util.List;
+
 public class Trainer extends User{
 
-    private String name;
-    private String description;
-    private double latitude;
-    private double longitude;
+    private String trainerID;
+    private List<Long> slots;
+    private double rating;
 
-    public Trainer(String name, String description, double latitude, double longitude) {
-        this.name = name;
-        this.description = description;
-        this.latitude = latitude;
-        this.longitude = longitude;
+    // constructor
+
+    public Trainer(String trainerID, List<Long> slots, double rating) {
+        this.trainerID = trainerID;
+        this.slots = slots;
+        this.rating = rating;
     }
 
-    public String getName() {
-        return name;
+    public Trainer(String trainerID, String firstName, String lastName, String email, double latitudeCoord, double longitudeCoord, double radius, double flatPrice, String phoneNumber, String address, Role role, List<String> serviceTypes,  List<Long> slots, double rating) {
+        super(firstName, lastName, email, latitudeCoord, longitudeCoord, radius, flatPrice, phoneNumber, address, role, serviceTypes);
+        this.trainerID = trainerID;
+        this.slots = slots;
+        this.rating = rating;
     }
 
-    public void setName(String name) {
-        this.name = name;
+
+    //Methods from trainer
+
+    public List<Long> getSlots() {
+        return slots;
     }
 
-    public String getDescription() {
-        return description;
+    public void setSlots(List<Long> slots) {
+        this.slots = slots;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public double getRating() {
+        return rating;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public String getTrainerID() {
+        return trainerID;
     }
 
-    public double getLongitude() {
-        return longitude;
+    public void setTrainerID(String trainerID) {
+        this.trainerID = trainerID;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
+
+    // Methods from user
+
+
 }

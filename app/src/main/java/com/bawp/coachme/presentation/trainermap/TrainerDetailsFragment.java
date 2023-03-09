@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.bawp.coachme.R;
 import com.bawp.coachme.model.CustomCalendarView;
+import com.bawp.coachme.model.Trainer;
 import com.bawp.coachme.model.TrainerSchedule;
 import com.bawp.coachme.model.User;
 import com.google.firebase.database.DataSnapshot;
@@ -76,11 +77,15 @@ public class TrainerDetailsFragment extends Fragment {
     String[] trainerDatesString;
 
     List<String> hourList = new ArrayList<>();
+
+
+    // Implementation with Trainer Class
+    Trainer theTrainer;
     public TrainerDetailsFragment() {
         // Required empty public constructor
     }
 
-    public static TrainerDetailsFragment newInstance() {
+    public static TrainerDetailsFragment newInstance(Trainer trainer) {
         TrainerDetailsFragment fragment = new TrainerDetailsFragment();
 //        Bundle args = new Bundle();
 //        args.putString(ARG_TRAINER_NAME, name);
@@ -96,7 +101,8 @@ public class TrainerDetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             Bundle bundle = getArguments();
-            currentTrainer = (User) bundle.getSerializable("TRAINER_TO_DISPLAY");
+//            currentTrainer = (User) bundle.getSerializable("TRAINER_TO_DISPLAY");
+            theTrainer = (Trainer) bundle.getSerializable("TRAINER_DISPLAY");
         }
     }
 
@@ -137,75 +143,78 @@ public class TrainerDetailsFragment extends Fragment {
 //        calendarView.setTrainerScheduleHashMap(trainerScheduleHashMap);
 
         //Set the info in card
-        tvName.setText(currentTrainer.getFirstName() + " " + currentTrainer.getLastName());
-        tvPrice.setText(Double.toString(currentTrainer.getFlatPrice()));
+//        tvName.setText(currentTrainer.getFirstName() + " " + currentTrainer.getLastName());
+//        tvPrice.setText(Double.toString(currentTrainer.getFlatPrice()));
+
+        tvName.setText(theTrainer.getFirstName() + " " + theTrainer.getLastName());
+        tvPrice.setText(Double.toString(theTrainer.getFlatPrice()));
 
 
-        getTrainerSchedule();
+//        getTrainerSchedule();
 
         //click listener for the button
-        seeMore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                calendarLayout.setVisibility(View.VISIBLE);
-//                disableDates();
-            }
-        });
+//        seeMore.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                calendarLayout.setVisibility(View.VISIBLE);
+////                disableDates();
+//            }
+//        });
 
         //on Change listener for the calendar view
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-//                Log.d("Andrea", "this is the selected day " + year + "-" + month + "-" + dayOfMonth); //this is ok
-
-                List<String> availableTimes = new ArrayList<>();
-
-                Calendar calToSearch = Calendar.getInstance();
-                calToSearch.set(year,month,dayOfMonth);
-                Date dateToSearch = calToSearch.getTime();
-
-                LocalDateTime dateTime = null;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                    dateTime = LocalDateTime.ofInstant(dateToSearch.toInstant(), ZoneId.systemDefault());
-                }
-                String dateStr = null;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                    dateStr = dateTime.toLocalDate().toString();
-                }
-
-//                System.out.println("This is the date to search " + dateStr);
-
-                 if(timesForEachDay.containsKey(dateStr)){
-//                     Log.d("Andrea", "Trainer has slots this day ");
-                     //Fill the list of times
-                     availableTimes = timesForEachDay.get(dateStr); //ok
-                 }
-
-                 //fill the listview with each of the dates
-                List<Integer> timesInNumber = new ArrayList<>();
-                 for(String s: availableTimes){
-                     timesInNumber.add(Integer.parseInt(s.substring(0,1))); //only the hour
-                 }
-
-                Collections.sort(timesInNumber); //sorted in number
-                for(int s : timesInNumber){
-                    hourList.add(Integer.toString(s)); //in sring
-                }
-
-                //Create the adapter for the listview
-                ArrayAdapter<String> slotsAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, hourList );
-                listViewHours.setAdapter(slotsAdapter);
-            }
-        });
+//        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+//            @Override
+//            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+////                Log.d("Andrea", "this is the selected day " + year + "-" + month + "-" + dayOfMonth); //this is ok
+//
+//                List<String> availableTimes = new ArrayList<>();
+//
+//                Calendar calToSearch = Calendar.getInstance();
+//                calToSearch.set(year,month,dayOfMonth);
+//                Date dateToSearch = calToSearch.getTime();
+//
+//                LocalDateTime dateTime = null;
+//                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+//                    dateTime = LocalDateTime.ofInstant(dateToSearch.toInstant(), ZoneId.systemDefault());
+//                }
+//                String dateStr = null;
+//                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+//                    dateStr = dateTime.toLocalDate().toString();
+//                }
+//
+////                System.out.println("This is the date to search " + dateStr);
+//
+//                 if(timesForEachDay.containsKey(dateStr)){
+////                     Log.d("Andrea", "Trainer has slots this day ");
+//                     //Fill the list of times
+//                     availableTimes = timesForEachDay.get(dateStr); //ok
+//                 }
+//
+//                 //fill the listview with each of the dates
+//                List<Integer> timesInNumber = new ArrayList<>();
+//                 for(String s: availableTimes){
+//                     timesInNumber.add(Integer.parseInt(s.substring(0,1))); //only the hour
+//                 }
+//
+//                Collections.sort(timesInNumber); //sorted in number
+//                for(int s : timesInNumber){
+//                    hourList.add(Integer.toString(s)); //in sring
+//                }
+//
+//                //Create the adapter for the listview
+//                ArrayAdapter<String> slotsAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, hourList );
+//                listViewHours.setAdapter(slotsAdapter);
+//            }
+//        });
 
         // Click Listener for the ListView Hours
-        listViewHours.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                String selectedValue = hourList.get(position);
-            }
-        });
+//        listViewHours.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//
+//                String selectedValue = hourList.get(position);
+//            }
+//        });
 
         //Click listener for the close button
         closeBtn.setOnClickListener(new View.OnClickListener() {

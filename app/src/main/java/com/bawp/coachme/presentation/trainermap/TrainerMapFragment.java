@@ -49,11 +49,17 @@ public class TrainerMapFragment extends Fragment {
     private MapView mapView;
 
 
+    // Implementation with  HM<String, Trainer>
+    private HashMap<String, Trainer> trainersHM = new HashMap<>();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
           trainersMapFiltered = (HashMap<String, User>) getArguments().getSerializable("FILTERED_TRAINERS");
+          trainersHM = (HashMap<String, Trainer>)  getArguments().getSerializable("TRAINERS");
+
+          System.out.println("trainersHM :" + trainersHM.size());
         }
     }
 
@@ -75,7 +81,9 @@ public class TrainerMapFragment extends Fragment {
                 Log.d("Andrea", "Map Ready");
                 checkLocationPermissionAndEnableMyLocation();
 
-                        addMarkersForTrainers(trainersMapFiltered);
+//                        addMarkersForTrainers(trainersMapFiltered);
+
+                addMarkersForTrainers(trainersHM);
 
                 //Print unfiltered trainers
 //                for (Map.Entry<String, User> entry : trainersMapFiltered.entrySet()) {
@@ -85,6 +93,31 @@ public class TrainerMapFragment extends Fragment {
 //                }
 
 
+//                googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+//                    @Override
+//                    public boolean onMarkerClick(@NonNull Marker marker) {
+//                        Log.d("ANDREA", "Clicked marker");
+//
+//                        //Parameters for the object creation
+//                        String trainerID =marker.getSnippet();
+//                        User userToPass = trainersMapFiltered.get(trainerID);
+//
+//                        //Bundle
+//                        Bundle bundle = new Bundle();
+//                        bundle.putSerializable("TRAINER_TO_DISPLAY", userToPass);
+//                        TrainerDetailsFragment detailsFragment = new TrainerDetailsFragment();
+//                        detailsFragment.setArguments(bundle);
+//
+//                        // Replace the map fragment with the TrainerFragment
+//                        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+//                        transaction.replace(R.id.mapFragmentContainer, detailsFragment);
+//                        transaction.addToBackStack(null);
+//                        transaction.commit();
+//
+//                        return true;
+//                    }
+//                });
+
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(@NonNull Marker marker) {
@@ -92,11 +125,11 @@ public class TrainerMapFragment extends Fragment {
 
                         //Parameters for the object creation
                         String trainerID =marker.getSnippet();
-                        User userToPass = trainersMapFiltered.get(trainerID);
+                        Trainer trainerToPass = trainersHM.get(trainerID);
 
                         //Bundle
                         Bundle bundle = new Bundle();
-                        bundle.putSerializable("TRAINER_TO_DISPLAY", userToPass);
+                        bundle.putSerializable("TRAINER_DISPLAY", trainerToPass);
                         TrainerDetailsFragment detailsFragment = new TrainerDetailsFragment();
                         detailsFragment.setArguments(bundle);
 
@@ -141,23 +174,44 @@ public class TrainerMapFragment extends Fragment {
     }
 
     //ADDITIONAL METHODS
-    private void addMarkersForTrainers(HashMap<String, User> trainers) {
+//    private void addMarkersForTrainers(HashMap<String, User> trainers) {
+//
+//        for (Map.Entry<String, User> trainer : trainers.entrySet()) { //ok
+//            String key = trainer.getKey();
+//            User theTrainer = trainer.getValue();
+//
+//            LatLng position = new LatLng(theTrainer.getLatitudeCoord(), theTrainer.getLongitudeCoord());
+//            MarkerOptions markerOptions = new MarkerOptions()
+//                    .position(position)
+//                    .title(theTrainer.getFirstName())
+//                    .snippet(key) //To pass to trainer details
+//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+//
+//
+//
+//            googleMap.addMarker(markerOptions);
+//        }
+//
+//    }
 
-        for (Map.Entry<String, User> trainer : trainers.entrySet()) { //ok
+
+    private void addMarkersForTrainers(HashMap<String, Trainer> trainers) {
+
+        for (Map.Entry<String, Trainer> trainer : trainers.entrySet()) { //ok
             String key = trainer.getKey();
-            User theTrainer = trainer.getValue();
+            Trainer theTrainer = trainer.getValue();
 
             LatLng position = new LatLng(theTrainer.getLatitudeCoord(), theTrainer.getLongitudeCoord());
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(position)
-                    .title(theTrainer.getFirstName())
+                    .title(theTrainer.getFirstName() + " " + theTrainer.getLastName())
                     .snippet(key) //To pass to trainer details
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
 
 
             googleMap.addMarker(markerOptions);
         }
+
     }
 
     private void checkLocationPermissionAndEnableMyLocation() {
@@ -172,14 +226,24 @@ public class TrainerMapFragment extends Fragment {
     }
 
     //Method to get the clicked trainer
-    private User getClickedTrainer(Marker marker) {
-        for (User trainer : theFilteredTrainers) {
-            if (trainer.getFirstName().equals(marker.getTitle())) {
-                return trainer;
-            }
-        }
-        return null;
-    }
+//    private User getClickedTrainer(Marker marker) {
+//        for (User trainer : theFilteredTrainers) {
+//            if (trainer.getFirstName().equals(marker.getTitle())) {
+//                return trainer;
+//            }
+//        }
+//        return null;
+//    }
+
+
+//    private Trainer getClickedTrainer(Marker marker) {
+//        for (Trainer trainer : trainersHM) {
+//            if (trainer.getFirstName().equals(marker.getTitle())) {
+//                return trainer;
+//            }
+//        }
+//        return null;
+//    }
 
 
 

@@ -15,6 +15,7 @@ import com.bawp.coachme.model.SelfWorkoutPlan;
 import com.bawp.coachme.model.SelfWorkoutPlanByUser;
 import com.bawp.coachme.model.User;
 import com.bawp.coachme.presentation.order.OrdersFragment;
+import com.bawp.coachme.presentation.trainermap.TrainerListFragment;
 import com.bawp.coachme.presentation.trainermap.TrainerMapFragment;
 import com.bawp.coachme.presentation.trainermap.TrainerSearchFragment;
 import com.bawp.coachme.utils.UserSingleton;
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case R.id.menu_stats:
-                    replaceFragment(new StatsFragment());
+                    replaceFragment(new TrainerListFragment());
 
                     break;
 

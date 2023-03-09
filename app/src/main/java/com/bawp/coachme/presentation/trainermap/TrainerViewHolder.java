@@ -7,10 +7,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bawp.coachme.R;
+import com.bawp.coachme.model.Trainer;
 
 public class TrainerViewHolder extends RecyclerView.ViewHolder {
 
@@ -39,5 +41,22 @@ public class TrainerViewHolder extends RecyclerView.ViewHolder {
          listViewHours = itemView.findViewById(R.id.lvTimesR);
 
 
+    }
+
+    public void bind(Trainer trainer){
+
+        tvName.setText(trainer.getFirstName() + " " + trainer.getLastName());
+
+        // ClickListener to launch the TrainerDetailsFragment from here
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                FragmentManager fm = getFragmentManager();
+//                FragmentTransaction ft = fm.beginTransaction();
+//                ft.replace(R.id.rvTrainerList, TrainerDetailsFragment.newInstance(trainer));
+//                ft.addToBackStack(null);
+//                ft.commit();
+            }
+        });
     }
 }
