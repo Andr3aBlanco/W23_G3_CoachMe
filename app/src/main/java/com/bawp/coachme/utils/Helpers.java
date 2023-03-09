@@ -93,11 +93,11 @@ public class Helpers {
 
         SelfWorkoutPlan swp1 = new SelfWorkoutPlan("Crossfit Workout Plan",
                 "Crossfit Workout Plan for everyone",
-                190.99);
+                190.99,"");
 
         SelfWorkoutPlan swp2 = new SelfWorkoutPlan("Cycling Workout Plan",
                 "Cycling Workout Plan - 30days for everyone",
-                89.99);
+                89.99,"");
         swpRef.push().setValue(swp1);
         swpRef.push().setValue(swp1);
         swpRef.push().setValue(swp2);
@@ -116,7 +116,7 @@ public class Helpers {
             public void onComplete(@NonNull Task task) {
                 DataSnapshot ds = (DataSnapshot) task.getResult();
                 SelfWorkoutPlanByUser obj = new SelfWorkoutPlanByUser(
-                        userId, selfworkoutId, new Date(), 1);
+                        userId, selfworkoutId, 1677354923545L, 1);
                 swpByUserRef.push().setValue(obj);
             }
         });

@@ -26,16 +26,16 @@ public class SelfWorkoutPlanByUser {
 
     private String customerId;
     private String selfworkoutplanId;
-    private Date requestedDate;
+    private long requestedDate;
     private int status;
-    private Date paymentDate;
+    private long paymentDate;
     private String paymentId;
 
     public SelfWorkoutPlanByUser(){
 
     }
 
-    public SelfWorkoutPlanByUser(String customerId,String selfworkoutplanId, Date requestedDate, int status) {
+    public SelfWorkoutPlanByUser(String customerId,String selfworkoutplanId, long requestedDate, int status) {
         this.customerId = customerId;
         this.selfworkoutplanId = selfworkoutplanId;
         this.requestedDate = requestedDate;
@@ -58,11 +58,11 @@ public class SelfWorkoutPlanByUser {
         this.selfworkoutplanId = selfworkoutplanId;
     }
 
-    public Date getRequestedDate() {
+    public long getRequestedDate() {
         return requestedDate;
     }
 
-    public void setRequestedDate(Date requestedDate) {
+    public void setRequestedDate(long requestedDate) {
         this.requestedDate = requestedDate;
     }
 
@@ -74,11 +74,11 @@ public class SelfWorkoutPlanByUser {
         this.status = status;
     }
 
-    public Date getPaymentDate() {
+    public long getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(Date paymentDate) {
+    public void setPaymentDate(long paymentDate) {
         this.paymentDate = paymentDate;
     }
 
@@ -88,5 +88,10 @@ public class SelfWorkoutPlanByUser {
 
     public void setPaymentId(String paymentId) {
         this.paymentId = paymentId;
+    }
+
+    @Override
+    public String toString(){
+        return customerId + " " + selfworkoutplanId;
     }
 }

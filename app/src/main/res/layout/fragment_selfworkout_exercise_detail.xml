@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/coachme_background"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".presentation.selfworkout.SelfworkoutExerciseDetailFragment">
+
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:id="@+id/pbExerciseDetail"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/llExerciseDetailLayout">
+
+        <TextView
+            android:id="@+id/txtViewExerciseNameDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp"
+            android:textColor="#F0F0F0"
+            android:fontFamily="@font/barlow_bold"
+            android:textSize="25dp"
+            android:text="TextView" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="0dp"
+            android:layout_margin="20dp"
+            >
+
+            <ImageView
+                android:id="@+id/imgViewExercise"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/ic_coachme_logo" />
+
+        </androidx.cardview.widget.CardView>
+
+        <LinearLayout
+            android:id="@+id/cvExerciseDetail"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="20dp"
+            android:background="@drawable/rounded_corner_background">
+
+            <!-- Layout for the detail information of the workout plan-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.33"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.35"
+                    android:text="Number of Sets:"
+                    android:textSize="16dp"
+                    android:fontFamily="@font/barlow_bold"
+                    android:gravity="center|right"/>
+                <TextView
+                    android:id="@+id/txtViewExerciseSets"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.65"
+                    android:textSize="16dp"
+                    android:gravity="center"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.33"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.35"
+                    android:textSize="16dp"
+                    android:text="Repetitions:"
+                    android:fontFamily="@font/barlow_bold"
+                    android:gravity="center|right"/>
+                <TextView
+                    android:id="@+id/txtViewExerciseRepetitions"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.65"
+                    android:textSize="16dp"
+                    android:gravity="center"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.33"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.35"
+                    android:text="Rest Time:"
+                    android:textSize="16dp"
+                    android:fontFamily="@font/barlow_bold"
+                    android:gravity="center|right"/>
+                <TextView
+                    android:id="@+id/txtViewRestTime"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.65"
+                    android:textSize="16dp"
+                    android:gravity="center"/>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            >
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGoBack"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="0.45"
+                android:backgroundTint="#FE685E"
+                android:drawableLeft="@drawable/baseline_arrow_back_36"
+                android:fontFamily="@font/barlow_bold"
+                android:text="Back"
+                app:cornerRadius="10dp" />
+
+            <com.google.android.material.button.MaterialButton
+
+                android:id="@+id/btnMarkCompleted"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="0.45"
+                android:backgroundTint="#FE685E"
+                android:drawableLeft="@drawable/baseline_restart_alt_36"
+                android:fontFamily="@font/barlow_bold"
+                android:text="Completed"
+                app:cornerRadius="10dp" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

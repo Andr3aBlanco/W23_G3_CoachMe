@@ -4,8 +4,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.bawp.coachme.presentation.selfworkout.SelfworkoutFragment;
 
 
 public class HomeFragment extends Fragment {
@@ -53,7 +58,36 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        Button btnGoToWorkout = view.findViewById(R.id.btnGoToWorkout);
+        String workoutPlanUserId = "-NOueb7xjsL1jp2uRn6q";
+
+        btnGoToWorkout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SelfworkoutFragment selfworkoutFragment = new SelfworkoutFragment();
+
+                Bundle workoutplanData = new Bundle();
+                workoutplanData.putString("workoutUserId",workoutPlanUserId);
+
+                selfworkoutFragment.setArguments(workoutplanData);
+
+                FragmentManager fm = getParentFragmentManager();
+                FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+                // Replace the current fragment with the new one
+                fragmentTransaction.replace(R.id.barFrame, selfworkoutFragment);
+
+                // Add the transaction to the back stack
+                fragmentTransaction.addToBackStack(null);
+
+                // Commit the transaction
+                fragmentTransaction.commit();
+            }
+        });
+
+        return view;
     }
 }

@@ -21,15 +21,11 @@ package com.bawp.coachme.presentation.order;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.Icon;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
@@ -56,8 +52,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
-import org.w3c.dom.Text;
-
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
@@ -73,8 +67,8 @@ public class OrderListRecyclerFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.order_recycler_view_fragment, container, false);
-        recyclerView = view.findViewById(R.id.order_recycler_view);
+        View view = inflater.inflate(R.layout.recycler_view_fragment, container, false);
+        recyclerView = view.findViewById(R.id.recycler_view_layout);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         orderListAdapter = new OrderListRecyclerFragment.RecyclerViewAdapter(orderList,orderFragment);
         recyclerView.setAdapter(orderListAdapter);
@@ -173,7 +167,7 @@ public class OrderListRecyclerFragment extends Fragment {
                                 if (swpObj.getSelfworkoutplanId().equals(orderId)){
                                     //cancel it!
                                     swpObj.setStatus(2);
-                                    swpObj.setPaymentDate(null);
+                                    swpObj.setPaymentDate(0);
                                     swpObj.setPaymentId(null);
                                     swpRef.child(swpKey).setValue(swpObj);
                                     orderList.remove(orderPosition);

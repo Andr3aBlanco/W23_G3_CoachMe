@@ -381,7 +381,7 @@ public class OrderPaymentOptionsFragment extends Fragment {
                                 String key = ds.getKey();
                                 if (swp.getSelfworkoutplanId().equals(orderIdArray.get(i))){
                                     swp.setPaymentId(paymentIntentId);
-                                    swp.setPaymentDate(new Date());
+                                    swp.setPaymentDate(new Date().getTime());
                                     swp.setStatus(3); //change to active;
                                     swpRef.child(key).setValue(swp);
                                 }
