@@ -1,58 +1,31 @@
 package com.bawp.coachme;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.view.textclassifier.ConversationActions;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.bawp.coachme.databinding.ActivityMainBinding;
-import com.bawp.coachme.model.Appointment;
-import com.bawp.coachme.model.AppointmentReminder;
-import com.bawp.coachme.model.SelfWorkoutPlan;
-import com.bawp.coachme.model.SelfWorkoutPlanByUser;
-import com.bawp.coachme.model.User;
 import com.bawp.coachme.presentation.order.OrdersFragment;
+import com.bawp.coachme.utils.DBHelper;
 import com.bawp.coachme.utils.UserSingleton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.RemoteMessage;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.FileInputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -78,8 +51,55 @@ public class MainActivity extends AppCompatActivity {
                     DatabaseReference usersRef = database.child("users");
                     UserSingleton.getInstance().setUserDeviceToken(token);
                     usersRef.child(UserSingleton.getInstance().getUserId()).child("deviceToken").setValue(token);
-                });
 
+                    DBHelper dbHelper = new DBHelper(this);
+                    SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+                    if (dbHelper.isDatabaseJustCreated()) {
+
+                        //Get the information from each file
+                        FirebaseStorage storage = FirebaseStorage.getInstance();
+                        StorageReference csvFileWp = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_SELF_WORKOUT_PLANS_TABLE);
+                        StorageReference csvFileWST = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_SELF_WORKOUT_SESSION_TYPES_TABLE);
+                        StorageReference csvFileEx = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_SELF_PLAN_EXERCISES_TABLE);
+                        StorageReference csvFileTrainer = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_TRAINER_TABLE);
+
+                        List<Task<byte[]>> downloadTasks = new ArrayList<>();
+                        downloadTasks.add(csvFileWp.getBytes(Long.MAX_VALUE));
+                        downloadTasks.add(csvFileWST.getBytes(Long.MAX_VALUE));
+                        downloadTasks.add(csvFileEx.getBytes(Long.MAX_VALUE));
+                        downloadTasks.add(csvFileTrainer.getBytes(Long.MAX_VALUE));
+
+                        // Wait for all Tasks to complete
+                        Task<List<byte[]>> allTasks = Tasks.whenAllSuccess(downloadTasks);
+
+                        allTasks.addOnCompleteListener(new OnCompleteListener<List<byte[]>>() {
+                            @Override
+                            public void onComplete(@NonNull Task<List<byte[]>> task) {
+                                byte[] csvFileWpByte = task.getResult().get(0);
+                                byte[] csvFileWSTByte = task.getResult().get(1);
+                                byte[] csvFileExByte = task.getResult().get(2);
+                                byte[] csvFileTrainerByte = task.getResult().get(3);
+                                dbHelper.uploadSelfWorkoutPlans(csvFileWpByte);
+                                dbHelper.uploadSelfWorkoutSessionTypes(csvFileWSTByte);
+                                dbHelper.uploadSelfWorkoutPlanExercises(csvFileExByte);
+                                dbHelper.uploadTrainers(csvFileTrainerByte);
+
+                                //some dump data
+                                dbHelper.uploadSampleAppointment();
+                                dbHelper.uploadSampleWorkoutPlanByUser();
+                                fragmentBinding();
+                            }
+                        });
+
+                    } else {
+                        // The database was already created, so onCreate has already finished
+                        fragmentBinding();
+                    }
+                });
+    }
+
+    private void fragmentBinding(){
         //bind
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -120,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     private void replaceFragment(Fragment fragment){
 
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -129,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
 
     }
+
 
 
 }

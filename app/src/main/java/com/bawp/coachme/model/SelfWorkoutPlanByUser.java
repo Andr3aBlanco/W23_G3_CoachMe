@@ -24,8 +24,8 @@ import java.util.Date;
 
 public class SelfWorkoutPlanByUser {
 
-    private String customerId;
-    private String selfworkoutplanId;
+    private int id;
+    private SelfWorkoutPlan selfworkoutplan;
     private Date requestedDate;
     private int status;
     private Date paymentDate;
@@ -35,27 +35,36 @@ public class SelfWorkoutPlanByUser {
 
     }
 
-    public SelfWorkoutPlanByUser(String customerId,String selfworkoutplanId, Date requestedDate, int status) {
-        this.customerId = customerId;
-        this.selfworkoutplanId = selfworkoutplanId;
+    public SelfWorkoutPlanByUser(int id,SelfWorkoutPlan selfworkoutplan, Date requestedDate, int status) {
+        this.id = id;
+        this.selfworkoutplan = selfworkoutplan;
         this.requestedDate = requestedDate;
         this.status = status;
     }
 
-    public String getCustomerId() {
-        return customerId;
+    public SelfWorkoutPlanByUser(int id, SelfWorkoutPlan selfworkoutplan, Date requestedDate, int status, Date paymentDate, String paymentId) {
+        this.id = id;
+        this.selfworkoutplan = selfworkoutplan;
+        this.requestedDate = requestedDate;
+        this.status = status;
+        this.paymentDate = paymentDate;
+        this.paymentId = paymentId;
     }
 
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
+    public int getId() {
+        return id;
     }
 
-    public String getSelfworkoutplanId() {
-        return selfworkoutplanId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setSelfworkoutplanId(String selfworkoutplanId) {
-        this.selfworkoutplanId = selfworkoutplanId;
+    public void setSelfworkoutplan(SelfWorkoutPlan selfworkoutplan) {
+        this.selfworkoutplan = selfworkoutplan;
+    }
+
+    public SelfWorkoutPlan getSelfworkoutplan() {
+        return selfworkoutplan;
     }
 
     public Date getRequestedDate() {
