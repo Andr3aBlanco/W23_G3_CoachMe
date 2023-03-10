@@ -106,6 +106,8 @@ btn.setOnClickListener((View view)->{
                 address = String.valueOf(addressTxt.getText());
                 User newUser = new User(Fname, Lname, emailTxt, address, phoneNumber, newRole);
                databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+//                   ******//need to change when login  by fb should takes to home page
                    @Override
                    public void onDataChange(@NonNull DataSnapshot snapshot) {
                        if(snapshot.exists()){
