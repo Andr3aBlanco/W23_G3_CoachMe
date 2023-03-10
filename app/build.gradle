@@ -52,6 +52,7 @@ dependencies {
     implementation 'com.airbnb.android:lottie:4.2.0'
     implementation 'com.google.firebase:firebase-messaging:23.1.1'
     implementation 'com.google.protobuf:protobuf-java:3.17.3'
+    implementation 'com.firebaseui:firebase-ui-storage:8.0.2'
     implementation 'androidx.sqlite:sqlite:2.3.0'
-
+    implementation 'com.opencsv:opencsv:5.5.1'
 }

@@ -29,6 +29,7 @@ import java.util.Date;
 
 public class Appointment {
 
+    private String id;
     private long bookedDate;
     private long registeredDate;
     private String serviceType;
@@ -44,9 +45,10 @@ public class Appointment {
 
     }
 
-    public Appointment(long bookedDate,long registeredDate, String serviceType, int status,
+    public Appointment(String id,long bookedDate,long registeredDate, String serviceType, int status,
                        double totalPrice, String location,
                        String trainerId, String customerId) {
+        this.id = id;
         this.bookedDate = bookedDate;
         this.registeredDate = registeredDate;
         this.serviceType = serviceType;
@@ -55,6 +57,14 @@ public class Appointment {
         this.location = location;
         this.trainerId = trainerId;
         this.customerId = customerId;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public long getBookedDate() {

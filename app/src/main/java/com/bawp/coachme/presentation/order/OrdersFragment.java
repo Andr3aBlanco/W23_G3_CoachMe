@@ -36,7 +36,9 @@ import com.bawp.coachme.model.Appointment;
 import com.bawp.coachme.model.Order;
 import com.bawp.coachme.model.SelfWorkoutPlan;
 import com.bawp.coachme.model.SelfWorkoutPlanByUser;
+import com.bawp.coachme.model.Trainer;
 import com.bawp.coachme.model.User;
+import com.bawp.coachme.utils.DBHelper;
 import com.bawp.coachme.utils.UserSingleton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -54,6 +56,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CountDownLatch;
 
 
 public class OrdersFragment extends Fragment {
@@ -75,8 +78,18 @@ public class OrdersFragment extends Fragment {
     MaterialButton btnCheckout;
     ArrayList<String> orderIdArray;
     ArrayList<Integer> orderTypeArray;
+    DBHelper dbHelper;
 
     static final float TAX_PERCENTAGE = 0.1f;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Create an instance of your database helper class
+        dbHelper = new DBHelper(getContext());
+
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -138,116 +151,70 @@ public class OrdersFragment extends Fragment {
     }
 
     private void updateShoppingCart(OrdersFragment currentFragment){
-        FirebaseDatabase CoachMeDatabaseInstance = FirebaseDatabase.getInstance();
-        DatabaseReference CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
+        //Getting appointments pending to purchase
+        List<Appointment> appointments = dbHelper.getAppointmentsByStatus(1);
 
-        DatabaseReference appRef = CoachMeDatabaseRef.child("appointments");
-        DatabaseReference userRef = CoachMeDatabaseRef.child("users");
-        DatabaseReference swpByRef = CoachMeDatabaseRef.child("selfWorkoutPlans");
-        DatabaseReference swpByUserRef = CoachMeDatabaseRef.child("selfWorkoutPlansByUser");
+        for (Appointment appObj : appointments){
+            Date bookedDate = new Date(appObj.getBookedDate());
+            DateFormat format = new SimpleDateFormat("EEE, dd/MM/yy HH:mm");
+            String formattedBookedDate = format.format(bookedDate);
+            Trainer trainerObj = dbHelper.getTrainerById(appObj.getTrainerId());
 
-        List<Task<DataSnapshot>> tasks = new ArrayList<>();
-        subTotal = 0;
+            orderList.add(
+                    new Order(appObj.getId(),
+                            "TRAINING SESSION with "+trainerObj.getFirstName().toUpperCase(),
+                            1,
+                            appObj.getServiceType() + " Session\n"+formattedBookedDate,
+                            appObj.getTotalPrice(), true)
+            );
+            subTotal += appObj.getTotalPrice();
+        }
 
-        // Add a task to retrieve the data from the posts node
-        Query queryAppointment = appRef.orderByChild("customerId").equalTo(UserSingleton.getInstance().getUserId());
-        Query querySwpByUser = swpByUserRef.orderByChild("customerId").equalTo(UserSingleton.getInstance().getUserId());
+        //Getting selfworkouts pending to purchase
+        List<SelfWorkoutPlanByUser> selfWorkoutPlanByUsers = dbHelper.getSelfWorkoutPlanByUserByStatus(1);
 
-        tasks.add(queryAppointment.get());
-        tasks.add(userRef.get());
-        tasks.add(swpByRef.get());
-        tasks.add(querySwpByUser.get());
+        for (SelfWorkoutPlanByUser swpByUser: selfWorkoutPlanByUsers){
+            orderList.add(new Order(
+                    Integer.toString(swpByUser.getId()),
+                    "SELF-WORKOUT PLAN",
+                    2,
+                    swpByUser.getSelfworkoutplan().getTitle(),
+                    swpByUser.getSelfworkoutplan().getPlanPrice(),
+                    true
+            ));
+            subTotal += swpByUser.getSelfworkoutplan().getPlanPrice();
+        }
 
-        // Create a new task that completes when all tasks in the list complete successfully
-        Task<List<DataSnapshot>> allTasks = Tasks.whenAllSuccess(tasks);
+        if(orderList.size()>0){
+            flOrderFragmentContainer.setVisibility(View.VISIBLE);
+            llNoItemsInCart.setVisibility(View.GONE);
+        }else{
+            flOrderFragmentContainer.setVisibility(View.GONE);
+            llNoItemsInCart.setVisibility(View.VISIBLE);
+        }
 
-        allTasks.addOnCompleteListener(new OnCompleteListener<List<DataSnapshot>>() {
-            @Override
-            public void onComplete(@NonNull Task<List<DataSnapshot>> task) {
-                if (task.isSuccessful()) {
-                    // All tasks completed successfully
-                    DataSnapshot appResults = task.getResult().get(0);
-                    DataSnapshot userResults = task.getResult().get(1);
-                    DataSnapshot swpResults = task.getResult().get(2);
-                    DataSnapshot swpByUserResults = task.getResult().get(3);
+        calculateTotalPrice();
 
-                    //Appointment info
-                    for(DataSnapshot ds: appResults.getChildren()){
-                        //Getting Appointment Object
-                        Appointment appObj = ds.getValue(Appointment.class);
-                        //Getting User Trainer
-                        User trainerObj = userResults.child(appObj.getTrainerId()).getValue(User.class);
+        fm = getActivity().getSupportFragmentManager();
+        fragment = fm.findFragmentById(R.id.orderFragmentContainer);
+        if (fragment == null){
+            fragment = OrderListRecyclerFragment.newInstance(orderList,currentFragment );
 
-                        if(appObj.getStatus() == 1){
+            fm.beginTransaction()
+                    .add(R.id.orderFragmentContainer,fragment)
+                    .commit();
+        }else{
+            fragment = OrderListRecyclerFragment.newInstance(orderList,currentFragment);
 
-                            Date bookedDate = new Date(appObj.getBookedDate());
-                            DateFormat format = new SimpleDateFormat("EEE, dd/MM/yy HH:mm");
-                            String formattedBookedDate = format.format(bookedDate);
-                            orderList.add(
-                                    new Order(ds.getKey(),
-                                            "TRAINING SESSION with "+trainerObj.getFirstName().toUpperCase(),
-                                            1,
-                                            appObj.getServiceType() + " Session\n"+formattedBookedDate,
-                                            appObj.getTotalPrice(), true)
-                            );
-                            subTotal += appObj.getTotalPrice();
-                        }
-                    }
+            fm.beginTransaction()
+                    .replace(R.id.orderFragmentContainer,fragment)
+                    .commit();
+        }
 
-                    //Self-workout plan
-                    for(DataSnapshot ds: swpByUserResults.getChildren()){
-                        SelfWorkoutPlanByUser swpByUser = ds.getValue(SelfWorkoutPlanByUser.class);
+        pbOrderList.setVisibility(View.GONE);
+        llOrderLayout.setVisibility(View.VISIBLE);
 
-                        SelfWorkoutPlan swpItem = swpResults.child(swpByUser.getSelfworkoutplanId()).getValue(SelfWorkoutPlan.class);
-                        if(swpByUser.getStatus() == 1){
-                            orderList.add(new Order(
-                                    swpByUser.getSelfworkoutplanId(),
-                                    "SELF-WORKOUT PLAN",
-                                    2,
-                                    swpItem.getTitle(),
-                                    swpItem.getPlanPrice(),
-                                    true
-                            ));
-                            subTotal += swpItem.getPlanPrice();
-                        }
-                    }
 
-                    if(orderList.size()>0){
-                        flOrderFragmentContainer.setVisibility(View.VISIBLE);
-                        llNoItemsInCart.setVisibility(View.GONE);
-                    }else{
-                        flOrderFragmentContainer.setVisibility(View.GONE);
-                        llNoItemsInCart.setVisibility(View.VISIBLE);
-                    }
-
-                    calculateTotalPrice();
-
-                    fm = getActivity().getSupportFragmentManager();
-                    fragment = fm.findFragmentById(R.id.orderFragmentContainer);
-                    if (fragment == null){
-                        fragment = OrderListRecyclerFragment.newInstance(orderList,currentFragment );
-
-                        fm.beginTransaction()
-                                .add(R.id.orderFragmentContainer,fragment)
-                                .commit();
-                    }else{
-                        fragment = OrderListRecyclerFragment.newInstance(orderList,currentFragment);
-
-                        fm.beginTransaction()
-                                .replace(R.id.orderFragmentContainer,fragment)
-                                .commit();
-                    }
-
-                    pbOrderList.setVisibility(View.GONE);
-                    llOrderLayout.setVisibility(View.VISIBLE);
-
-                } else {
-                    // At least one task failed
-                    Exception error = task.getException();
-                    System.out.println("At least one task failed: " + error.getMessage());
-                }
-            }
-        });
     }
 
     public void calculateTotalPrice(){
