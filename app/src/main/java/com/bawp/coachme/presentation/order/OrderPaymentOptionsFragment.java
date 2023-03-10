@@ -51,8 +51,10 @@ import com.bawp.coachme.BuildConfig;
 import com.bawp.coachme.R;
 
 import com.bawp.coachme.model.Appointment;
+import com.bawp.coachme.model.OrderNotifcation;
 import com.bawp.coachme.model.SelfWorkoutPlanByUser;
 import com.bawp.coachme.model.User;
+import com.bawp.coachme.utils.DBHelper;
 import com.bawp.coachme.utils.UserSingleton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -91,7 +93,11 @@ public class OrderPaymentOptionsFragment extends Fragment {
     FirebaseDatabase CoachMeDatabaseInstance;
     DatabaseReference CoachMeDatabaseRef;
     DatabaseReference userRef;
+    DatabaseReference triggerNotificationRef;
     User currentCustomer;
+    DBHelper dbHelper;
+
+
 
     public OrderPaymentOptionsFragment() {
         // Required empty public constructor
@@ -118,6 +124,8 @@ public class OrderPaymentOptionsFragment extends Fragment {
         CoachMeDatabaseInstance = FirebaseDatabase.getInstance();
         CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
         userRef = CoachMeDatabaseRef.child("users");
+
+        dbHelper = new DBHelper(getContext());
 
         pbPaymentOption = view.findViewById(R.id.pbPaymentOption);
         llOrderLayoutPaymentOption = view.findViewById(R.id.llOrderLayoutPaymentOption);
@@ -341,74 +349,97 @@ public class OrderPaymentOptionsFragment extends Fragment {
         pbPaymentOption.setVisibility(View.VISIBLE);
         llOrderLayoutPaymentOption.setVisibility(View.GONE);
 
-        DatabaseReference appRef = CoachMeDatabaseRef.child("appointments");
-        DatabaseReference swpRef = CoachMeDatabaseRef.child("selfWorkoutPlansByUser");
+        //Let's update the payment information for the selfworkout first
+        int numAppointmentsToPay = 0;
+        Date newDate = new Date();
+        for(int i=0;i<orderIdArray.size();i++){
+            if (orderTypeArray.get(i) == 2){
+                int numRowsUpdated = dbHelper.updateSelfWorkoutAddPayment(
+                        orderIdArray.get(i),
+                        paymentIntentId,
+                        newDate
+                );
+            }else{
+                numAppointmentsToPay++;
+            }
+        }
 
-        List<Task<DataSnapshot>> tasks = new ArrayList<>();
+        if (numAppointmentsToPay > 0){
+            DatabaseReference appRef = CoachMeDatabaseRef.child("appointments");
+            List<Task<DataSnapshot>> tasks = new ArrayList<>();
+            tasks.add(appRef.get());
+            // Create a new task that completes when all tasks in the list complete successfully
+            Task<List<DataSnapshot>> allTasks = Tasks.whenAllSuccess(tasks);
 
-        tasks.add(appRef.get());
-        tasks.add(swpRef.get());
+            allTasks.addOnCompleteListener(new OnCompleteListener<List<DataSnapshot>>() {
+                @Override
+                public void onComplete(@NonNull Task<List<DataSnapshot>> task) {
+                    if(task.isSuccessful()){
+                        DataSnapshot appDs = (DataSnapshot) task.getResult().get(0);
+                        Date newDate = new Date();
+                        for(int i=0;i<orderIdArray.size();i++){
 
-        // Create a new task that completes when all tasks in the list complete successfully
-        Task<List<DataSnapshot>> allTasks = Tasks.whenAllSuccess(tasks);
+                            if (orderTypeArray.get(i) == 1){
 
-        allTasks.addOnCompleteListener(new OnCompleteListener<List<DataSnapshot>>() {
-            @Override
-            public void onComplete(@NonNull Task<List<DataSnapshot>> task) {
-                if(task.isSuccessful()){
-                    DataSnapshot appDs = (DataSnapshot) task.getResult().get(0);
-                    DataSnapshot swpDs = (DataSnapshot) task.getResult().get(1);
+                                int numRowsUpdated = dbHelper.updateAppointmentAddPayment(orderIdArray.get(i),
+                                        paymentIntentId,
+                                        newDate);
 
-                    for(int i=0;i<orderIdArray.size();i++){
-
-                        if (orderTypeArray.get(i) == 1 ){
-                            DataSnapshot ds = appDs.child(orderIdArray.get(i));
-                            Appointment app = ds.getValue(Appointment.class);
-                            app.setPaymentId(paymentIntentId);
-                            app.setPaymentDate(new Date());
-                            app.setStatus(3); //change to active;
-
-                            appRef.child(orderIdArray.get(i)).setValue(app);
-
-                        }else{
-
-                            for(DataSnapshot ds: swpDs.getChildren()){
-                                SelfWorkoutPlanByUser swp = ds.getValue(SelfWorkoutPlanByUser.class);
-                                String key = ds.getKey();
-                                if (swp.getSelfworkoutplanId().equals(orderIdArray.get(i))){
-                                    swp.setPaymentId(paymentIntentId);
-                                    swp.setPaymentDate(new Date());
-                                    swp.setStatus(3); //change to active;
-                                    swpRef.child(key).setValue(swp);
+                                if (numRowsUpdated > 0){
+                                    DataSnapshot ds = appDs.child(orderIdArray.get(i));
+                                    Appointment app = ds.getValue(Appointment.class);
+                                    app.setPaymentId(paymentIntentId);
+                                    app.setPaymentDate(newDate.getTime());
+                                    app.setStatus(3); //change to active;
+                                    appRef.child(orderIdArray.get(i)).setValue(app);
                                 }
 
                             }
 
                         }
 
+                        //Send the Notification to the Database
+                        sendNotificationTrigger();
+
+
+                    }else{
+                        // At least one task failed
+                        Exception error = task.getException();
+                        System.out.println("At least one task failed: " + error.getMessage());
                     }
-
-                    //Move to Cart Detail
-                    OrderPaymentConfirmedFragment orderConfirmedFragment = new OrderPaymentConfirmedFragment();
-
-                    FragmentManager fm = getParentFragmentManager();
-                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
-
-                    // Replace the current fragment with the new one
-                    fragmentTransaction.replace(R.id.barFrame, orderConfirmedFragment);
-
-                    // Add the transaction to the back stack
-                    fragmentTransaction.addToBackStack(null);
-
-                    // Commit the transaction
-                    fragmentTransaction.commit();
-
-                }else{
-                    // At least one task failed
-                    Exception error = task.getException();
-                    System.out.println("At least one task failed: " + error.getMessage());
                 }
-            }
-        });
+            });
+        }else{
+            //Send the Notification to the Database
+            sendNotificationTrigger();
+        }
+    }
+
+    private void sendNotificationTrigger(){
+
+        triggerNotificationRef = CoachMeDatabaseRef.child("orderNotifications");
+
+        String notificationDescription = "Purchased successfully! Go to CoachMe and see your new item!";
+
+        OrderNotifcation newNotification = new OrderNotifcation("Purchase Completed!",notificationDescription,
+                UserSingleton.getInstance().getUserDeviceToken());
+        triggerNotificationRef.push().setValue(newNotification);
+
+        //Move to Cart Detail
+        OrderPaymentConfirmedFragment orderConfirmedFragment = new OrderPaymentConfirmedFragment();
+
+        FragmentManager fm = getParentFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+        // Replace the current fragment with the new one
+        fragmentTransaction.replace(R.id.barFrame, orderConfirmedFragment);
+
+        // Add the transaction to the back stack
+        fragmentTransaction.addToBackStack(null);
+
+        // Commit the transaction
+        fragmentTransaction.commit();
+
+
     }
 }

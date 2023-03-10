@@ -19,6 +19,7 @@ public class UserSingleton {
 
     private static UserSingleton instance;
     private String userId;
+    private String userDeviceToken;
 
     private UserSingleton(){
 
@@ -39,4 +40,15 @@ public class UserSingleton {
         this.userId = userId;
     }
 
+    public static void setInstance(UserSingleton instance) {
+        UserSingleton.instance = instance;
+    }
+
+    public String getUserDeviceToken() {
+        return userDeviceToken;
+    }
+
+    public void setUserDeviceToken(String userDeviceToken) {
+        this.userDeviceToken = userDeviceToken;
+    }
 }

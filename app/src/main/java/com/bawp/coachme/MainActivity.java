@@ -1,8 +1,8 @@
 package com.bawp.coachme;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,58 +11,107 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bawp.coachme.databinding.ActivityMainBinding;
-import com.bawp.coachme.model.SelfWorkoutPlan;
-import com.bawp.coachme.model.SelfWorkoutPlanByUser;
-import com.bawp.coachme.model.User;
 import com.bawp.coachme.presentation.order.OrdersFragment;
-import com.bawp.coachme.presentation.trainermap.TrainerMapFragment;
-import com.bawp.coachme.presentation.trainermap.TrainerSearchFragment;
+import com.bawp.coachme.utils.DBHelper;
 import com.bawp.coachme.utils.UserSingleton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
-    Button addBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
+        //After loging, we have set the User Id
         UserSingleton.getInstance().setUserId("-NOjpL1jiGcc80qBrFIl");
 
-        //addWorkoutPlans();
-        //addWorkoutPlanToUser("-NOuQesyIu4gk6Qsu3Ti","-NOjpL1jiGcc80qBrFIl");
-        //addWorkoutPlanToUser("-NOuQet72VtKaw2AO3qb","-NOjpL1jiGcc80qBrFIl");
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if(!task.isSuccessful()){
+                        Log.d("FIREBASE MESSAGING","Failed token");
+                        return;
+                    }
+                    String token = task.getResult();
+                    // Store the FCM registration token in your database
+                    DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                    DatabaseReference usersRef = database.child("users");
+                    UserSingleton.getInstance().setUserDeviceToken(token);
+                    usersRef.child(UserSingleton.getInstance().getUserId()).child("deviceToken").setValue(token);
 
+                    DBHelper dbHelper = new DBHelper(this);
+                    SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+                    if (dbHelper.isDatabaseJustCreated()) {
+
+                        //Get the information from each file
+                        FirebaseStorage storage = FirebaseStorage.getInstance();
+                        StorageReference csvFileWp = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_SELF_WORKOUT_PLANS_TABLE);
+                        StorageReference csvFileWST = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_SELF_WORKOUT_SESSION_TYPES_TABLE);
+                        StorageReference csvFileEx = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_SELF_PLAN_EXERCISES_TABLE);
+                        StorageReference csvFileTrainer = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_TRAINER_TABLE);
+
+                        List<Task<byte[]>> downloadTasks = new ArrayList<>();
+                        downloadTasks.add(csvFileWp.getBytes(Long.MAX_VALUE));
+                        downloadTasks.add(csvFileWST.getBytes(Long.MAX_VALUE));
+                        downloadTasks.add(csvFileEx.getBytes(Long.MAX_VALUE));
+                        downloadTasks.add(csvFileTrainer.getBytes(Long.MAX_VALUE));
+
+                        // Wait for all Tasks to complete
+                        Task<List<byte[]>> allTasks = Tasks.whenAllSuccess(downloadTasks);
+
+                        allTasks.addOnCompleteListener(new OnCompleteListener<List<byte[]>>() {
+                            @Override
+                            public void onComplete(@NonNull Task<List<byte[]>> task) {
+                                byte[] csvFileWpByte = task.getResult().get(0);
+                                byte[] csvFileWSTByte = task.getResult().get(1);
+                                byte[] csvFileExByte = task.getResult().get(2);
+                                byte[] csvFileTrainerByte = task.getResult().get(3);
+                                dbHelper.uploadSelfWorkoutPlans(csvFileWpByte);
+                                dbHelper.uploadSelfWorkoutSessionTypes(csvFileWSTByte);
+                                dbHelper.uploadSelfWorkoutPlanExercises(csvFileExByte);
+                                dbHelper.uploadTrainers(csvFileTrainerByte);
+
+                                //some dump data
+                                dbHelper.uploadSampleAppointment();
+                                dbHelper.uploadSampleWorkoutPlanByUser();
+                                fragmentBinding();
+                            }
+                        });
+
+                    } else {
+                        // The database was already created, so onCreate has already finished
+                        fragmentBinding();
+                    }
+                });
+    }
+
+    private void fragmentBinding(){
         //bind
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-
-        binding.floatingAdd.setOnClickListener(v -> replaceFragment(new TrainerMapFragment())); //Change to trainer search working on map now
-
         binding.bottomNavigationView.setBackground(null);
-
-
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
 
             switch (item.getItemId()){
 
                 case R.id.menu_home:
-                    replaceFragment(new TrainerSearchFragment());
+                    replaceFragment(new HomeFragment());
                     break;
 
                 case R.id.menu_orders:
@@ -91,43 +140,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void addWorkoutPlans(){
-        FirebaseDatabase CoachMeDatabaseInstance = FirebaseDatabase.getInstance();
-        DatabaseReference CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
-        DatabaseReference swpRef = CoachMeDatabaseRef.child("selfWorkoutPlans");
-
-        SelfWorkoutPlan swp1 = new SelfWorkoutPlan("Crossfit Workout Plan",
-                                                    "Crossfit Workout Plan for everyone",
-                                                    190.99);
-
-        SelfWorkoutPlan swp2 = new SelfWorkoutPlan("Cycling Workout Plan",
-                "Cycling Workout Plan - 30days for everyone",
-                89.99);
-
-        swpRef.push().setValue(swp1);
-        swpRef.push().setValue(swp2);
-
-    }
-
-    private void addWorkoutPlanToUser(String selfworkoutId, String userId){
-        FirebaseDatabase CoachMeDatabaseInstance = FirebaseDatabase.getInstance();
-        DatabaseReference CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
-        DatabaseReference swpByUserRef = CoachMeDatabaseRef
-                    .child("selfWorkoutPlansByUser");
-
-        Task swpByUserRefTask = swpByUserRef.get();
-        swpByUserRefTask.addOnCompleteListener(new OnCompleteListener() {
-            @Override
-            public void onComplete(@NonNull Task task) {
-                DataSnapshot ds = (DataSnapshot) task.getResult();
-                SelfWorkoutPlanByUser obj = new SelfWorkoutPlanByUser(
-                        userId,selfworkoutId,new Date(),1);
-                swpByUserRef.push().setValue(obj);
-            }
-        });
-
-    }
-
     private void replaceFragment(Fragment fragment){
 
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -136,5 +148,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
 
     }
+
+
 
 }
