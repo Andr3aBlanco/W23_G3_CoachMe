@@ -40,6 +40,8 @@ public class TrainerAdapter extends RecyclerView.Adapter<TrainerViewHolder> {
         // Bind to the holder
         holder.bind(trainer);
 
+        // create the fragment
+
 
     }
 

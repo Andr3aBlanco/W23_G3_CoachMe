@@ -141,6 +141,8 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.trainer_search_fragment, container, false);
 
+        //Initialize the filtered trainers
+        trainersFiltered = new HashMap<>();
 
         // Get the views from this layout
         rgMapList = view.findViewById(R.id.rgMapListSelector);
@@ -249,6 +251,8 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
         });
 
 
+        // Listener for Displaying Map or List
+
         rgMapList.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
@@ -266,6 +270,8 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                         replaceFragment(childMapFragment);
                         break;
                     case R.id.rbListView:
+
+                        // Put here the List -> RecyclerView
                         replaceFragment(new HomeFragment()); //Replace this for the list later
                         break;
                     default:
@@ -523,7 +529,6 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                         slotsByTrainer.put(trainerId,list);
                     }
                 }
-
                             // Inside listen for the trainer query
 
                 trainersFromUser.addListenerForSingleValueEvent(new ValueEventListener() {

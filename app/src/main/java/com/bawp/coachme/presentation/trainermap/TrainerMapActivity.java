@@ -28,6 +28,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/// REMOVE THIS
 public class TrainerMapActivity extends AppCompatActivity {
 
     private MapView mapView;

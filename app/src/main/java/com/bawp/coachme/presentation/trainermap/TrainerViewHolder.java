@@ -7,6 +7,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,7 +52,7 @@ public class TrainerViewHolder extends RecyclerView.ViewHolder {
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                FragmentManager fm = getFragmentManager();
+//                FragmentManager fm = Fra; ///cjeck this again
 //                FragmentTransaction ft = fm.beginTransaction();
 //                ft.replace(R.id.rvTrainerList, TrainerDetailsFragment.newInstance(trainer));
 //                ft.addToBackStack(null);

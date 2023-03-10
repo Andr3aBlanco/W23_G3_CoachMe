@@ -39,7 +39,7 @@
         <LinearLayout
             android:id="@+id/llServicesFilter"
             android:layout_width="100dp"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
             android:layout_marginRight="8dp"
             android:layout_marginLeft="8dp"
             android:layout_toRightOf="@id/tvDateStart"
@@ -64,7 +64,7 @@
         <LinearLayout
             android:id="@+id/llServicesFilter2"
             android:layout_width="100dp"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
             android:layout_toRightOf="@id/llServicesFilter"
             android:orientation="vertical">
 
@@ -105,13 +105,13 @@
             <RadioButton
                 android:id="@+id/rbListView"
                 android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_height="40dp"
                 android:text="List" />
 
             <RadioButton
                 android:id="@+id/rbMapView"
                 android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_height="40dp"
                 android:checked="true"
                 android:text="Map" />
         </RadioGroup>
