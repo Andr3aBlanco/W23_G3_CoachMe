@@ -31,8 +31,10 @@ import android.widget.TextView;
 
 import com.bawp.coachme.HomeFragment;
 import com.bawp.coachme.R;
+import com.bawp.coachme.model.Trainer;
 import com.bawp.coachme.model.User;
 import com.bawp.coachme.presentation.order.OrdersFragment;
+import com.bawp.coachme.utils.DBHelper;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -87,7 +89,7 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
     List<String> trainerIDs = new ArrayList<>();
 
     //Arrays to store filter results
-    private HashMap<String, User> unfilteredTrainers = new HashMap<>();
+    private HashMap<String, Trainer> unfilteredTrainers = new HashMap<>();
     private HashMap<String, User> filteredTrainers = new HashMap<>();
 
 //    Fragment fragmentMapList = new TrainerMapFragment();
@@ -97,33 +99,19 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
     private double latitude;
     private double longitude;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    //
+    DBHelper dbHelper;
 
     public TrainerSearchFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment TrainerSearchFragment.
-     */
-    // TODO: Rename and change types and number of parameters
+
     public static TrainerSearchFragment newInstance(String param1, String param2) {
         TrainerSearchFragment fragment = new TrainerSearchFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -132,9 +120,10 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+
         }
+
+        dbHelper = new DBHelper(getContext());
 
         // Check if the app has permission to access location information
         if (ContextCompat.checkSelfPermission(getContext(),
@@ -226,7 +215,7 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
         //get trainers
         getTrainers(new GetTrainersCallback() {
             @Override
-            public void onTrainersReceived(HashMap<String, User> trainers) {
+            public void onTrainersReceived(HashMap<String, Trainer> trainers) {
                 Log.d("Andrea", "Trainers received in the TrainerSearchFragment");
 
                 //Pass the data to MapSearchFragment
@@ -247,10 +236,26 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
 
                 switch (checkedId) {
                     case R.id.rbMapView:
-                        replaceFragment(new TrainerMapFragment());
+                        //Pass the data to MapSearchFragment
+                        TrainerMapFragment childMapFragment = new TrainerMapFragment();
+                        Bundle args = new Bundle();
+                        args.putSerializable("FILTERED_TRAINERS", unfilteredTrainers);  //how to update this
+                        childMapFragment.setArguments(args);
+
+                        //At the beginning replace for TrainerMapFragment
+                        replaceFragment(childMapFragment);
                         break;
                     case R.id.rbListView:
-                        replaceFragment(new HomeFragment()); //Replace this for the list later
+
+
+                        //Pass the data to MapSearchFragment
+                        TrainerListFragment childMapFragment2 = new TrainerListFragment();
+                        Bundle args2 = new Bundle();
+                        args2.putSerializable("FILTERED_TRAINERS", unfilteredTrainers);  //how to update this
+                        childMapFragment2.setArguments(args2);
+
+                        //At the beginning replace for TrainerMapFragment
+                        replaceFragment(childMapFragment2);
                         break;
                     default:
                         replaceFragment(new TrainerMapFragment());
@@ -391,33 +396,45 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
     //Method for getting the trainers based on the filters
     private void getTrainers(GetTrainersCallback callback) {
 
-        // References to the necessary collections -> Users, Schedule, Trainer raitings
-        DatabaseReference trainerRef = FirebaseDatabase.getInstance().getReference().child("users");
+//        // References to the necessary collections -> Users, Schedule, Trainer raitings
+//        DatabaseReference trainerRef = FirebaseDatabase.getInstance().getReference().child("users");
+//
+//        //Pull with no filter
+//        trainerRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//
+//                HashMap<String, User> trainers = new HashMap<>();
+//
+//                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+//                    User user = userSnapshot.getValue(User.class);
+//                    String userKey = userSnapshot.getKey();
+//                    trainers.put(userKey, user); //
+//                    unfilteredTrainers.put(userKey, user);
+//                    assert user != null;
+//                    Log.d("Andrea", "Retrieved " + user.getFirstName());
+//                }
+//                // New
 
-        //Pull with no filter
-        trainerRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                HashMap<String, User> trainers = new HashMap<>();
+                List<Trainer> trainerList = new ArrayList<>();
 
-                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                    User user = userSnapshot.getValue(User.class);
-                    String userKey = userSnapshot.getKey();
-                    trainers.put(userKey, user); //
-                    unfilteredTrainers.put(userKey, user);
-                    assert user != null;
-                    Log.d("Andrea", "Retrieved " + user.getFirstName());
+                trainerList = dbHelper.getTrainers();
+
+                for(int i = 0; i < trainerList.size(); i++){
+
+                    unfilteredTrainers.put(trainerList.get(i).getId(), trainerList.get(i));
+
                 }
-                // New
-                callback.onTrainersReceived(trainers);
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.d("Andrea", "onCancelled: " + error.getMessage());
-            }
-        });
+                callback.onTrainersReceived(unfilteredTrainers);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//                Log.d("Andrea", "onCancelled: " + error.getMessage());
+//            }
+//        });
 
     }
 
@@ -449,7 +466,7 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
 
     // Interface for GetTrainers
     public interface GetTrainersCallback {
-        void onTrainersReceived(HashMap<String, User> trainersMap); //Chck this - change in trainer details
+        void onTrainersReceived(HashMap<String, Trainer> trainersMap); //Chck this - change in trainer details
     }
 
 

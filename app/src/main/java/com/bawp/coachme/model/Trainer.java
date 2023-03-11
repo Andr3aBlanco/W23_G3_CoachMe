@@ -1,6 +1,8 @@
 package com.bawp.coachme.model;
 
-public class Trainer {
+import java.io.Serializable;
+
+public class Trainer implements Serializable {
 
     private String id;
     private String firstName;
@@ -13,10 +15,12 @@ public class Trainer {
     private String phoneNumber;
     private String address;
 
+    private double rating;
+
     public Trainer(){
 
     }
-    public Trainer(String id, String firstName, String lastName, String email, double latitudeCoord, double longitudeCoord, double radius, double flatPrice, String phoneNumber, String address) {
+    public Trainer(String id, String firstName, String lastName, String email, double latitudeCoord, double longitudeCoord, double radius, double flatPrice, String phoneNumber, String address, double rating) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -27,6 +31,7 @@ public class Trainer {
         this.flatPrice = flatPrice;
         this.phoneNumber = phoneNumber;
         this.address = address;
+        this.rating = rating;
     }
 
     public String getId() {
@@ -107,5 +112,13 @@ public class Trainer {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 }

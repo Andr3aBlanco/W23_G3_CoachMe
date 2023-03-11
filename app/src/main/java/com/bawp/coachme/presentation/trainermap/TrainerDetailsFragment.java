@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.bawp.coachme.R;
 import com.bawp.coachme.model.CustomCalendarView;
+import com.bawp.coachme.model.Trainer;
 import com.bawp.coachme.model.TrainerSchedule;
 import com.bawp.coachme.model.User;
 import com.google.firebase.database.DataSnapshot;
@@ -62,7 +63,7 @@ public class TrainerDetailsFragment extends Fragment {
 
     CustomCalendarView calendarView;
     //Variables for the trainer info
-    User currentTrainer;
+    Trainer currentTrainer;
 
 
     //Map of appointments
@@ -96,7 +97,7 @@ public class TrainerDetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             Bundle bundle = getArguments();
-            currentTrainer = (User) bundle.getSerializable("TRAINER_TO_DISPLAY");
+            currentTrainer = (Trainer) bundle.getSerializable("TRAINER_TO_DISPLAY");
         }
     }
 
@@ -141,7 +142,7 @@ public class TrainerDetailsFragment extends Fragment {
         tvPrice.setText(Double.toString(currentTrainer.getFlatPrice()));
 
 
-        getTrainerSchedule();
+//        getTrainerSchedule();
 
         //click listener for the button
         seeMore.setOnClickListener(new View.OnClickListener() {

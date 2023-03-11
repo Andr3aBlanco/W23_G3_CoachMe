@@ -123,11 +123,22 @@ public class DBHelper extends SQLiteOpenHelper {
             "address TEXT" +
             ")";
 
+    private static final String CREATE_RATINGS_TABLE = "CREATE TABLE ratings(" +
+            "_id TEXT PRIMARY KEY, " +
+            "trainerID TEXT, " +
+            "rating FLOAT, " +
+            "FOREIGN KEY(trainerID) REFERENCES trainers(_id)" +
+            ")";
+
+
+
+
     public static final String URL_FIRESTORE_SELF_WORKOUT_PLANS_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutPlans.csv";
     public static final String URL_FIRESTORE_SELF_WORKOUT_SESSION_TYPES_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutSessionTypes.csv";
     public static final String URL_FIRESTORE_SELF_PLAN_EXERCISES_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutPlanExercises.csv";
     public static final String URL_FIRESTORE_TRAINER_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/trainers.csv";
 
+    public static  final String URL_FIRESTORE_RATINGS_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/ratings.csv";
     public DBHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -158,6 +169,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_SELF_WORKOUT_SESSION_LOGS_TABLE);
         db.execSQL(CREATE_APPOINTMENTS_TABLE);
         db.execSQL(CREATE_TRAINERS_TABLE);
+        db.execSQL(CREATE_RATINGS_TABLE);
         databaseJustCreated=true;
         //uploadSelfWorkoutPlans();
 
@@ -173,6 +185,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS selfWorkoutSessionLogs");
         db.execSQL("DROP TABLE IF EXISTS appointments");
         db.execSQL("DROP TABLE IF EXISTS trainers");
+        db.execSQL("DROP TABLE IF EXISTS ratings");
         onCreate(db);
     }
 
@@ -313,6 +326,38 @@ public class DBHelper extends SQLiteOpenHelper {
             throw new RuntimeException(e);
         } catch (IOException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+    }
+
+
+    // Upload ratings
+    public void uploadRatings(byte[] bytes){
+
+        String content = null; // Convert byte array to string
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            content = new String(bytes, "UTF-8");
+            CSVReader reader = new CSVReader(new StringReader(content));
+            String[] nextLine;
+            while ((nextLine = reader.readNext()) != null) {
+
+                ContentValues ratingsContent = new ContentValues();
+                ratingsContent.put("_id",nextLine[0]);
+                ratingsContent.put("trainerID",nextLine[1]);
+                ratingsContent.put("rating",Double.parseDouble(nextLine[2]));
+                db.insert("ratings", null, ratingsContent);
+
+            }
+
+            db.close();
+
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        } catch (CsvValidationException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -541,15 +586,61 @@ public class DBHelper extends SQLiteOpenHelper {
             Double flatPrice = cursor.getDouble(cursor.getColumnIndex("flatPrice"));
             String phoneNumber = cursor.getString(cursor.getColumnIndex("phoneNumber"));
             String address = cursor.getString(cursor.getColumnIndex("address"));
+            Double rating = cursor.getDouble(cursor.getColumnIndex("avgRating"));
 
             trainer = new Trainer(trainerId, firstName, lastName, email,
                     latitudeCoord, longitudeCoord,  radius, flatPrice,
-                     phoneNumber, address);
+                     phoneNumber, address, rating);
 
         }
 
         db.close();
         return trainer;
+    }
+
+
+    @SuppressLint("Range")
+    public List<Trainer> getTrainers(){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT t._id, t.firstName, t.lastName, t.email, \n" +
+                "t.latitudeCoord, t.longitudeCoord, t.radius, t.flatPrice, t.phoneNumber," +
+                "t.address, AVG(r.rating) AS avgRating " +
+                "FROM trainers t \n" +
+                "JOIN ratings r ON t._id = r.trainerID"
+                ,null);
+
+        List<Trainer> tempTrainers =  new ArrayList<>(); // List for the trainers
+        Trainer trainer = null;
+        int count = 0;
+
+        if(cursor.moveToFirst()){
+            do {
+                String trainerId = cursor.getString(cursor.getColumnIndex("_id"));
+                String firstName = cursor.getString(cursor.getColumnIndex("firstName"));
+                String lastName = cursor.getString(cursor.getColumnIndex("lastName"));
+                String email = cursor.getString(cursor.getColumnIndex("email"));
+                Double latitudeCoord = cursor.getDouble(cursor.getColumnIndex("latitudeCoord"));
+                Double longitudeCoord = cursor.getDouble(cursor.getColumnIndex("longitudeCoord"));
+                Integer radius = cursor.getInt(cursor.getColumnIndex("radius"));
+                Double flatPrice = cursor.getDouble(cursor.getColumnIndex("flatPrice"));
+                String phoneNumber = cursor.getString(cursor.getColumnIndex("phoneNumber"));
+                String address = cursor.getString(cursor.getColumnIndex("address"));
+                Double rating = cursor.getDouble(cursor.getColumnIndex("avgRating"));
+
+                trainer = new Trainer(trainerId, firstName, lastName, email,
+                        latitudeCoord, longitudeCoord, radius, flatPrice,
+                        phoneNumber, address, rating);
+
+                tempTrainers.add(trainer);
+                count++;
+
+            } while(cursor.moveToNext());
+        }
+
+        Log.d("Andrea", "Trainers from SQLLite " + count);
+
+        db.close();
+        return tempTrainers;
     }
 
 }

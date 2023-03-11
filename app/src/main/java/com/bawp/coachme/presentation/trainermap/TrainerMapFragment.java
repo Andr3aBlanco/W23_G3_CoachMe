@@ -43,8 +43,8 @@ public class TrainerMapFragment extends Fragment {
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
 
     private GoogleMap googleMap;
-    private List<User> theFilteredTrainers;
-    private HashMap<String, User> trainersMapFiltered = new HashMap<>();
+    private List<Trainer> theFilteredTrainers;
+    private HashMap<String, Trainer> trainersMapFiltered = new HashMap<>();
 
     private MapView mapView;
 
@@ -53,7 +53,7 @@ public class TrainerMapFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-          trainersMapFiltered = (HashMap<String, User>) getArguments().getSerializable("FILTERED_TRAINERS");
+          trainersMapFiltered = (HashMap<String, Trainer>) getArguments().getSerializable("FILTERED_TRAINERS");
         }
     }
 
@@ -92,7 +92,7 @@ public class TrainerMapFragment extends Fragment {
 
                         //Parameters for the object creation
                         String trainerID =marker.getSnippet();
-                        User userToPass = trainersMapFiltered.get(trainerID);
+                        Trainer userToPass = trainersMapFiltered.get(trainerID);
 
                         //Bundle
                         Bundle bundle = new Bundle();
@@ -141,11 +141,11 @@ public class TrainerMapFragment extends Fragment {
     }
 
     //ADDITIONAL METHODS
-    private void addMarkersForTrainers(HashMap<String, User> trainers) {
+    private void addMarkersForTrainers(HashMap<String, Trainer> trainers) {
 
-        for (Map.Entry<String, User> trainer : trainers.entrySet()) { //ok
+        for (Map.Entry<String, Trainer> trainer : trainers.entrySet()) { //ok
             String key = trainer.getKey();
-            User theTrainer = trainer.getValue();
+            Trainer theTrainer = trainer.getValue();
 
             LatLng position = new LatLng(theTrainer.getLatitudeCoord(), theTrainer.getLongitudeCoord());
             MarkerOptions markerOptions = new MarkerOptions()
@@ -172,8 +172,8 @@ public class TrainerMapFragment extends Fragment {
     }
 
     //Method to get the clicked trainer
-    private User getClickedTrainer(Marker marker) {
-        for (User trainer : theFilteredTrainers) {
+    private Trainer getClickedTrainer(Marker marker) {
+        for (Trainer trainer : theFilteredTrainers) {
             if (trainer.getFirstName().equals(marker.getTitle())) {
                 return trainer;
             }

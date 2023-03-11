@@ -3,6 +3,8 @@ package com.bawp.coachme;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,11 +14,14 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.bawp.coachme.databinding.ActivityMainBinding;
 import com.bawp.coachme.presentation.order.OrdersFragment;
+import com.bawp.coachme.presentation.trainermap.TrainerListFragment;
+import com.bawp.coachme.presentation.trainermap.TrainerSearchFragment;
 import com.bawp.coachme.utils.DBHelper;
 import com.bawp.coachme.utils.UserSingleton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -30,11 +35,23 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
+    FloatingActionButton plusButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Button +
+        plusButton = findViewById(R.id.floatingAdd);
+
+        plusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Andrea", "click on +");
+                replaceFragment(new TrainerSearchFragment());
+            }
+        });
 
         //After loging, we have set the User Id
         UserSingleton.getInstance().setUserId("-NOjpL1jiGcc80qBrFIl");
@@ -63,12 +80,14 @@ public class MainActivity extends AppCompatActivity {
                         StorageReference csvFileWST = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_SELF_WORKOUT_SESSION_TYPES_TABLE);
                         StorageReference csvFileEx = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_SELF_PLAN_EXERCISES_TABLE);
                         StorageReference csvFileTrainer = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_TRAINER_TABLE);
+                        StorageReference csvFileRatings = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_RATINGS_TABLE);
 
                         List<Task<byte[]>> downloadTasks = new ArrayList<>();
                         downloadTasks.add(csvFileWp.getBytes(Long.MAX_VALUE));
                         downloadTasks.add(csvFileWST.getBytes(Long.MAX_VALUE));
                         downloadTasks.add(csvFileEx.getBytes(Long.MAX_VALUE));
                         downloadTasks.add(csvFileTrainer.getBytes(Long.MAX_VALUE));
+                        downloadTasks.add(csvFileRatings.getBytes(Long.MAX_VALUE));
 
                         // Wait for all Tasks to complete
                         Task<List<byte[]>> allTasks = Tasks.whenAllSuccess(downloadTasks);
@@ -80,11 +99,14 @@ public class MainActivity extends AppCompatActivity {
                                 byte[] csvFileWSTByte = task.getResult().get(1);
                                 byte[] csvFileExByte = task.getResult().get(2);
                                 byte[] csvFileTrainerByte = task.getResult().get(3);
+                                byte[] csvFileRatingsByte = task.getResult().get(4);
                                 dbHelper.uploadSelfWorkoutPlans(csvFileWpByte);
                                 dbHelper.uploadSelfWorkoutSessionTypes(csvFileWSTByte);
                                 dbHelper.uploadSelfWorkoutPlanExercises(csvFileExByte);
                                 dbHelper.uploadTrainers(csvFileTrainerByte);
 
+                                // do there the trainers
+                                dbHelper.uploadRatings(csvFileRatingsByte);
                                 //some dump data
                                 dbHelper.uploadSampleAppointment();
                                 dbHelper.uploadSampleWorkoutPlanByUser();
@@ -120,12 +142,12 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case R.id.menu_profile:
-                    replaceFragment(new ProfileFragment());
+                    replaceFragment(new TrainerSearchFragment());
 
                     break;
 
                 case R.id.menu_stats:
-                    replaceFragment(new StatsFragment());
+                    replaceFragment(new TrainerListFragment());
 
                     break;
 
