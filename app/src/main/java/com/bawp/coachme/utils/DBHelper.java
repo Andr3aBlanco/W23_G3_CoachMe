@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -379,6 +381,55 @@ public class DBHelper extends SQLiteOpenHelper {
                 Long paymentDate = cursor.getLong(cursor.getColumnIndex("paymentDate"));
 
                 Appointment appointment = new Appointment(id,bookedDate,registeredDate,serviceType,status,
+                        totalPrice,location,trainerId,UserSingleton.getInstance().getUserId());
+
+                if (paymentId == null){
+                    appointment.setPaymentId(null);
+                }else{
+                    appointment.setPaymentId(paymentId);
+                }
+
+                if (paymentDate == null){
+                    appointment.setPaymentDate(0);
+                }else{
+                    appointment.setPaymentDate(paymentDate);
+                }
+
+                appointmentsList.add(appointment);
+
+            }while(cursor.moveToNext());
+        }
+        db.close();
+        return appointmentsList;
+
+    }
+
+    @SuppressLint("Range")
+    public List<Appointment> getAppointmentsByStatusList(int[] status){
+        SQLiteDatabase db = getReadableDatabase();
+        String whereClause = "status IN (" + TextUtils.join(",", Collections.nCopies(status.length, "?")) + ")";
+        String[] whereArgs = new String[status.length];
+        for (int i = 0; i < status.length; i++) {
+            whereArgs[i] = String.valueOf(status[i]);
+        }
+        Cursor cursor = db.query("appointments", null, whereClause, whereArgs, null, null, null);
+
+        List<Appointment> appointmentsList = new ArrayList<>();
+
+        if (cursor.moveToFirst()){
+            do{
+                String id = cursor.getString(cursor.getColumnIndex("_id"));
+                Long bookedDate = cursor.getLong(cursor.getColumnIndex("bookedDate"));
+                Long registeredDate = cursor.getLong(cursor.getColumnIndex("registeredDate"));
+                int statusValue = cursor.getInt(cursor.getColumnIndex("status"));
+                String serviceType = cursor.getString(cursor.getColumnIndex("serviceType"));
+                Double totalPrice = cursor.getDouble(cursor.getColumnIndex("totalPrice"));
+                String location = cursor.getString(cursor.getColumnIndex("location"));
+                String trainerId = cursor.getString(cursor.getColumnIndex("trainerId"));
+                String paymentId = cursor.getString(cursor.getColumnIndex("paymentId"));
+                Long paymentDate = cursor.getLong(cursor.getColumnIndex("paymentDate"));
+
+                Appointment appointment = new Appointment(id,bookedDate,registeredDate,serviceType,statusValue,
                         totalPrice,location,trainerId,UserSingleton.getInstance().getUserId());
 
                 if (paymentId == null){
