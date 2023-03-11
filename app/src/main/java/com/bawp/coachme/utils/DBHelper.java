@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -131,14 +132,28 @@ public class DBHelper extends SQLiteOpenHelper {
             ")";
 
 
+    private static final String CREATE_TRAINER_SERVICE_TABLE = "CREATE TABLE trainer_service("+
+            "_id int PRIMARY KEY AUTOINCREMENT,"+
+            "trainerID TEXT, " +
+            "service TEXT, " +
+            "FOREIGN KEY(trainerID) REFERENCES trainers(_id)" +
+            ")";
 
-
+    private static final String CREATE_TRAINER_OPEN_SCHEDULE_TABLE = "CREATE TABLE schedule( " +
+            "_id INT PRIMARY KEY AUTOINCREMENT, " +
+            "time INT, " +
+            "trainerID TEXT, " +
+            "FOREIGN KEY(trainerID) REFERENCES trainers(_id) " +
+            ")";
     public static final String URL_FIRESTORE_SELF_WORKOUT_PLANS_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutPlans.csv";
     public static final String URL_FIRESTORE_SELF_WORKOUT_SESSION_TYPES_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutSessionTypes.csv";
     public static final String URL_FIRESTORE_SELF_PLAN_EXERCISES_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutPlanExercises.csv";
     public static final String URL_FIRESTORE_TRAINER_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/trainers.csv";
 
     public static  final String URL_FIRESTORE_RATINGS_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/ratings.csv";
+
+    public static final String URL_FIRESTORE_TRAINER_SERVICE_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/trainerService.csv";
+    public static final String URL_FIRESTORE_TRAINER_OPEN_SCHEDULE_TABLE="gs://w23-g3-coachme.appspot.com/sqlite_datasets/schedule.csv";
     public DBHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -170,6 +185,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_APPOINTMENTS_TABLE);
         db.execSQL(CREATE_TRAINERS_TABLE);
         db.execSQL(CREATE_RATINGS_TABLE);
+        db.execSQL(CREATE_TRAINER_SERVICE_TABLE);
+        db.execSQL(CREATE_TRAINER_OPEN_SCHEDULE_TABLE);
         databaseJustCreated=true;
         //uploadSelfWorkoutPlans();
 
@@ -186,6 +203,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS appointments");
         db.execSQL("DROP TABLE IF EXISTS trainers");
         db.execSQL("DROP TABLE IF EXISTS ratings");
+        db.execSQL("DROP TABLE IF EXISTS trainer_service");
+        db.execSQL("DROP TABLE IF EXISTS schedule");
         onCreate(db);
     }
 
@@ -363,6 +382,67 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
+
+    public void uploadTrainerService(byte[] bytes){
+
+        String content = null; // Convert byte array to string
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            content = new String(bytes, "UTF-8");
+            CSVReader reader = new CSVReader(new StringReader(content));
+            String[] nextLine;
+            while ((nextLine = reader.readNext()) != null) {
+
+                ContentValues trainerServContents = new ContentValues();
+                trainerServContents.put("_id",nextLine[0]);
+                trainerServContents.put("trainerID",nextLine[1]);
+                trainerServContents.put("service",nextLine[2]);
+                db.insert("ratings", null, trainerServContents);
+
+            }
+
+            db.close();
+
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        } catch (CsvValidationException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+
+    public void uploadTrainerSchedule(byte[] bytes){
+
+        String content = null; // Convert byte array to string
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            content = new String(bytes, "UTF-8");
+            CSVReader reader = new CSVReader(new StringReader(content));
+            String[] nextLine;
+            while ((nextLine = reader.readNext()) != null) {
+
+                ContentValues trainerScheduleContents = new ContentValues();
+                trainerScheduleContents.put("_id",nextLine[0]);
+                trainerScheduleContents.put("trainerID",nextLine[1]);
+                trainerScheduleContents.put("service",nextLine[2]);
+                db.insert("ratings", null, trainerScheduleContents);
+
+            }
+
+            db.close();
+
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        } catch (CsvValidationException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 
     public void uploadSampleAppointment(){
         SQLiteDatabase db = getWritableDatabase();
@@ -606,7 +686,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 "t.latitudeCoord, t.longitudeCoord, t.radius, t.flatPrice, t.phoneNumber," +
                 "t.address, AVG(r.rating) AS avgRating " +
                 "FROM trainers t \n" +
-                "JOIN ratings r ON t._id = r.trainerID"
+                "JOIN ratings r ON t._id = r.trainerID \n" +
+                "GROUP BY t._id, t.firstName, t.lastName, t.email, t.latitudeCoord, t.longitudeCoord, t.radius, t.flatPrice, t.phoneNumber, t.address  "
                 ,null);
 
         List<Trainer> tempTrainers =  new ArrayList<>(); // List for the trainers
@@ -641,6 +722,57 @@ public class DBHelper extends SQLiteOpenHelper {
 
         db.close();
         return tempTrainers;
+    }
+
+
+    @SuppressLint("Range")
+    public List<Trainer> getTrainersByServicesAndDate(List<String> services, int dateFrom, int dateTo) {
+        SQLiteDatabase db = getReadableDatabase();
+
+        String selectQuery = "SELECT trainers._id, trainers.firstName, trainers.lastName, trainers.email, " +
+                "trainers.latitudeCoord, trainers.longitudeCoord, trainers.radius, trainers.flatPrice, trainers.phoneNumber," +
+                "trainers.address, AVG(ratings.rating) AS avgRating " +
+                " FROM trainers " +
+                "JOIN ratings ON trainers._id = ratings.trainerID " +
+                "JOIN trainer_service ON trainers._id = trainer_service.trainerID " +
+                "JOIN schedule ON trainers._id = schedule.trainerID " +
+                "WHERE schedule.time BETWEEN dateFrom AND dateTo ";
+
+
+        // Add service filtering if services list is not empty
+        if (!services.isEmpty()) {
+            String serviceList = TextUtils.join(",", services);
+            selectQuery += "AND trainer_service.service IN (" + serviceList + ") ";
+        }
+
+        selectQuery += "GROUP BY trainers._id, trainers.firstName, trainers.lastName, trainers.email,  " +
+                " trainers.latitudeCoord, trainers.longitudeCoord, trainers.radius, trainers.flatPrice, trainers.phoneNumber, " +
+                "trainers.address";
+
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(dateFrom), String.valueOf(dateTo)});
+
+        List<Trainer> trainers = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            do {
+                Trainer trainer = new Trainer();
+                trainer.setId(cursor.getString(cursor.getColumnIndex("_id")));
+                trainer.setFirstName(cursor.getString(cursor.getColumnIndex("firstName")));
+                trainer.setLastName(cursor.getString(cursor.getColumnIndex("lastName")));
+                trainer.setEmail(cursor.getString(cursor.getColumnIndex("email")));
+                trainer.setLatitudeCoord(cursor.getFloat(cursor.getColumnIndex("latitudeCoord")));
+                trainer.setLongitudeCoord(cursor.getFloat(cursor.getColumnIndex("longitudeCoord")));
+                trainer.setRadius(cursor.getInt(cursor.getColumnIndex("radius")));
+                trainer.setFlatPrice(cursor.getFloat(cursor.getColumnIndex("flatPrice")));
+                trainer.setPhoneNumber(cursor.getString(cursor.getColumnIndex("phoneNumber")));
+                trainer.setAddress(cursor.getString(cursor.getColumnIndex("address")));
+                trainer.setRating(cursor.getDouble(cursor.getColumnIndex("avgRating")));
+
+                trainers.add(trainer);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        return trainers;
     }
 
 }
