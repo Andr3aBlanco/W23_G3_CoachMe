@@ -1,5 +1,6 @@
 package com.bawp.coachme.presentation.trainermap;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +53,8 @@ public class TrainerListFragment extends Fragment {
 
      // List of trainers
     private static List<Trainer> trainerList = new ArrayList<>(); // This is unsorted
+    private static HashMap<String, Trainer> unsortTrainers = new HashMap<>();
+    private int sortOption = 1;
 
     public TrainerListFragment() {
         // Required empty public constructor
@@ -68,7 +72,13 @@ public class TrainerListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-//            trainersMapFiltered = (HashMap<String, Trainer>) getArguments().getSerializable("FILTERED_TRAINERS");
+            unsortTrainers = (HashMap<String, Trainer>) getArguments().getSerializable("FILTERED_TRAINERS");
+            sortOption = getArguments().getInt("SORTING_OPTION");
+
+            for(Trainer trainer: unsortTrainers.values()){
+                trainerList.add(trainer);
+            }
+
         }
         // Create an instance of your database helper class
         dbHelper = new DBHelper(getContext());
@@ -83,12 +93,12 @@ public class TrainerListFragment extends Fragment {
         recyclerView = view.findViewById(R.id.trainer_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        trainerList = dbHelper.getTrainers();
+//        trainerList = dbHelper.getTrainers(); // chnage this to pass the  parameters
         Log.d("Andrea", "Number of trainers: " + trainerList.size());
         // Here call the adapter
             Log.d("Andrea", "Inside the Trainer List"); // Loading ok
         //set the adapter
-        trainerListAdapter = new TrainerListFragment.TrainerViewAdapter(trainerList, trainerSearchFragment, 1 );
+        trainerListAdapter = new TrainerListFragment.TrainerViewAdapter(trainerList, trainerSearchFragment, sortOption );
         recyclerView.setAdapter(trainerListAdapter);
         return view;
     }
@@ -191,8 +201,23 @@ public class TrainerListFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull TrainerListFragment.TrainerViewHolder holder, int position) {
-           // Fomrater for the price
+        public void onBindViewHolder(@NonNull TrainerViewHolder holder, int position) {
+            // sorting the trainers
+            if(sortingOpt == 1){
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    trainerList.sort(Comparator.comparingDouble(Trainer::getRating));
+                }
+            } else if (sortingOpt == 2) {
+                    System.out.println("need to create method for the distance");
+            } else{
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    trainerList.sort(Comparator.comparingDouble(Trainer::getFlatPrice));
+                }
+            }
+
+
+            // Fomrater for the price
             Locale locate = new Locale("en", "CA");
             NumberFormat formatter = NumberFormat.getCurrencyInstance(locate);
            double rating = unsortedTrainers.get(position).getRating();
@@ -234,10 +259,8 @@ public class TrainerListFragment extends Fragment {
 
             // Set the things in the layout with the holder
             holder.closeCard.setVisibility(View.INVISIBLE);
-
             holder.tvName.setText(unsortedTrainers.get(position).getFirstName() + " " + unsortedTrainers.get(position).getLastName()); //Only one for testing
             holder.tvPrice.setText(formatter.format(unsortedTrainers.get(position).getFlatPrice()));
-
             holder.tvRating.setText(String.format("%.2f", unsortedTrainers.get(position).getRating())); //Ok
 
             //Here goes all the logic

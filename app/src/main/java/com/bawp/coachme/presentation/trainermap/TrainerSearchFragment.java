@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -21,6 +22,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
@@ -102,7 +104,9 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
     private double latitude;
     private double longitude;
 
-
+    //
+    int sortingOption = 1;
+    String selectedValue = "";
     //
     DBHelper dbHelper;
 
@@ -249,7 +253,37 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                 //At the beginning replace for TrainerMapFragment
                 replaceFragment(childMapFragment);
 
+        // Listener for the spinner
 
+        spinSort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                selectedValue = parent.getItemAtPosition(position).toString();
+
+                switch (selectedValue){
+                    case "Rating":
+                        sortingOption = 2;
+                        break;
+
+                    case "Distance":
+                        sortingOption = 3;
+                        break;
+
+                    case "Price":
+                        sortingOption = 1;
+                        break;
+                    default:
+                        sortingOption = 1;
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                sortingOption = 1;
+            }
+        });
 
         rgMapList.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -261,6 +295,8 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                         TrainerMapFragment childMapFragment = new TrainerMapFragment();
                         Bundle args = new Bundle();
                         args.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
+
+                        //sort before pass
                         childMapFragment.setArguments(args);
 
                         //At the beginning replace for TrainerMapFragment
@@ -273,6 +309,7 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                         TrainerListFragment childMapFragment2 = new TrainerListFragment();
                         Bundle args2 = new Bundle();
                         args2.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
+                        args2.putInt("SORTING_OPTION", sortingOption);
                         childMapFragment2.setArguments(args2);
 
                         //At the beginning replace for TrainerMapFragment
@@ -358,6 +395,22 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
     public void onProviderDisabled(@NonNull String provider) {
         LocationListener.super.onProviderDisabled(provider);
     }
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        switch (status) {
+            case LocationProvider.OUT_OF_SERVICE:
+                System.out.println("OUT OF SERVICE ");
+                break;
+            case LocationProvider.TEMPORARILY_UNAVAILABLE:
+                System.out.println("UNAVAILABLE ");
+                break;
+            case LocationProvider.AVAILABLE:
+                System.out.println("AVAILABLE ");
+                break;
+        }
+    }
+
+
 
 
     //Method for creating the date picker dialog
