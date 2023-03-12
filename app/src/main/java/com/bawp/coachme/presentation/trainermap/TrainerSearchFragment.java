@@ -277,6 +277,29 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                         sortingOption = 1;
                         break;
                 }
+
+                // If in list View generate the new view of the List parring the option
+                // Get the selected raadio button  --> create new fragment with the new filtering options
+                int selectedRb = rgMapList.getCheckedRadioButtonId();
+
+                switch(selectedRb){
+                    case R.id.rbListView:
+                        //Pass the data to MapSearchFragment
+                        TrainerListFragment childMapFragment2 = new TrainerListFragment();
+                        Bundle args2 = new Bundle();
+                        args2.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
+                        args2.putInt("SORTING_OPTION", sortingOption);
+                        childMapFragment2.setArguments(args2);
+
+                        //At the beginning replace for TrainerMapFragment
+                        replaceFragment(childMapFragment2);
+
+                        break;
+
+                    case R.id.rbMapView:
+                        //Do nothing
+                        break;
+                }
             }
 
             @Override
@@ -304,7 +327,6 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                         break;
                     case R.id.rbListView:
 
-
                         //Pass the data to MapSearchFragment
                         TrainerListFragment childMapFragment2 = new TrainerListFragment();
                         Bundle args2 = new Bundle();
@@ -328,6 +350,9 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
             @Override
             public void onClick(View v) {
 
+                // Reset the filtered list
+                filteredTrainersHM = new HashMap<>();
+
                 if (crossfit.isChecked()) {
                     selectedServices.add("Crossfit");
                     Log.d("Andrea", "Checkbox selected");
@@ -348,7 +373,7 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                 Log.d("Andrea", "Inside click search  this is the end time " + endDate + "initial date: " + initialDate);
 
                 // On search - dates and services migh change or not
-                filteredTrainersList = dbHelper.getTrainersByServicesAndDate(selectedServices, initialDate, endDate);
+                filteredTrainersList = dbHelper.getTrainersByServicesAndDate(selectedServices, initialDate, endDate); // Filter ok
 
                 // create the hashmap -> pass to map
                 for(Trainer trainer : filteredTrainersList){
@@ -356,6 +381,39 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                     filteredTrainersHM.put(trainer.getId(), trainer);
                 }
 
+
+                // Get the selected raadio button  --> create new fragment with the new filtering options
+                int selectedRb = rgMapList.getCheckedRadioButtonId();
+
+               switch(selectedRb){
+                   case R.id.rbListView:
+                       //Pass the data to MapSearchFragment
+                       TrainerListFragment childMapFragment2 = new TrainerListFragment();
+                       Bundle args2 = new Bundle();
+                       args2.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
+                       args2.putInt("SORTING_OPTION", sortingOption);
+                       childMapFragment2.setArguments(args2);
+
+                       //At the beginning replace for TrainerMapFragment
+                       replaceFragment(childMapFragment2);
+
+                       break;
+
+                   case R.id.rbMapView:
+
+                       TrainerMapFragment childMapFragment = new TrainerMapFragment();
+                       Bundle args = new Bundle();
+                       args.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
+
+                       //sort before pass
+                       childMapFragment.setArguments(args);
+
+                       //At the beginning replace for TrainerMapFragment
+                       replaceFragment(childMapFragment);
+
+
+                       break;
+               }
             }
         });
 

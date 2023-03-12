@@ -206,13 +206,13 @@ public class TrainerListFragment extends Fragment {
             if(sortingOpt == 1){
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    trainerList.sort(Comparator.comparingDouble(Trainer::getRating));
+                    unsortedTrainers.sort(Comparator.comparingDouble(Trainer::getRating));
                 }
             } else if (sortingOpt == 2) {
                     System.out.println("need to create method for the distance");
             } else{
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    trainerList.sort(Comparator.comparingDouble(Trainer::getFlatPrice));
+                    unsortedTrainers.sort(Comparator.comparingDouble(Trainer::getFlatPrice));
                 }
             }
 
@@ -220,7 +220,7 @@ public class TrainerListFragment extends Fragment {
             // Fomrater for the price
             Locale locate = new Locale("en", "CA");
             NumberFormat formatter = NumberFormat.getCurrencyInstance(locate);
-           double rating = unsortedTrainers.get(position).getRating();
+            double rating = unsortedTrainers.get(position).getRating();
             availApp =   dbHelper.getTimesByTrainerID(unsortedTrainers.get(position).getId());
 
 
