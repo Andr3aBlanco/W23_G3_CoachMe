@@ -24,6 +24,7 @@
     <string name="btnReset">Reset</string>
     <string name="txtBacktoLogIn">Back to Sign In</string>
     <string name="txtGetCurrentLoc">Get Current Location</string>
+    <string name="txtForgetPass">Forgot Password?</string>
 
 
 </resources>

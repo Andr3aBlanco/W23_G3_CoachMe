@@ -40,7 +40,7 @@ alreadyHaveAccount=findViewById(R.id.txtGoToLogin);
 
         alreadyHaveAccount.setOnClickListener((View view)->{
 
-            Intent regIntent=new Intent(RegisterActivity.this, LoginActivity.class);
+            Intent regIntent=new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(regIntent);
         });
 

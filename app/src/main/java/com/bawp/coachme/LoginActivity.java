@@ -109,8 +109,8 @@ public class LoginActivity extends AppCompatActivity {
                                 // Sign in success, update UI with the signed-in user's information
                                 Toast.makeText(LoginActivity.this, "Loged in",
                                         Toast.LENGTH_SHORT).show();
-                                 //starting new Activity when user id password is correct
-                                Intent intent = new Intent (getApplicationContext(), NewUserForm.class);
+                                 //starting new Activity when user id password is correct send them to main activity
+                                Intent intent = new Intent (getApplicationContext(), MainActivity.class);
                                 startActivity (intent);
                                 finish();
                             } else {

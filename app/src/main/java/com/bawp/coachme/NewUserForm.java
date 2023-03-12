@@ -47,6 +47,30 @@ Button confirmDataBtn;
 
 Button btn;
     DatabaseReference databaseRef ;
+
+    public void onStart() {
+        super.onStart();
+        databaseRef =FirebaseDatabase.getInstance().getReference().child("users").child(current_User);
+        databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+//                    //user exists
+//
+//                    //here i have to change to main activity when i create one
+//                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+//                    startActivity(intent);
+//                    Toast.makeText(NewUserForm.this, "Welcome Back ", Toast.LENGTH_SHORT).show();
+//                    finish();
+                }
+            };
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+       });}
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,21 +89,21 @@ Button btn;
         addressTxt =findViewById(R.id.txtAddress);
         phoneNumberTxt =findViewById(R.id.txtPhoneNumber);
 
-btn=findViewById(R.id.btngotosn);
+//        btn=findViewById(R.id.btngotosn);
 
 
         addressTxt.setAdapter(new PlaceAutoSuggestionAdapter(NewUserForm.this, android.R.layout.simple_list_item_1));
-btn.setOnClickListener((View view)->{
-
-//    Intent intent = new Intent (NewUserForm.this, LoginActivity.class);
-//    startActivity (intent);
-//    finish();
-    //SignOut from FireBase **this function i have to add where we select logout account
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity (intent);
-                finish();
-});
+//        btn.setOnClickListener((View view)->{
+//
+////    Intent intent = new Intent (NewUserForm.this, LoginActivity.class);
+////    startActivity (intent);
+////    finish();
+//    //SignOut from FireBase **this function i have to add where we select logout account
+//                FirebaseAuth.getInstance().signOut();
+//                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+//                startActivity (intent);
+//                finish();
+//});
         //if user is not logged in we will open login activity
         if (user == null) {
             Intent intent = new Intent (getApplicationContext(), LoginActivity.class);
@@ -95,59 +119,48 @@ btn.setOnClickListener((View view)->{
             phoneNumberTxt.setText(phonenum);
 
         }
-        confirmDataBtn.setOnClickListener((View v) ->{
-                String Fname, Lname, address, phoneNumber;
+        //whem exsiting user gets log in it will redirect them to main activity
 
-                //creating role as a customer ID=1 and role customer
-                Role newRole = new Role(1, "Customer");
-                Fname = String.valueOf(firstNameTxt.getText());
-                Lname = String.valueOf(lastNameTxt.getText());
-                phoneNumber = String.valueOf(phoneNumberTxt.getText());
-                address = String.valueOf(addressTxt.getText());
-                User newUser = new User(Fname, Lname, emailTxt, address, phoneNumber, newRole);
-               databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    confirmDataBtn.setOnClickListener((View v) ->{
+                        String Fname, Lname, address, phoneNumber;
 
-//                   ******//need to change when login  by fb should takes to home page
-                   @Override
-                   public void onDataChange(@NonNull DataSnapshot snapshot) {
-                       if(snapshot.exists()){
-                           //user exists
-                           Toast.makeText(NewUserForm.this, "Welcome Back ", Toast.LENGTH_SHORT).show();
-                           //here i have to change to main activity when i create one
-                           Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
-                           startActivity(intent);
-                           finish();
-                       }else{
-                           //user does not exists
-                           databaseRef.setValue(newUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-                               @Override
-                               public void onComplete(@NonNull Task<Void> task) {
-                                   if (task.isSuccessful()) {
-                                       Toast.makeText(NewUserForm.this, "Welcome to CoachMe ", Toast.LENGTH_SHORT).show();
-                                       Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                       startActivity(intent);
-                                       finish();
-
-                                   } else {
-                                       Toast.makeText(NewUserForm.this, "unable to add user details ", Toast.LENGTH_SHORT).show();
-                                   }
-                               }
-                           });
+                        //creating role as a customer ID=1 and role customer
+                        Role newRole = new Role(1, "Customer");
+                        Fname = String.valueOf(firstNameTxt.getText());
+                        Lname = String.valueOf(lastNameTxt.getText());
+                        phoneNumber = String.valueOf(phoneNumberTxt.getText());
+                        address = String.valueOf(addressTxt.getText());
+                        User newUser = new User(Fname, Lname, emailTxt, address, phoneNumber, newRole);
 
 
-                           //SignOut from FireBase **this function i have to add where we select logout account
+                    //user does not exists
+                    databaseRef.setValue(newUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(NewUserForm.this, "Welcome to CoachMe ", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                startActivity(intent);
+                                finish();
+
+                            } else {
+                                Toast.makeText(NewUserForm.this, "unable to add user details ", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                   });
+
+
+                    //SignOut from FireBase **this function i have to add where we select logout account
 //                FirebaseAuth.getInstance().signOut();
 //                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
 //                startActivity (intent);
 //                finish();
-                       }
-                   }
 
-                   @Override
-                   public void onCancelled(@NonNull DatabaseError error) {
 
-                   }
-               });
-            });
+
+
+
+
     }
 }
