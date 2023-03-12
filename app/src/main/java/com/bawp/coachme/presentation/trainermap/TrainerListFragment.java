@@ -1,5 +1,6 @@
 package com.bawp.coachme.presentation.trainermap;
 
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -56,6 +57,8 @@ public class TrainerListFragment extends Fragment {
     private static HashMap<String, Trainer> unsortTrainers = new HashMap<>();
     private int sortOption = 1;
 
+    private double currentLatitude = 0;
+    private double currentLongitude = 0;
     public TrainerListFragment() {
         // Required empty public constructor
     }
@@ -74,6 +77,8 @@ public class TrainerListFragment extends Fragment {
         if (getArguments() != null) {
             unsortTrainers = (HashMap<String, Trainer>) getArguments().getSerializable("FILTERED_TRAINERS");
             sortOption = getArguments().getInt("SORTING_OPTION");
+            currentLatitude = getArguments().getDouble("LATITUDE");
+            currentLongitude = getArguments().getDouble("LONGITUDE");
 
             for(Trainer trainer: unsortTrainers.values()){
                 trainerList.add(trainer);
@@ -98,7 +103,7 @@ public class TrainerListFragment extends Fragment {
         // Here call the adapter
             Log.d("Andrea", "Inside the Trainer List"); // Loading ok
         //set the adapter
-        trainerListAdapter = new TrainerListFragment.TrainerViewAdapter(trainerList, trainerSearchFragment, sortOption );
+        trainerListAdapter = new TrainerListFragment.TrainerViewAdapter(trainerList, trainerSearchFragment, sortOption, currentLatitude, currentLongitude );
         recyclerView.setAdapter(trainerListAdapter);
         return view;
     }
@@ -153,6 +158,8 @@ public class TrainerListFragment extends Fragment {
         private TrainerSearchFragment parentFragment;
         private int sortingOpt = 0;
         int cardStatus = 0;
+        double yourLatitude = 0;
+        double yourLongitude = 0;
         private DBHelper dbHelper;
 
         /* For saving into database -> appointment
@@ -186,11 +193,13 @@ public class TrainerListFragment extends Fragment {
         * */
 
         // Constructor OK
-        public TrainerViewAdapter(List<Trainer> unsortedTrainers, TrainerSearchFragment parentFragment,  int sortingOpt) {
+        public TrainerViewAdapter(List<Trainer> unsortedTrainers, TrainerSearchFragment parentFragment,  int sortingOpt, double yourLatitude, double yourLongitude) {
             this.unsortedTrainers = unsortedTrainers;
             this.sortingOpt = sortingOpt;
             this.parentFragment = parentFragment; //This is calling the parent - container for both map and tlist
             this.dbHelper = new DBHelper(getContext());
+            this.yourLatitude = yourLatitude;
+            this.yourLongitude = yourLongitude;
         }
 
         @NonNull
@@ -210,6 +219,13 @@ public class TrainerListFragment extends Fragment {
                 }
             } else if (sortingOpt == 2) {
                     System.out.println("need to create method for the distance");
+
+                TrainerDistanceSorter sorter = new TrainerDistanceSorter();
+                unsortedTrainers = sorter.sortByDistance(unsortedTrainers, yourLatitude, yourLongitude);
+
+
+
+
             } else{
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     unsortedTrainers.sort(Comparator.comparingDouble(Trainer::getFlatPrice));
@@ -411,5 +427,37 @@ public class TrainerListFragment extends Fragment {
         public int getItemCount() {
             return unsortedTrainers.size();
         }
+
+
     }
+
+    /// To sort the trainers based on distance
+    public class TrainerDistanceSorter {
+
+        private static final int EARTH_RADIUS_KM = 6371;
+
+        public List<Trainer> sortByDistance(List<Trainer> trainers, double userLatitude, double userLongitude) {
+            Collections.sort(trainers, new Comparator<Trainer>() {
+                @Override
+                public int compare(Trainer t1, Trainer t2) {
+                    double distanceToT1 = calculateDistance(userLatitude, userLongitude, t1.getLatitudeCoord(), t1.getLongitudeCoord());
+                    double distanceToT2 = calculateDistance(userLatitude, userLongitude, t2.getLatitudeCoord(), t2.getLongitudeCoord());
+                    return Double.compare(distanceToT1, distanceToT2);
+                }
+            });
+            return trainers;
+        }
+
+        private double calculateDistance(double userLat, double userLng, double trainerLat, double trainerLng) {
+            double dLat = Math.toRadians(trainerLat - userLat);
+            double dLng = Math.toRadians(trainerLng - userLng);
+            double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                    + Math.cos(Math.toRadians(userLat))
+                    * Math.cos(Math.toRadians(trainerLat))
+                    * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+            double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return EARTH_RADIUS_KM * c;
+        }
+    }
+
 }

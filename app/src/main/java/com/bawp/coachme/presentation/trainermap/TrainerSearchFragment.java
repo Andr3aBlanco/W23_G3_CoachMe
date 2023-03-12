@@ -289,6 +289,8 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                         Bundle args2 = new Bundle();
                         args2.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
                         args2.putInt("SORTING_OPTION", sortingOption);
+                        args2.putDouble("LATITUDE", latitude);
+                        args2.putDouble("LONGITUDE",longitude);
                         childMapFragment2.setArguments(args2);
 
                         //At the beginning replace for TrainerMapFragment
