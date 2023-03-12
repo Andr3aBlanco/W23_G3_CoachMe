@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                         StorageReference csvFileEx = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_SELF_PLAN_EXERCISES_TABLE);
                         StorageReference csvFileTrainer = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_TRAINER_TABLE);
                         StorageReference csvFileRatings = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_RATINGS_TABLE);
-                        StorageReference csvFileTrainerSevice = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_TRAINER_SERVICE_TABLE);
+                        StorageReference csvFileTrainerService = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_TRAINERSERVICE_TABLE);
                         StorageReference csvFileSchedule = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_TRAINER_OPEN_SCHEDULE_TABLE);
 
                         List<Task<byte[]>> downloadTasks = new ArrayList<>();
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                         downloadTasks.add(csvFileEx.getBytes(Long.MAX_VALUE));
                         downloadTasks.add(csvFileTrainer.getBytes(Long.MAX_VALUE));
                         downloadTasks.add(csvFileRatings.getBytes(Long.MAX_VALUE));
-                        downloadTasks.add(csvFileTrainerSevice.getBytes(Long.MAX_VALUE));
+                        downloadTasks.add(csvFileTrainerService.getBytes(Long.MAX_VALUE));
                         downloadTasks.add(csvFileSchedule.getBytes(Long.MAX_VALUE));
 
                         // Wait for all Tasks to complete

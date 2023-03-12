@@ -85,12 +85,15 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
     //Variables for the search in firebase
     long initialDate;
     long endDate;
+    List<String> selectedServices = new ArrayList<>();
 
     List<String> trainerIDs = new ArrayList<>();
 
     //Arrays to store filter results
-    private HashMap<String, Trainer> unfilteredTrainers = new HashMap<>();
-    private HashMap<String, Trainer> filteredTrainers = new HashMap<>();
+//    private HashMap<String, Trainer> unfilteredTrainers = new HashMap<>();
+
+    private List<Trainer> filteredTrainersList = new ArrayList<>();
+    private HashMap<String, Trainer> filteredTrainersHM = new HashMap<>();
 
 //    Fragment fragmentMapList = new TrainerMapFragment();
 
@@ -171,6 +174,17 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
         calendar.set(year + 1, month, dayOfMonth, 23, 59, 59);
         endDate = calendar.getTime().getTime();
 
+        // Get the first round of trainers with list empty and current day today + 1 year
+        filteredTrainersList = dbHelper.getTrainersByServicesAndDate(selectedServices, initialDate, endDate);
+
+        // create the hashmap -> pass to map
+        for(Trainer trainer : filteredTrainersList){
+
+            filteredTrainersHM.put(trainer.getId(), trainer);
+        }
+
+        System.out.println("Total trainers found " + filteredTrainersHM.size());
+
         //Cick Listener for the date
         dateTo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -194,40 +208,47 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
 
         // Request location updates
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
+
             ActivityCompat.requestPermissions(getActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                     MY_PERMISSIONS_REQUEST_LOCATION);
 
+        } else {
+
+            // Get the location manager and provider
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            }
+            provider = LocationManager.GPS_PROVIDER;
+
+            try {
+                locationManager.requestLocationUpdates(provider, 400, 1, this);
+
+                // Get the last known location
+                Location location = locationManager.getLastKnownLocation(provider);
+                if (location != null) {
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                    Log.d("TrainerSearch", "Latitude: " + latitude + ", Longitude: " + longitude); //My location ok :)
+                }
+            } catch(SecurityException e){
+                e.printStackTrace();
+            }
         }
-        locationManager.requestLocationUpdates(provider, 400, 1, this);
-
-        // Get the last known location
-        Location location = locationManager.getLastKnownLocation(provider);
-        if (location != null) {
-            latitude = location.getLatitude();
-            longitude = location.getLongitude();
-            Log.d("TrainerSearch", "Latitude: " + latitude + ", Longitude: " + longitude); //My location ok :)
-        }
 
 
-        //get trainers
-//        getTrainers(new GetTrainersCallback() {
-//            @Override
-//            public void onTrainersReceived(HashMap<String, Trainer> trainers) {
-//                Log.d("Andrea", "Trainers received in the TrainerSearchFragment");
-//
-//                //Pass the data to MapSearchFragment
-//                TrainerMapFragment childMapFragment = new TrainerMapFragment();
-//                Bundle args = new Bundle();
-//                args.putSerializable("FILTERED_TRAINERS", unfilteredTrainers);  //how to update this
-//                childMapFragment.setArguments(args);
-//
-//                //At the beginning replace for TrainerMapFragment
-//                replaceFragment(childMapFragment);
-//            }
-//        });
+
+        // In the first load -> map selected
+
+                //Pass the data to MapSearchFragment
+                TrainerMapFragment childMapFragment = new TrainerMapFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
+                childMapFragment.setArguments(args);
+
+                //At the beginning replace for TrainerMapFragment
+                replaceFragment(childMapFragment);
+
 
 
         rgMapList.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -239,7 +260,7 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                         //Pass the data to MapSearchFragment
                         TrainerMapFragment childMapFragment = new TrainerMapFragment();
                         Bundle args = new Bundle();
-                        args.putSerializable("FILTERED_TRAINERS", filteredTrainers);  //how to update this
+                        args.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
                         childMapFragment.setArguments(args);
 
                         //At the beginning replace for TrainerMapFragment
@@ -251,7 +272,7 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                         //Pass the data to MapSearchFragment
                         TrainerListFragment childMapFragment2 = new TrainerListFragment();
                         Bundle args2 = new Bundle();
-                        args2.putSerializable("FILTERED_TRAINERS", filteredTrainers);  //how to update this
+                        args2.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
                         childMapFragment2.setArguments(args2);
 
                         //At the beginning replace for TrainerMapFragment
@@ -266,105 +287,40 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
 
 
         //Listener for the search button
-//        search.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                ArrayList<String> selectedServices = new ArrayList<>();
-//
-//                if (crossfit.isChecked()) {
-//                    selectedServices.add("Crossfit");
-//                    Log.d("Andrea", "Checkbox selected");
-//                }
-//                if (yoga.isChecked()) {
-//                    selectedServices.add("Yoga");
-//                    Log.d("Andrea", "Checkbox selected");
-//                }
-//                if (pilates.isChecked()) {
-//                    selectedServices.add("Pilates");
-//                    Log.d("Andrea", "Checkbox selected");
-//                }
-//                if (martials.isChecked()) {
-//                    selectedServices.add("Martials");
-//                    Log.d("Andrea", "Checkbox selected");
-//                }
-//
-//
-//                Log.d("Andrea", "Inside click search  this is the end time " + endDate + "initial date: " + initialDate);
-//                availAppQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-//
-//                        //Iterating over the results from trainerShedule
-//                        for (DataSnapshot appointmentSnapshot : snapshot.getChildren()) {
-//                            String trainerId = appointmentSnapshot.child("trainerID").getValue(String.class);
-//                            if (!trainerIDs.contains(trainerId)) {
-//                                trainerIDs.add(trainerId); //
-//                                // Do i need the list of appointments here?  - pulling again in trainer details -- check again
-//
-//                                //Add available appointments info for each trainer
-//                                // change from list to HM
-//                            }
-//                        }
-//                        Log.d("Andrea", "Retrieved " + trainerIDs.size() + " trainers");
-//
-//                        //Create query for trainers with services
-//                        Query trainerQuery = trainerRef.orderByChild("servicesTypes");
-//                        //Listener for
-//                        trainerQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-//                            @Override
-//                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                                // Iterate through the results of the trainer query
-//                                for (DataSnapshot trainerSnapshot : snapshot.getChildren()) {
-//                                    // Check if the trainer has appointments within the desired date range
-//                                    if (trainerIDs.contains(trainerSnapshot.getKey())) {
-//                                        // Check if the trainer's "services" field contains at least one of the values in the "services" list
-//                                     List<String> trainerServices = trainerSnapshot.child("serviceTypes").getValue(new GenericTypeIndicator<List<String>>() {
-//                                        });
-//
-//                                        System.out.println("selectedServices " + selectedServices.size());
-//
-//                                        if (selectedServices.isEmpty()) {
-//                                            // Add all trainers to the filtered trainers list
-//                                            User trainer = trainerSnapshot.getValue(User.class);
-//                                            String key = trainerSnapshot.getKey();
-//                                            System.out.println("retrieving all trainers");
-//                                            System.out.println("Retrieved " + trainer.getFirstName());
-//                                            filteredTrainers.put(key, trainer);
-//                                        } else {
-//                                            for (String service : selectedServices) {
-//                                                if (trainerServices.contains(service)) {
-//                                                    // Add the trainer to the filtered trainers list
-//                                                    User trainer = trainerSnapshot.getValue(User.class);
-//                                                    String key = trainerSnapshot.getKey();
-//                                                    System.out.println("retrieving with checked box");
-//                                                    System.out.println("Retrieved " + trainer.getFirstName());
-//                                                    filteredTrainers.put(key, trainer);
-//                                                    break;
-//                                                }
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(@NonNull DatabaseError error) {
-//
-//                            }
-//                        });
-//
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError error) {
-//                        Log.d("FIREBASE", "Trainer Search - On Appointment By Time CANCELLED");
-//                    }
-//                });
-//
-//            }
-//        });
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (crossfit.isChecked()) {
+                    selectedServices.add("Crossfit");
+                    Log.d("Andrea", "Checkbox selected");
+                }
+                if (yoga.isChecked()) {
+                    selectedServices.add("Yoga");
+                    Log.d("Andrea", "Checkbox selected");
+                }
+                if (pilates.isChecked()) {
+                    selectedServices.add("Pilates");
+                    Log.d("Andrea", "Checkbox selected");
+                }
+                if (martials.isChecked()) {
+                    selectedServices.add("Martials");
+                    Log.d("Andrea", "Checkbox selected");
+                }
+
+                Log.d("Andrea", "Inside click search  this is the end time " + endDate + "initial date: " + initialDate);
+
+                // On search - dates and services migh change or not
+                filteredTrainersList = dbHelper.getTrainersByServicesAndDate(selectedServices, initialDate, endDate);
+
+                // create the hashmap -> pass to map
+                for(Trainer trainer : filteredTrainersList){
+
+                    filteredTrainersHM.put(trainer.getId(), trainer);
+                }
+
+            }
+        });
 
         return view;
     }
@@ -377,61 +333,6 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
         transaction.commit();
     }
 
-    /* METHOD FOR GETTING TRAINERS
-    * In the first run it loads all the trainers that have
-    * available slots */
-    private void getTrainers(List<String> serviceOpts, double dateFrom, double dateTo) {
-
-        List<Trainer> trainerList = new ArrayList<>();
-//        trainerList = dbHelper.getTrainers(); // Get from DB
-        HashMap<String, Trainer> tempTrainers = new HashMap<String, Trainer>();
-
-        if(serviceOpts.size() == 0){
-
-            trainerList = dbHelper.getTrainers();
-        } else{
-
-
-        }
-
-        // PUT in the HM
-        for(int i = 0; i < trainerList.size(); i++){
-            tempTrainers.put(trainerList.get(i).getId(), trainerList.get(i));
-        }
-
-        // To get available dates from Firebase
-        //Create the references
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference scheduleRef = FirebaseDatabase.getInstance().getReference().child("trainerSchedules");
-
-        //Query based on date
-        Query availAppQuery = scheduleRef
-                .orderByChild("time")
-                .startAt(dateFrom)
-                .endAt(dateTo);
-
-        availAppQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                //Iterating over the results from trainerSchedule
-                for (DataSnapshot appointmentSnapshot : snapshot.getChildren()) {
-                    String trainerId = appointmentSnapshot.child("trainerID").getValue(String.class);
-                    if (!tempTrainers.containsKey(trainerId)) {
-                       // Put in filtered trainers
-                        unfilteredTrainers.put(trainerId, tempTrainers.get(trainerId));
-                    }
-                }
-                Log.d("Andrea", "Retrieved " + trainerIDs.size() + " trainers");
-
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-
-    }
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
@@ -457,7 +358,6 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
     public void onProviderDisabled(@NonNull String provider) {
         LocationListener.super.onProviderDisabled(provider);
     }
-
 
 
     //Method for creating the date picker dialog

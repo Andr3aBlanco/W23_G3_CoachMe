@@ -20,6 +20,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -113,7 +114,7 @@ public class TrainerDetailsFragment extends Fragment {
         TextView tvRating = view.findViewById(R.id.tvTrainerRating);
 
         ImageButton seeMore = view.findViewById(R.id.btnTrainerSeeAppTable);
-        LinearLayout calendarLayout = view.findViewById(R.id.calLayout); //ok
+        RelativeLayout calendarLayout = view.findViewById(R.id.calLayout); //ok
         ListView listViewHours = view.findViewById(R.id.lvTimes);
         ImageButton closeBtn = view.findViewById(R.id.btnCloseCard);
         CardView wholeCard = view.findViewById(R.id.cardViewTrainerDetails);

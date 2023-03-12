@@ -122,29 +122,29 @@ public class DBHelper extends SQLiteOpenHelper {
             "flatPrice FLOAT," +
             "phoneNumber TEXT," +
             "address TEXT" +
-            ")";
+            ");";
 
     private static final String CREATE_RATINGS_TABLE = "CREATE TABLE ratings(" +
             "_id TEXT PRIMARY KEY, " +
             "trainerID TEXT, " +
             "rating FLOAT, " +
             "FOREIGN KEY(trainerID) REFERENCES trainers(_id)" +
-            ")";
+            ");";
 
 
-    private static final String CREATE_TRAINER_SERVICE_TABLE = "CREATE TABLE trainer_service("+
-            "_id int PRIMARY KEY AUTOINCREMENT,"+
-            "trainerID TEXT, " +
+    private static final String CREATE_TRAINERSERVICE_TABLE = "CREATE TABLE trainerservice("+
+            "_id INT PRIMARY KEY,"+
             "service TEXT, " +
+            "trainerID TEXT, " +
             "FOREIGN KEY(trainerID) REFERENCES trainers(_id)" +
-            ")";
+            ");";
 
     private static final String CREATE_TRAINER_OPEN_SCHEDULE_TABLE = "CREATE TABLE schedule( " +
-            "_id INT PRIMARY KEY AUTOINCREMENT, " +
-            "time INT, " +
+            "_id INT PRIMARY KEY, " +
+            "time BIGINT, " +
             "trainerID TEXT, " +
             "FOREIGN KEY(trainerID) REFERENCES trainers(_id) " +
-            ")";
+            ");";
     public static final String URL_FIRESTORE_SELF_WORKOUT_PLANS_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutPlans.csv";
     public static final String URL_FIRESTORE_SELF_WORKOUT_SESSION_TYPES_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutSessionTypes.csv";
     public static final String URL_FIRESTORE_SELF_PLAN_EXERCISES_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutPlanExercises.csv";
@@ -152,7 +152,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public static  final String URL_FIRESTORE_RATINGS_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/ratings.csv";
 
-    public static final String URL_FIRESTORE_TRAINER_SERVICE_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/trainerService.csv";
+    public static final String URL_FIRESTORE_TRAINERSERVICE_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/trainerService.csv";
     public static final String URL_FIRESTORE_TRAINER_OPEN_SCHEDULE_TABLE="gs://w23-g3-coachme.appspot.com/sqlite_datasets/schedule.csv";
     public DBHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -185,7 +185,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_APPOINTMENTS_TABLE);
         db.execSQL(CREATE_TRAINERS_TABLE);
         db.execSQL(CREATE_RATINGS_TABLE);
-        db.execSQL(CREATE_TRAINER_SERVICE_TABLE);
+        db.execSQL(CREATE_TRAINERSERVICE_TABLE);
         db.execSQL(CREATE_TRAINER_OPEN_SCHEDULE_TABLE);
         databaseJustCreated=true;
         //uploadSelfWorkoutPlans();
@@ -203,7 +203,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS appointments");
         db.execSQL("DROP TABLE IF EXISTS trainers");
         db.execSQL("DROP TABLE IF EXISTS ratings");
-        db.execSQL("DROP TABLE IF EXISTS trainer_service");
+        db.execSQL("DROP TABLE IF EXISTS trainerservice");
         db.execSQL("DROP TABLE IF EXISTS schedule");
         onCreate(db);
     }
@@ -395,9 +395,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
                 ContentValues trainerServContents = new ContentValues();
                 trainerServContents.put("_id",nextLine[0]);
-                trainerServContents.put("trainerID",nextLine[1]);
-                trainerServContents.put("service",nextLine[2]);
-                db.insert("ratings", null, trainerServContents);
+                trainerServContents.put("service",nextLine[1]);
+                trainerServContents.put("trainerID",nextLine[2]);
+                db.insert("trainerservice", null, trainerServContents);
 
             }
 
@@ -426,9 +426,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
                 ContentValues trainerScheduleContents = new ContentValues();
                 trainerScheduleContents.put("_id",nextLine[0]);
-                trainerScheduleContents.put("trainerID",nextLine[1]);
-                trainerScheduleContents.put("service",nextLine[2]);
-                db.insert("ratings", null, trainerScheduleContents);
+                trainerScheduleContents.put("time",nextLine[1]);
+                trainerScheduleContents.put("trainerID",nextLine[2]);
+                db.insert("schedule", null, trainerScheduleContents);
 
             }
 
@@ -560,6 +560,36 @@ public class DBHelper extends SQLiteOpenHelper {
         return numRowsUpdated;
     }
 
+
+    public void addAppToCart(String id,long bookedDate,long registeredDate, String serviceType, int status,
+                             double totalPrice, String location,
+                             String trainerId, String customerId){
+
+        ContentValues values = new ContentValues();
+        values.put("_id", id);
+        values.put("bookedDate", bookedDate);
+        values.put("registeredDate", registeredDate);
+        values.put("serviceType", serviceType);
+        values.put("status", status);
+        values.put("totalPrice", totalPrice);
+        values.put("location", location);
+        values.put("trainerId", trainerId);
+        values.put("customerId", customerId);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        long result = db.insert("appointments", null, values);
+        db.close();
+
+        if (result == -1) {
+            // Insert failed
+            Log.e("addAppToCart", "Failed to add appointment to cart.");
+        } else {
+            // Insert succeeded
+            Log.d("addAppToCart", "Appointment added to cart with ID: " + id);
+        }
+
+    }
+
     /* -------------------------------
     -----------SELF WORKOUT----------
     ------------------------------- */
@@ -650,9 +680,13 @@ public class DBHelper extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public Trainer getTrainerById(String trainerId){
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * \n" +
-                "FROM trainers \n"+
-                "WHERE _id = '"+trainerId+"'",null);
+        Cursor cursor = db.rawQuery("SELECT t._id, t.firstName, t.lastName, t.email, \n" +
+                        "t.latitudeCoord, t.longitudeCoord, t.radius, t.flatPrice, t.phoneNumber," +
+                        "t.address, AVG(r.rating) AS avgRating " +
+                        "FROM trainers t \n" +
+                        "JOIN ratings r ON t._id = r.trainerID \n" +
+                        "WHERE t._id = '"+trainerId+"'" +
+                        "GROUP BY t._id, t.firstName, t.lastName, t.email, t.latitudeCoord, t.longitudeCoord, t.radius, t.flatPrice, t.phoneNumber, t.address ",null);
 
         Trainer trainer = null;
 
@@ -726,7 +760,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     @SuppressLint("Range")
-    public List<Trainer> getTrainersByServicesAndDate(List<String> services, int dateFrom, int dateTo) {
+    public List<Trainer> getTrainersByServicesAndDate(List<String> services, long dateFrom, long dateTo) {
         SQLiteDatabase db = getReadableDatabase();
 
         String selectQuery = "SELECT trainers._id, trainers.firstName, trainers.lastName, trainers.email, " +
@@ -734,22 +768,22 @@ public class DBHelper extends SQLiteOpenHelper {
                 "trainers.address, AVG(ratings.rating) AS avgRating " +
                 " FROM trainers " +
                 "JOIN ratings ON trainers._id = ratings.trainerID " +
-                "JOIN trainer_service ON trainers._id = trainer_service.trainerID " +
+                "JOIN trainerservice ON trainers._id = trainerservice.trainerID " +
                 "JOIN schedule ON trainers._id = schedule.trainerID " +
-                "WHERE schedule.time BETWEEN dateFrom AND dateTo ";
+                "WHERE schedule.time BETWEEN " + dateFrom +" AND " + dateTo ;
 
 
         // Add service filtering if services list is not empty
         if (!services.isEmpty()) {
             String serviceList = TextUtils.join(",", services);
-            selectQuery += "AND trainer_service.service IN (" + serviceList + ") ";
+            selectQuery += " AND trainerservice.service IN (" + serviceList + ") ";
         }
 
-        selectQuery += "GROUP BY trainers._id, trainers.firstName, trainers.lastName, trainers.email,  " +
+        selectQuery += "\n GROUP BY trainers._id, trainers.firstName, trainers.lastName, trainers.email,  " +
                 " trainers.latitudeCoord, trainers.longitudeCoord, trainers.radius, trainers.flatPrice, trainers.phoneNumber, " +
                 "trainers.address";
 
-        Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(dateFrom), String.valueOf(dateTo)});
+        Cursor cursor = db.rawQuery(selectQuery, null);
 
         List<Trainer> trainers = new ArrayList<>();
         if (cursor.moveToFirst()) {
@@ -767,12 +801,51 @@ public class DBHelper extends SQLiteOpenHelper {
                 trainer.setAddress(cursor.getString(cursor.getColumnIndex("address")));
                 trainer.setRating(cursor.getDouble(cursor.getColumnIndex("avgRating")));
 
+                System.out.println("NNNNN " + cursor.getString(cursor.getColumnIndex("_id")));
+
                 trainers.add(trainer);
             } while (cursor.moveToNext());
         }
-        cursor.close();
+        System.out.println("FROM DBHELPER " + trainers.size() + "\n Date from " + dateFrom + " \n Date to " + dateTo);
+        db.close();
 
         return trainers;
     }
 
+    // Get available schedule by trainer ID
+    @SuppressLint("Range")
+    public List<Long> getTimesByTrainerID(String trainerId){
+
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM schedule " +
+                "JOIN trainers ON trainers._id = schedule.trainerID " +
+                "WHERE trainerID =  '"+trainerId+"'", null);
+
+        List<Long> times = new ArrayList<>();
+
+        if(cursor.moveToFirst()){
+            do{
+                times.add(cursor.getLong(cursor.getColumnIndex("time")));
+                System.out.println(cursor.getLong(cursor.getColumnIndex("time")));
+
+            }while(cursor.moveToNext());
+        }
+        db.close();
+        return times;
+    }
+
+    public void removeFromSchedule(String trainerID, long initTime, long endTime){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        String whereClause = "trainerID = ? AND time >= ? AND time <= ?";
+        String[] whereArgs = { trainerID, String.valueOf(initTime), String.valueOf(endTime) };
+
+        // Execute the DELETE SQL statement with the specified WHERE clause
+        db.delete("schedule", whereClause, whereArgs);
+
+        System.out.println("DELETING APPOINTMENT " + initTime); // working
+        // Close the database connection
+        db.close();
+    }
 }
