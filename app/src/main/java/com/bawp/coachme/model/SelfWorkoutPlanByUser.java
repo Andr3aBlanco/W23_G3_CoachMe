@@ -24,54 +24,45 @@ import java.util.Date;
 
 public class SelfWorkoutPlanByUser {
 
-    private int id;
-    private SelfWorkoutPlan selfworkoutplan;
-    private Date requestedDate;
+    private String customerId;
+    private String selfworkoutplanId;
+    private long requestedDate;
     private int status;
-    private Date paymentDate;
+    private long paymentDate;
     private String paymentId;
 
     public SelfWorkoutPlanByUser(){
 
     }
 
-    public SelfWorkoutPlanByUser(int id,SelfWorkoutPlan selfworkoutplan, Date requestedDate, int status) {
-        this.id = id;
-        this.selfworkoutplan = selfworkoutplan;
+    public SelfWorkoutPlanByUser(String customerId,String selfworkoutplanId, long requestedDate, int status) {
+        this.customerId = customerId;
+        this.selfworkoutplanId = selfworkoutplanId;
         this.requestedDate = requestedDate;
         this.status = status;
     }
 
-    public SelfWorkoutPlanByUser(int id, SelfWorkoutPlan selfworkoutplan, Date requestedDate, int status, Date paymentDate, String paymentId) {
-        this.id = id;
-        this.selfworkoutplan = selfworkoutplan;
-        this.requestedDate = requestedDate;
-        this.status = status;
-        this.paymentDate = paymentDate;
-        this.paymentId = paymentId;
+    public String getCustomerId() {
+        return customerId;
     }
 
-    public int getId() {
-        return id;
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public String getSelfworkoutplanId() {
+        return selfworkoutplanId;
     }
 
-    public void setSelfworkoutplan(SelfWorkoutPlan selfworkoutplan) {
-        this.selfworkoutplan = selfworkoutplan;
+    public void setSelfworkoutplanId(String selfworkoutplanId) {
+        this.selfworkoutplanId = selfworkoutplanId;
     }
 
-    public SelfWorkoutPlan getSelfworkoutplan() {
-        return selfworkoutplan;
-    }
-
-    public Date getRequestedDate() {
+    public long getRequestedDate() {
         return requestedDate;
     }
 
-    public void setRequestedDate(Date requestedDate) {
+    public void setRequestedDate(long requestedDate) {
         this.requestedDate = requestedDate;
     }
 
@@ -83,11 +74,11 @@ public class SelfWorkoutPlanByUser {
         this.status = status;
     }
 
-    public Date getPaymentDate() {
+    public long getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(Date paymentDate) {
+    public void setPaymentDate(long paymentDate) {
         this.paymentDate = paymentDate;
     }
 
@@ -97,5 +88,10 @@ public class SelfWorkoutPlanByUser {
 
     public void setPaymentId(String paymentId) {
         this.paymentId = paymentId;
+    }
+
+    @Override
+    public String toString(){
+        return customerId + " " + selfworkoutplanId;
     }
 }
