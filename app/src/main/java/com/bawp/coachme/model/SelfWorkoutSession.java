@@ -29,8 +29,9 @@ import java.io.Serializable;
 
 public class SelfWorkoutSession implements Serializable {
 
-    private String swpUserId;
-    private String selfworkoutSessionType;
+    private int id;
+    private SelfWorkoutPlanByUser selfWorkoutPlanByUser;
+    private SelfWorkoutSessionType selfworkoutSessionType;
     private long sessionDate;
     private int sessionStatus;
 
@@ -38,26 +39,35 @@ public class SelfWorkoutSession implements Serializable {
 
     }
 
-    public SelfWorkoutSession(String swpUserId, String selfworkoutSessionType, long sessionDate, int sessionStatus) {
-        this.swpUserId = swpUserId;
+    public SelfWorkoutSession(int id, SelfWorkoutPlanByUser selfWorkoutPlanByUser, SelfWorkoutSessionType selfworkoutSessionType, long sessionDate, int sessionStatus) {
+        this.id = id;
+        this.selfWorkoutPlanByUser = selfWorkoutPlanByUser;
         this.selfworkoutSessionType = selfworkoutSessionType;
         this.sessionDate = sessionDate;
         this.sessionStatus = sessionStatus;
     }
 
-    public String getSwpUserId() {
-        return swpUserId;
+    public int getId() {
+        return id;
     }
 
-    public void setSwpUserId(String swpUserId) {
-        this.swpUserId = swpUserId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getSelfworkoutSessionType() {
+    public SelfWorkoutPlanByUser getSelfWorkoutPlanByUser() {
+        return selfWorkoutPlanByUser;
+    }
+
+    public void setSelfWorkoutPlanByUser(SelfWorkoutPlanByUser selfWorkoutPlanByUser) {
+        this.selfWorkoutPlanByUser = selfWorkoutPlanByUser;
+    }
+
+    public SelfWorkoutSessionType getSelfworkoutSessionType() {
         return selfworkoutSessionType;
     }
 
-    public void setSelfworkoutSessionType(String selfworkoutSessionType) {
+    public void setSelfworkoutSessionType(SelfWorkoutSessionType selfworkoutSessionType) {
         this.selfworkoutSessionType = selfworkoutSessionType;
     }
 

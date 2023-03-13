@@ -4,7 +4,7 @@ xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
 xmlns:app="http://schemas.android.com/apk/res-auto"
-android:background="@drawable/coachme_background"
+android:background="#F9F9F9"
 android:orientation="vertical"
 tools:context=".presentation.selfworkout.SelfworkoutSessionTypeFragment">
 
@@ -36,9 +36,10 @@ tools:context=".presentation.selfworkout.SelfworkoutSessionTypeFragment">
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="20dp"
             android:textSize="25dp"
-            android:textColor="#FE685E"
-            android:drawableLeft="@drawable/ic_shopping_cart_black_24dp"
-            android:fontFamily="@font/barlow_bold"
+            android:textColor="#200E32"
+            android:drawableLeft="@drawable/baseline_shopping_cart_24"
+            android:drawableTint="#200E32"
+            android:fontFamily="@font/poppins_bold"
             android:text="Select a Session"/>
 
         <!--
@@ -63,12 +64,12 @@ tools:context=".presentation.selfworkout.SelfworkoutSessionTypeFragment">
             android:layout_marginTop="20dp">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnOrderCheckout"
+                android:id="@+id/btnBackToWorkoutMain"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Back"
-                android:backgroundTint="#FE685E"
-                android:fontFamily="@font/barlow_bold"
+                android:backgroundTint="#6B66C7"
+                android:fontFamily="@font/poppins_bold"
                 android:drawableLeft="@drawable/baseline_arrow_back_36"
                 app:cornerRadius="10dp"
                 />

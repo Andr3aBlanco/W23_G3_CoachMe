@@ -22,7 +22,7 @@ import java.util.List;
 public class SelfworkoutSessionExerciseFragment extends Fragment {
 
     List<SelfWorkoutSessionLog> exercisesLog;
-    String sessionId;
+    int sessionId;
     ProgressBar pbSelfworkoutSessionExercises;
     LinearLayout llSelfworkoutSessionExercises;
     ProgressBar pbSessionProgress;
@@ -38,7 +38,7 @@ public class SelfworkoutSessionExerciseFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             exercisesLog = (List<SelfWorkoutSessionLog>) getArguments().getSerializable("exercisesLog");
-            sessionId = getArguments().getString("sessionId");
+            sessionId = getArguments().getInt("sessionId");
         }
     }
 
@@ -84,6 +84,7 @@ public class SelfworkoutSessionExerciseFragment extends Fragment {
     private void calculateProgressBar(){
 
         int totalExercises = exercisesLog.size();
+        Log.d("HELLO",Integer.toString(totalExercises));
         int currentProgress = 0;
 
         for(SelfWorkoutSessionLog ssl : exercisesLog){

@@ -4,8 +4,9 @@ import java.io.Serializable;
 
 public class SelfWorkoutSessionType implements Serializable {
 
+    private String id;
     private String sessionType;
-    private String selfWorkoutPlanId;
+    private SelfWorkoutPlan selfWorkoutPlan;
 
     private String sessionTypeIconURLFirestore;
 
@@ -13,10 +14,19 @@ public class SelfWorkoutSessionType implements Serializable {
 
     }
 
-    public SelfWorkoutSessionType(String sessionType, String selfWorkoutPlanId, String sessionTypeIconURLFirestore) {
+    public SelfWorkoutSessionType(String id,String sessionType, SelfWorkoutPlan selfWorkoutPlan, String sessionTypeIconURLFirestore) {
+        this.id = id;
         this.sessionType = sessionType;
-        this.selfWorkoutPlanId = selfWorkoutPlanId;
+        this.selfWorkoutPlan = selfWorkoutPlan;
         this.sessionTypeIconURLFirestore = sessionTypeIconURLFirestore;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getSessionType() {
@@ -27,12 +37,12 @@ public class SelfWorkoutSessionType implements Serializable {
         this.sessionType = sessionType;
     }
 
-    public String getSelfWorkoutPlanId() {
-        return selfWorkoutPlanId;
+    public SelfWorkoutPlan getSelfWorkoutPlan() {
+        return selfWorkoutPlan;
     }
 
-    public void setSelfWorkoutPlanId(String selfWorkoutPlanId) {
-        this.selfWorkoutPlanId = selfWorkoutPlanId;
+    public void setSelfWorkoutPlan(SelfWorkoutPlan selfWorkoutPlan) {
+        this.selfWorkoutPlan = selfWorkoutPlan;
     }
 
     public String getSessionTypeIconURLFirestore() {

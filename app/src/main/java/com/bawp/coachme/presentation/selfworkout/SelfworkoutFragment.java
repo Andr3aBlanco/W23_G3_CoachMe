@@ -25,6 +25,7 @@ import com.bawp.coachme.model.SelfWorkoutSessionType;
 import com.bawp.coachme.presentation.order.OrderListRecyclerFragment;
 import com.bawp.coachme.presentation.order.OrderPaymentOptionsFragment;
 import com.bawp.coachme.presentation.order.OrdersFragment;
+import com.bawp.coachme.utils.DBHelper;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -56,20 +57,14 @@ public class SelfworkoutFragment extends Fragment {
     ProgressBar pbSelfworkoutMain;
     LinearLayout llSelfworkoutMainLayout;
     Button btnStartResumeWorkout;
-
-    String selfworkoutUserId;
+    int selfworkoutUserId;
     String selfworkoutPlanId;
-    String swpSessionRefKey;
     SelfWorkoutSession currentSession;
     Boolean isNewSession;
-    List<SelfWorkoutSessionType> selfworkoutSessionTypes;
-    ArrayList<String> selfworkoutSessionTypeIds;
+    DBHelper dbHelper;
 
     FragmentManager fm;
     Fragment fragment;
-
-    DatabaseReference CoachMeDatabaseRef;
-    FirebaseDatabase CoachMeDatabaseInstance;
 
     public SelfworkoutFragment() {
         // Required empty public constructor
@@ -79,7 +74,7 @@ public class SelfworkoutFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            selfworkoutUserId = getArguments().getString("workoutUserId");
+            selfworkoutUserId = getArguments().getInt("workoutUserId");
         }
     }
 
@@ -92,9 +87,7 @@ public class SelfworkoutFragment extends Fragment {
         //Saving the current fragment object
         SelfworkoutFragment currentFragment = this;
 
-        //Preparing the database reference to firebase
-        CoachMeDatabaseInstance = FirebaseDatabase.getInstance();
-        CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
+        dbHelper = new DBHelper(getContext());
 
         //Get the components from the Fragment
         txtViewSelfworkoutName = view.findViewById(R.id.txtViewSelfworkoutName);
@@ -132,94 +125,53 @@ public class SelfworkoutFragment extends Fragment {
                 calendar.set(year, month, dayOfMonth, 23, 59, 59);
                 Long endTime = calendar.getTime().getTime();
 
-                selfworkoutSessionTypes = new ArrayList<>();
-                selfworkoutSessionTypeIds = new ArrayList<>();
+                SelfWorkoutSession session = dbHelper.getActiveSelfWorkoutSession(selfworkoutUserId);
+                List<SelfWorkoutSessionType> sessionTypes = dbHelper.getSessionTypesByPlanId(selfworkoutPlanId);
 
-                //For now, let's move to the next fragment with the list of session Types.
-                DatabaseReference swpSessionTypesRef = CoachMeDatabaseRef.child("selfWorkoutSessionTypes");
-                DatabaseReference swpSessionRef = CoachMeDatabaseRef.child("selfWorkoutSessions");
+                if(session != null){
+                    //Let's check if the session is in the same day
+                    if(session.getSessionDate() >= startTime & session.getSessionDate() <= endTime){
 
-                List<Task<DataSnapshot>> tasks = new ArrayList<>();
+                        //We are resuming
+                        isNewSession = false;
+                        currentSession = session;
+                        Log.d("SESSION","RESUMING");
 
-                Query swpSessionTypeQuery = swpSessionTypesRef.orderByChild("selfworkoutPlanId").equalTo(selfworkoutPlanId);
-                Query swpSessionQuery = swpSessionRef.orderByChild("sessionDate").startAt(startTime).endAt(endTime);
+                    }else{
 
-                tasks.add(swpSessionTypeQuery.get());
-                tasks.add(swpSessionQuery.get());
-
-                // Create a new task that completes when all tasks in the list complete successfully
-                Task<List<DataSnapshot>> allTasks = Tasks.whenAllSuccess(tasks);
-
-                allTasks.addOnCompleteListener(new OnCompleteListener<List<DataSnapshot>>() {
-                    @Override
-                    public void onComplete(@NonNull Task<List<DataSnapshot>> task) {
-
-                        DataSnapshot dsSessionType = task.getResult().get(0);
-                        DataSnapshot dsSessions = task.getResult().get(1);
-
-                        for(DataSnapshot ds : dsSessionType.getChildren()){
-                            SelfWorkoutSessionType swST = ds.getValue(SelfWorkoutSessionType.class);
-                            selfworkoutSessionTypeIds.add(ds.getKey());
-                            selfworkoutSessionTypes.add(swST);
-                        }
-
-                        if (dsSessions.getValue() == null){
-                            //that means that there is not sessions available for today
-                            Date newSessionDate = new Date();
-                            SelfWorkoutSession currentSession = new SelfWorkoutSession(selfworkoutUserId,null,newSessionDate.getTime(),1);
-                            swpSessionRefKey = swpSessionRef.push().getKey();
-                            swpSessionRef.child(swpSessionRefKey).setValue(currentSession);
-                            isNewSession = true;
-                        }else{
-                            //if not, let see if the user has a session today
-                            SelfWorkoutSession swSession = null;
-
-                            for(DataSnapshot ds: dsSessions.getChildren()){
-                                SelfWorkoutSession swSessionTemp = ds.getValue(SelfWorkoutSession.class);
-                                if(swSessionTemp.getSwpUserId().equals(selfworkoutUserId)){
-                                    swSession = swSessionTemp;
-                                    swpSessionRefKey = ds.getKey();
-                                }
-                            }
-
-                            if(swSession == null){
-                                //finally we conclude that this is a new session
-                                //create a new Session
-                                Date newSessionDate = new Date();
-                                SelfWorkoutSession currentSession = new SelfWorkoutSession(selfworkoutUserId,null,newSessionDate.getTime(),1);
-                                swpSessionRefKey = swpSessionRef.push().getKey();
-                                swpSessionRef.child(swpSessionRefKey).setValue(currentSession);
-                                isNewSession = true;
-                            }else{
-                                //it's not a new one, that means that user is resuming
-                                isNewSession = false;
-                                currentSession = swSession;
-                            }
-                        }
-
-                        Bundle passDataToFragment = new Bundle();
-                        passDataToFragment.putSerializable("swST",(Serializable) selfworkoutSessionTypes);
-                        passDataToFragment.putString("sessionId",swpSessionRefKey);
-                        passDataToFragment.putSerializable("sessionObj",(Serializable) currentSession ) ;
-                        passDataToFragment.putBoolean("isNewSession",isNewSession);
-                        passDataToFragment.putStringArrayList("swSTId",selfworkoutSessionTypeIds);
-
-                        SelfworkoutSessionTypeFragment selfworkoutSessionTypeFragment = new SelfworkoutSessionTypeFragment();
-                        selfworkoutSessionTypeFragment.setArguments(passDataToFragment);
-
-                        FragmentManager fm = getParentFragmentManager();
-                        FragmentTransaction fragmentTransaction = fm.beginTransaction();
-
-                        // Replace the current fragment with the new one
-                        fragmentTransaction.replace(R.id.barFrame, selfworkoutSessionTypeFragment);
-
-                        // Add the transaction to the back stack
-                        fragmentTransaction.addToBackStack(null);
-
-                        // Commit the transaction
-                        fragmentTransaction.commit();
+                        //The user starts a session days before and he/she forgot to finish it
+                        //We have to restart it
+                        isNewSession = true;
+                        dbHelper.updateSelfWorkoutSessionStatus(session.getId(),2);
+                        Log.d("SESSION","RESTART");
                     }
-                });
+
+                }else{
+                    //This is a new session
+                    isNewSession = true;
+                }
+
+                Bundle passDataToFragment = new Bundle();
+                passDataToFragment.putSerializable("sessionTypesList",(Serializable) sessionTypes);
+                passDataToFragment.putSerializable("sessionObj",(Serializable) currentSession ) ;
+                passDataToFragment.putSerializable("workoutUserId",selfworkoutUserId ) ;
+                passDataToFragment.putBoolean("isNewSession",isNewSession);
+
+                SelfworkoutSessionTypeFragment selfworkoutSessionTypeFragment = new SelfworkoutSessionTypeFragment();
+                selfworkoutSessionTypeFragment.setArguments(passDataToFragment);
+
+                FragmentManager fm = getParentFragmentManager();
+                FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+                // Replace the current fragment with the new one
+                fragmentTransaction.replace(R.id.barFrame, selfworkoutSessionTypeFragment);
+
+                // Add the transaction to the back stack
+                fragmentTransaction.addToBackStack(null);
+
+                // Commit the transaction
+                fragmentTransaction.commit();
+
 
             }
         });
@@ -229,49 +181,27 @@ public class SelfworkoutFragment extends Fragment {
 
     public void getWorkoutPlan(){
 
-        DatabaseReference swpRef = CoachMeDatabaseRef.child("selfWorkoutPlans");
-        DatabaseReference swpByUsersRef = CoachMeDatabaseRef.child("selfWorkoutPlansByUser");
+        SelfWorkoutPlanByUser swpUser = dbHelper.getSelfWorkoutPlanByUserById(selfworkoutUserId);
 
-        List<Task<DataSnapshot>> tasks = new ArrayList<>();
+        //filling data
+        txtViewSelfworkoutName.setText(swpUser.getSelfworkoutplan().getTitle());
+        txtViewSelfworkoutMG.setText(swpUser.getSelfworkoutplan().getMainGoals());
+        txtViewSelfworkoutDifficulty.setText(swpUser.getSelfworkoutplan().getLevel());
+        txtViewSelfworkoutDpW.setText(Integer.toString(swpUser.getSelfworkoutplan().getDaysPerWeek()));
+        txtViewSelfworkoutTotalWeeks.setText(swpUser.getSelfworkoutplan().getDuration());
 
-        tasks.add(swpRef.get());
-        tasks.add(swpByUsersRef.get());
+        FirebaseStorage storage = FirebaseStorage.getInstance();
 
-        // Create a new task that completes when all tasks in the list complete successfully
-        Task<List<DataSnapshot>> allTasks = Tasks.whenAllSuccess(tasks);
+        //Setting the image of the workout plan
+        StorageReference imageRef = storage.getReferenceFromUrl(swpUser.getSelfworkoutplan().getPosterUrlFirestore());
+        Glide.with(getContext())
+                .load(imageRef)
+                .into(imgViewSelfworkout);
 
-        allTasks.addOnCompleteListener(new OnCompleteListener<List<DataSnapshot>>() {
-            @Override
-            public void onComplete(@NonNull Task<List<DataSnapshot>> task) {
-                // All tasks completed successfully
-                DataSnapshot snapSwpByRef = task.getResult().get(0);
-                DataSnapshot snapSwpUserByRef = task.getResult().get(1);
+        selfworkoutPlanId = swpUser.getSelfworkoutplan().getId();
 
-                SelfWorkoutPlanByUser swpByUser = snapSwpUserByRef.child(selfworkoutUserId).getValue(SelfWorkoutPlanByUser.class);
-                SelfWorkoutPlan swp = snapSwpByRef.child(swpByUser.getSelfworkoutplanId()).getValue(SelfWorkoutPlan.class);
-
-                //filling data
-                txtViewSelfworkoutName.setText(swp.getTitle());
-                txtViewSelfworkoutMG.setText(swp.getMainGoals());
-                txtViewSelfworkoutDifficulty.setText(swp.getLevel());
-                txtViewSelfworkoutDpW.setText(Integer.toString(swp.getDaysPerWeek()));
-                txtViewSelfworkoutTotalWeeks.setText(swp.getDuration());
-
-                FirebaseStorage storage = FirebaseStorage.getInstance();
-
-                //Setting the image of the workout plan
-                StorageReference imageRef = storage.getReferenceFromUrl(swp.getPosterUrlFirestore());
-                Glide.with(getContext())
-                        .load(imageRef)
-                        .into(imgViewSelfworkout);
-
-                selfworkoutPlanId = swpByUser.getSelfworkoutplanId();
-
-                pbSelfworkoutMain.setVisibility(View.GONE);
-                llSelfworkoutMainLayout.setVisibility(View.VISIBLE);
-
-            }
-        });
+        pbSelfworkoutMain.setVisibility(View.GONE);
+        llSelfworkoutMainLayout.setVisibility(View.VISIBLE);
 
     }
 }

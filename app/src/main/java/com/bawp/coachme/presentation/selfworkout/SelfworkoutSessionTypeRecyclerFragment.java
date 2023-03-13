@@ -14,14 +14,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bawp.coachme.R;
 import com.bawp.coachme.model.SelfWorkoutPlanExercise;
+import com.bawp.coachme.model.SelfWorkoutSession;
 import com.bawp.coachme.model.SelfWorkoutSessionLog;
 import com.bawp.coachme.model.SelfWorkoutSessionType;
+import com.bawp.coachme.utils.DBHelper;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -36,16 +39,16 @@ import com.google.firebase.storage.StorageReference;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class SelfworkoutSessionTypeRecyclerFragment extends Fragment {
 
     private SelfworkoutSessionTypeRecyclerFragment.RecyclerViewAdapter swpSessionTypeAdapter;
     private RecyclerView recyclerView;
-
     private static List<SelfWorkoutSessionType> swpSTList;
-    private static ArrayList<String> swpSTIdList;
-    private static String sessionId;
+    private static SelfWorkoutSession session;
+    private static int selfworkoutUserId;
     private static SelfworkoutSessionTypeFragment selfworkoutSessionTypeFragment;
 
     @Override
@@ -54,16 +57,16 @@ public class SelfworkoutSessionTypeRecyclerFragment extends Fragment {
         View view = inflater.inflate(R.layout.recycler_view_fragment, container, false);
         recyclerView = view.findViewById(R.id.recycler_view_layout);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        swpSessionTypeAdapter = new SelfworkoutSessionTypeRecyclerFragment.RecyclerViewAdapter(swpSTList, swpSTIdList,sessionId,selfworkoutSessionTypeFragment);
+        swpSessionTypeAdapter = new SelfworkoutSessionTypeRecyclerFragment.RecyclerViewAdapter(swpSTList, session,selfworkoutUserId,selfworkoutSessionTypeFragment);
         recyclerView.setAdapter(swpSessionTypeAdapter);
         return view;
     }
 
-    public static Fragment newInstance(List<SelfWorkoutSessionType> list, ArrayList<String> idList, String id, SelfworkoutSessionTypeFragment parentFragment) {
+    public static Fragment newInstance(List<SelfWorkoutSessionType> list, SelfWorkoutSession ses,int workoutId, SelfworkoutSessionTypeFragment parentFragment) {
         swpSTList = list;
-        swpSTIdList = idList;
         selfworkoutSessionTypeFragment = parentFragment;
-        sessionId = id;
+        session = ses;
+        selfworkoutUserId = workoutId;
         return new SelfworkoutSessionTypeRecyclerFragment();
     }
 
@@ -88,15 +91,17 @@ public class SelfworkoutSessionTypeRecyclerFragment extends Fragment {
     public class RecyclerViewAdapter extends RecyclerView.Adapter<SelfworkoutSessionTypeRecyclerFragment.RecyclerViewHolder> {
 
         private List<SelfWorkoutSessionType> swpSTList;
-        private ArrayList<String> swpSTIdList;
-        private String sessionId;
+        private SelfWorkoutSession session;
+        private int selfworkoutUserId;
         private SelfworkoutSessionTypeFragment parentFragment;
+        private DBHelper dbHelper;
 
-        public RecyclerViewAdapter(List<SelfWorkoutSessionType> swpSTList, ArrayList<String> swpSTIdList, String sessionId, SelfworkoutSessionTypeFragment parentFragment) {
+        public RecyclerViewAdapter(List<SelfWorkoutSessionType> swpSTList, SelfWorkoutSession session,int selfworkoutUserId, SelfworkoutSessionTypeFragment parentFragment) {
             this.swpSTList = swpSTList;
-            this.swpSTIdList = swpSTIdList;
-            this.sessionId = sessionId;
+            this.session = session;
             this.parentFragment = parentFragment;
+            this.dbHelper = new DBHelper(getContext());
+            this.selfworkoutUserId = selfworkoutUserId;
         }
 
         @NonNull
@@ -128,68 +133,32 @@ public class SelfworkoutSessionTypeRecyclerFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     //check if we don't have any log for this session
-                    FirebaseDatabase CoachMeDatabaseInstance = FirebaseDatabase.getInstance();
-                    DatabaseReference CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
-                    DatabaseReference sessionLogsRef = CoachMeDatabaseRef.child("selfWorkoutSessionLogs");
-                    Query sessionExercisesQuery = CoachMeDatabaseRef.child("selfWorkoutPlanExercises")
-                                                .orderByChild("selfWorkoutSessionId").equalTo(swpSTIdList.get(selectedPosition));
-                    Query sessionLogsQuery = CoachMeDatabaseRef.child("selfWorkoutSessionLogs")
-                            .orderByChild("selfWorkoutSessionId")
-                            .equalTo(sessionId);
+                    if (session == null){
+                        //This is a new session, we have to create it into the database
+                        session = dbHelper.createNewSession(selfworkoutUserId,swpSTList.get(holder.getAdapterPosition()).getId(),new Date().getTime(),1);
+                    }
 
-                    List<Task<DataSnapshot>> tasks = new ArrayList<>();
-                    tasks.add(sessionExercisesQuery.get());
-                    tasks.add(sessionLogsQuery.get());
+                    List<SelfWorkoutSessionLog> exercisesLog = dbHelper.getSessionLogs(session.getId());
 
-                    // Create a new task that completes when all tasks in the list complete successfully
-                    Task<List<DataSnapshot>> allTasks = Tasks.whenAllSuccess(tasks);
+                    //Let's send the data into the next fragment
+                    Bundle dataToPass = new Bundle();
+                    dataToPass.putSerializable("exercisesLog",(Serializable) exercisesLog);
+                    dataToPass.putInt("sessionId",session.getId());
 
-                    allTasks.addOnCompleteListener(new OnCompleteListener<List<DataSnapshot>>() {
-                        @Override
-                        public void onComplete(@NonNull Task<List<DataSnapshot>> task) {
-                            DataSnapshot dsExercises = task.getResult().get(0);
-                            DataSnapshot dsSessionLogs = task.getResult().get(1);
+                    SelfworkoutSessionExerciseFragment selfworkoutSessionExerciseFragment = new SelfworkoutSessionExerciseFragment();
+                    selfworkoutSessionExerciseFragment.setArguments(dataToPass);
 
-                            List<SelfWorkoutSessionLog> exercisesLog = new ArrayList<>();
+                    FragmentManager fm = getParentFragmentManager();
+                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
 
-                            if (dsSessionLogs.getValue() == null){
-                                //let's create a new session logs
-                                for (DataSnapshot ds: dsExercises.getChildren()){
-                                    SelfWorkoutPlanExercise swpExercise = ds.getValue(SelfWorkoutPlanExercise.class);
-                                    SelfWorkoutSessionLog ssl = new SelfWorkoutSessionLog(sessionId,swpExercise,1);
-                                    sessionLogsRef.push().setValue(ssl);
-                                    exercisesLog.add(ssl);
-                                }
-                            }else{
-                                //let's get the current session logs
-                                for (DataSnapshot ds: dsSessionLogs.getChildren()){
-                                    SelfWorkoutSessionLog ssl = ds.getValue(SelfWorkoutSessionLog.class);
-                                    exercisesLog.add(ssl);
-                                }
-                            }
+                    // Replace the current fragment with the new one
+                    fragmentTransaction.replace(R.id.barFrame, selfworkoutSessionExerciseFragment);
 
-                            //Let's send the data into the next fragment
-                            Bundle dataToPass = new Bundle();
-                            dataToPass.putSerializable("exercisesLog",(Serializable) exercisesLog);
-                            dataToPass.putString("sessionId",sessionId);
+                    // Add the transaction to the back stack
+                    fragmentTransaction.addToBackStack(null);
 
-                            SelfworkoutSessionExerciseFragment selfworkoutSessionExerciseFragment = new SelfworkoutSessionExerciseFragment();
-                            selfworkoutSessionExerciseFragment.setArguments(dataToPass);
-
-                            FragmentManager fm = getParentFragmentManager();
-                            FragmentTransaction fragmentTransaction = fm.beginTransaction();
-
-                            // Replace the current fragment with the new one
-                            fragmentTransaction.replace(R.id.barFrame, selfworkoutSessionExerciseFragment);
-
-                            // Add the transaction to the back stack
-                            fragmentTransaction.addToBackStack(null);
-
-                            // Commit the transaction
-                            fragmentTransaction.commit();
-
-                        }
-                    });
+                    // Commit the transaction
+                    fragmentTransaction.commit();
 
                 }
             });

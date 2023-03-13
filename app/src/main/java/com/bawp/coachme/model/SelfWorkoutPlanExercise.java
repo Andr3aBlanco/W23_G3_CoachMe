@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class SelfWorkoutPlanExercise implements Serializable {
 
+    private String id;
     private String selfWorkoutSessionTypeId;
     private String exerciseName;
     private int numSets;
@@ -15,13 +16,22 @@ public class SelfWorkoutPlanExercise implements Serializable {
 
     }
 
-    public SelfWorkoutPlanExercise(String selfWorkoutSessionTypeId, String exerciseName, int numSets, String repetitions, String restTime, String exerciseImageURLFirestore) {
+    public SelfWorkoutPlanExercise(String id,String selfWorkoutSessionTypeId, String exerciseName, int numSets, String repetitions, String restTime, String exerciseImageURLFirestore) {
+        this.id = id;
         this.selfWorkoutSessionTypeId = selfWorkoutSessionTypeId;
         this.exerciseName = exerciseName;
         this.numSets = numSets;
         this.repetitions = repetitions;
         this.restTime = restTime;
         this.exerciseImageURLFirestore = exerciseImageURLFirestore;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getSelfWorkoutSessionTypeId() {

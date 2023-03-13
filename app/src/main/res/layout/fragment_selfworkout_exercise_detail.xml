@@ -28,7 +28,7 @@
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="20dp"
             android:textColor="#F0F0F0"
-            android:fontFamily="@font/barlow_bold"
+            android:fontFamily="@font/poppins_bold"
             android:textSize="25dp"
             android:text="TextView" />
 
@@ -70,7 +70,7 @@
                     android:layout_weight="0.35"
                     android:text="Number of Sets:"
                     android:textSize="16dp"
-                    android:fontFamily="@font/barlow_bold"
+                    android:fontFamily="@font/poppins_bold"
                     android:gravity="center|right"/>
                 <TextView
                     android:id="@+id/txtViewExerciseSets"
@@ -93,7 +93,7 @@
                     android:layout_weight="0.35"
                     android:textSize="16dp"
                     android:text="Repetitions:"
-                    android:fontFamily="@font/barlow_bold"
+                    android:fontFamily="@font/poppins_bold"
                     android:gravity="center|right"/>
                 <TextView
                     android:id="@+id/txtViewExerciseRepetitions"
@@ -117,7 +117,7 @@
                     android:layout_weight="0.35"
                     android:text="Rest Time:"
                     android:textSize="16dp"
-                    android:fontFamily="@font/barlow_bold"
+                    android:fontFamily="@font/poppins_bold"
                     android:gravity="center|right"/>
                 <TextView
                     android:id="@+id/txtViewRestTime"
@@ -147,7 +147,7 @@
                 android:layout_weight="0.45"
                 android:backgroundTint="#FE685E"
                 android:drawableLeft="@drawable/baseline_arrow_back_36"
-                android:fontFamily="@font/barlow_bold"
+                android:fontFamily="@font/poppins_bold"
                 android:text="Back"
                 app:cornerRadius="10dp" />
 
@@ -161,7 +161,7 @@
                 android:layout_weight="0.45"
                 android:backgroundTint="#FE685E"
                 android:drawableLeft="@drawable/baseline_restart_alt_36"
-                android:fontFamily="@font/barlow_bold"
+                android:fontFamily="@font/poppins_bold"
                 android:text="Completed"
                 app:cornerRadius="10dp" />
         </LinearLayout>

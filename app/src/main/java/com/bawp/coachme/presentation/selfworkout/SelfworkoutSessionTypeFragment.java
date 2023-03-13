@@ -26,10 +26,9 @@ import java.util.List;
 public class SelfworkoutSessionTypeFragment extends Fragment {
 
     private List<SelfWorkoutSessionType> selfWorkoutSessionTypes;
-    private ArrayList<String> selfworkoutSessionTypeIds;
     private SelfWorkoutSession currentSession;
-    private String currentSessionId;
     private Boolean isNewSession;
+    private int selfworkoutUserId;
     FragmentManager fm;
     Fragment fragment;
     ProgressBar pbSelfworkoutSessionType;
@@ -43,11 +42,10 @@ public class SelfworkoutSessionTypeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            selfWorkoutSessionTypes = (List<SelfWorkoutSessionType>) getArguments().getSerializable("swST");
-            selfworkoutSessionTypeIds = getArguments().getStringArrayList("swSTId");
+            selfWorkoutSessionTypes = (List<SelfWorkoutSessionType>) getArguments().getSerializable("sessionTypesList");
             currentSession = (SelfWorkoutSession) getArguments().getSerializable("sessionObj");
-            currentSessionId = getArguments().getString("sessionId");
             isNewSession = getArguments().getBoolean("isNewSession");
+            selfworkoutUserId = getArguments().getInt("workoutUserId");
         }
     }
 
@@ -68,13 +66,13 @@ public class SelfworkoutSessionTypeFragment extends Fragment {
         fm = getActivity().getSupportFragmentManager();
         fragment = fm.findFragmentById(R.id.sessionTypeFragmentContainer);
         if (fragment == null){
-            fragment = SelfworkoutSessionTypeRecyclerFragment.newInstance(selfWorkoutSessionTypes,selfworkoutSessionTypeIds,currentSessionId,currentFragment );
+            fragment = SelfworkoutSessionTypeRecyclerFragment.newInstance(selfWorkoutSessionTypes,currentSession,selfworkoutUserId,currentFragment );
 
             fm.beginTransaction()
                     .add(R.id.sessionTypeFragmentContainer,fragment)
                     .commit();
         }else{
-            fragment = SelfworkoutSessionTypeRecyclerFragment.newInstance(selfWorkoutSessionTypes,selfworkoutSessionTypeIds,currentSessionId,currentFragment);
+            fragment = SelfworkoutSessionTypeRecyclerFragment.newInstance(selfWorkoutSessionTypes,currentSession,selfworkoutUserId,currentFragment);
 
             fm.beginTransaction()
                     .replace(R.id.sessionTypeFragmentContainer,fragment)

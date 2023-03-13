@@ -21,7 +21,8 @@ import java.io.Serializable;
 
 public class SelfWorkoutSessionLog implements Serializable {
 
-    private String selfWorkoutSessionId;
+    private int id;
+    private int selfWorkoutSessionId;
     private SelfWorkoutPlanExercise selfWorkoutExercise;
     private int sessionExerciseStatus;
 
@@ -29,17 +30,27 @@ public class SelfWorkoutSessionLog implements Serializable {
 
     }
 
-    public SelfWorkoutSessionLog(String selfWorkoutSessionId, SelfWorkoutPlanExercise selfWorkoutExercise, int sessionExerciseStatus) {
+    public SelfWorkoutSessionLog(int id,int selfWorkoutSessionId, SelfWorkoutPlanExercise selfWorkoutExercise, int sessionExerciseStatus) {
+        this.id = id;
         this.selfWorkoutSessionId = selfWorkoutSessionId;
         this.selfWorkoutExercise = selfWorkoutExercise;
         this.sessionExerciseStatus = sessionExerciseStatus;
     }
 
-    public String getSelfWorkoutSessionId() {
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getSelfWorkoutSessionId() {
         return selfWorkoutSessionId;
     }
 
-    public void setSelfWorkoutSessionId(String selfWorkoutSessionId) {
+    public void setSelfWorkoutSessionId(int selfWorkoutSessionId) {
         this.selfWorkoutSessionId = selfWorkoutSessionId;
     }
 

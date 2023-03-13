@@ -32,7 +32,7 @@ public class SelfworkoutSessionExRecyclerFragment extends Fragment {
     private RecyclerView recyclerView;
 
     private static List<SelfWorkoutSessionLog> exercisesLog;
-    private static String sessionId;
+    private static int sessionId;
     private static SelfworkoutSessionExerciseFragment selfworkoutSessionExerciseFragment;
 
     @Override
@@ -46,7 +46,7 @@ public class SelfworkoutSessionExRecyclerFragment extends Fragment {
         return view;
     }
 
-    public static Fragment newInstance(List<SelfWorkoutSessionLog> list, String id, SelfworkoutSessionExerciseFragment parentFragment) {
+    public static Fragment newInstance(List<SelfWorkoutSessionLog> list, int id, SelfworkoutSessionExerciseFragment parentFragment) {
         exercisesLog = list;
         sessionId = id;
         selfworkoutSessionExerciseFragment = parentFragment;
@@ -72,10 +72,10 @@ public class SelfworkoutSessionExRecyclerFragment extends Fragment {
     public class RecyclerViewAdapter extends RecyclerView.Adapter<SelfworkoutSessionExRecyclerFragment.RecyclerViewHolder> {
 
         private List<SelfWorkoutSessionLog> exercisesLog;
-        private String sessionId;
+        private int sessionId;
         private SelfworkoutSessionExerciseFragment parentFragment;
 
-        public RecyclerViewAdapter(List<SelfWorkoutSessionLog> exercisesLog,String sessionId, SelfworkoutSessionExerciseFragment parentFragment) {
+        public RecyclerViewAdapter(List<SelfWorkoutSessionLog> exercisesLog,int sessionId, SelfworkoutSessionExerciseFragment parentFragment) {
             this.exercisesLog = exercisesLog;
             this.sessionId = sessionId;
             this.parentFragment = parentFragment;

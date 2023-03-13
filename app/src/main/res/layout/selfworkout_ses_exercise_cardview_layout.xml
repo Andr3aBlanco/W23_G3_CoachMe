@@ -25,7 +25,7 @@
             android:text="TextView"
             android:textSize="20dp"
             android:textColor="#FE685E"
-            android:fontFamily="@font/barlow_bold"
+            android:fontFamily="@font/poppins_bold"
             android:gravity = "center|left"
             android:paddingLeft="10dp"
             android:layout_margin="10dp"
