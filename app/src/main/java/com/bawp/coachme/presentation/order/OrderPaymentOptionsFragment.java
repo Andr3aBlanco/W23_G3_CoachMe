@@ -52,6 +52,7 @@ import com.bawp.coachme.R;
 
 import com.bawp.coachme.model.Appointment;
 import com.bawp.coachme.model.OrderNotifcation;
+import com.bawp.coachme.model.Payment;
 import com.bawp.coachme.model.SelfWorkoutPlanByUser;
 import com.bawp.coachme.model.User;
 import com.bawp.coachme.utils.DBHelper;
@@ -349,9 +350,13 @@ public class OrderPaymentOptionsFragment extends Fragment {
         pbPaymentOption.setVisibility(View.VISIBLE);
         llOrderLayoutPaymentOption.setVisibility(View.GONE);
 
+        //adding a new payment into the SQL Lite database
+        Date newDate = new Date();
+        Payment payment = new Payment(paymentIntentId,newDate.getTime(),totalAmount);
+        dbHelper.insertPayment(payment);
+
         //Let's update the payment information for the selfworkout first
         int numAppointmentsToPay = 0;
-        Date newDate = new Date();
         for(int i=0;i<orderIdArray.size();i++){
             if (orderTypeArray.get(i) == 2){
                 int numRowsUpdated = dbHelper.updateSelfWorkoutAddPayment(
@@ -376,7 +381,6 @@ public class OrderPaymentOptionsFragment extends Fragment {
                 public void onComplete(@NonNull Task<List<DataSnapshot>> task) {
                     if(task.isSuccessful()){
                         DataSnapshot appDs = (DataSnapshot) task.getResult().get(0);
-                        Date newDate = new Date();
                         for(int i=0;i<orderIdArray.size();i++){
 
                             if (orderTypeArray.get(i) == 1){

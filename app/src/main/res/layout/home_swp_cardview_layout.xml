@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="100dp"
     android:layout_marginBottom="10dp"
-    android:id="@+id/card_container"
+    android:id="@+id/home_swp_card_container"
     app:cardCornerRadius="10dp"
     app:strokeColor="#6B66C7"
     app:strokeWidth="2dp"
@@ -14,8 +14,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:background="#F0F0F0"
         >
+
+        <ImageView
+            android:id="@+id/imgViewSelfWorkoutLogo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="10dp"
+            android:background="@drawable/rounded_corner_background"/>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -26,7 +34,8 @@
             <TextView
                 android:id="@+id/txtViewProductTitle"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
                 android:text="TextView"
                 android:textSize="15dp"
                 android:textColor="#200E32"
@@ -38,62 +47,34 @@
             <TextView
                 android:id="@+id/txtViewProductDetail"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
                 android:text="TextView"
                 android:textSize="13dp"
                 android:textColor="#200E32"
                 android:fontFamily="@font/poppins_regular"
-                android:gravity = "center_vertical|left|start"
+                android:gravity = "top|left|start"
                 android:paddingLeft="10dp"
                 />
 
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/txtViewProductPrice"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_weight="0.15"
-            android:text="$20.99"
-            android:textSize="15dp"
-            android:textColor="#200E32"
-            android:fontFamily="@font/poppins_regular"
-            android:gravity="center"/>
-
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_weight="0.15"
-            android:gravity="center"
-            >
-
-            <CheckBox
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/cbSelectedProduct"
-                android:buttonTint="#200E32"
-                />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.15"
+            android:layout_weight="0.2"
             android:gravity="center"
             android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/btnCancelOrder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/btnCheckSelfWorkout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:background="@android:color/transparent"
-                android:minWidth="48dp"
-                android:minHeight="48dp"
-                app:tint="#200E32"
-                android:src="@drawable/ic_delete_black_36dp" />
+                android:src="@drawable/baseline_remove_red_eye_36"
+                app:tint="#6B66C7"/>
+
         </LinearLayout>
 
     </LinearLayout>
