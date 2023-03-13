@@ -4,49 +4,150 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/teal_200"
+    android:background="#F9F9F9"
     tools:context=".presentation.home.HomeFragment">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        >
+        android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="match_parent"
+        <!--
+        Progress Bar to change the visibility of the detail
+        while we are retrieving the data from Firebase
+    -->
+        <ProgressBar
+            android:id="@+id/pbHomeFragment"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20dp"
-            android:text="WELCOME"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20dp"
-            android:text="MY CURRENT APPOINTMENTS"/>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:id="@+id/homeAppFragmentContainer"
+            android:layout_centerInParent="true"
             />
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20dp"
-            android:text="MY CURRENT SELFWORKOUT"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/llHomeFragmentLayout"
+            >
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:id="@+id/homeSwpFragmentContainer"
-            />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18dp"
+                android:textColor="#200E32"
+                android:text="CURRENT APPOINTMENTS"
+                android:layout_marginTop="20dp"
+                android:layout_marginHorizontal="20dp"
+                android:fontFamily="@font/poppins_semibold"/>
 
+            <!--
+                LinearLayout to display no appointments coming
+            -->
+            <LinearLayout
+                android:id="@+id/llNoAppsAvailable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginVertical="10dp"
+                android:gravity="center">
 
-    </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="No appointments coming :("
+                    android:textColor="#6B66C7"
+                    android:fontFamily="@font/poppins_bold"
+                    android:gravity="center"
+                    android:drawableLeft="@drawable/ic_info_white_24dp"
+                    android:drawableTint="#6B66C7"
+                    ></TextView>
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:id="@+id/homeAppFragmentContainer"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:orientation="vertical">
+
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Book a New Appointment"
+                    android:backgroundTint="#6B66C7"
+                    android:drawableLeft="@drawable/baseline_calendar_month_24"
+
+                    />
+
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="View previous appointments"
+                    android:backgroundTint="#6B66C7"
+                    android:drawableLeft="@drawable/baseline_fitness_center_24"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18dp"
+                android:text="WORKOUT PLANS"
+                android:textColor="#200E32"
+                android:layout_marginTop="20dp"
+                android:layout_marginHorizontal="20dp"
+                android:fontFamily="@font/poppins_semibold"/>
+
+            <!--
+                LinearLayout to display no appointments coming
+            -->
+            <LinearLayout
+                android:id="@+id/llNoSwpAvailable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginVertical="10dp"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="No Self Workouts (for now)"
+                    android:textColor="#6B66C7"
+                    android:fontFamily="@font/poppins_bold"
+                    android:gravity="center"
+                    android:drawableLeft="@drawable/ic_info_white_24dp"
+                    android:drawableTint="#6B66C7"
+                    ></TextView>
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:id="@+id/homeSwpFragmentContainer"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Buy a Self Workout Plan"
+                android:backgroundTint="#6B66C7"
+                android:layout_marginHorizontal="20dp"
+                android:drawableLeft="@drawable/baseline_fitness_center_24"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
 
 

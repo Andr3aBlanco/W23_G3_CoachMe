@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,9 @@ import com.bawp.coachme.model.Appointment;
 import com.bawp.coachme.model.SelfWorkoutPlanByUser;
 import com.bawp.coachme.model.Trainer;
 import com.bawp.coachme.utils.DBHelper;
+import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -55,6 +59,7 @@ public class HomeSwpRecyclerFragment extends Fragment {
         CardView mCardView;
         TextView mTxtViewProductTitle;
         TextView mTxtViewProductDetail;
+        ImageView mImgViewSelfWorkoutLogo;
 
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -65,6 +70,7 @@ public class HomeSwpRecyclerFragment extends Fragment {
             mCardView = itemView.findViewById(R.id.home_swp_card_container);
             mTxtViewProductTitle = itemView.findViewById(R.id.txtViewProductTitle);
             mTxtViewProductDetail = itemView.findViewById(R.id.txtViewProductDetail);
+            mImgViewSelfWorkoutLogo = itemView.findViewById(R.id.imgViewSelfWorkoutLogo);
         }
     }
 
@@ -90,12 +96,18 @@ public class HomeSwpRecyclerFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull HomeSwpRecyclerFragment.RecyclerViewHolder holder, int position) {
 
+            String title = selfWorkoutPlanByUsersList.get(position).getSelfworkoutplan().getTitle();
+            String mainGoal = selfWorkoutPlanByUsersList.get(position).getSelfworkoutplan().getMainGoals();
+            holder.mTxtViewProductTitle.setText(title);
+            holder.mTxtViewProductDetail.setText(mainGoal);
 
-                String title = selfWorkoutPlanByUsersList.get(position).getSelfworkoutplan().getTitle();
-                String mainGoal = selfWorkoutPlanByUsersList.get(position).getSelfworkoutplan().getMainGoals();
-                holder.mTxtViewProductTitle.setText(title);
-                holder.mTxtViewProductDetail.setText(mainGoal);
-
+            //Downloading the logo from firebase storage
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            String imageURL = selfWorkoutPlanByUsersList.get(position).getSelfworkoutplan().getPosterUrlFirestore();
+            StorageReference imageRef = storage.getReferenceFromUrl(imageURL);
+            Glide.with(getContext())
+                    .load(imageRef)
+                    .into(holder.mImgViewSelfWorkoutLogo);
 
         }
 

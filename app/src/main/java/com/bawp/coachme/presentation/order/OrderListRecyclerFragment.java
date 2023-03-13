@@ -191,6 +191,10 @@ public class OrderListRecyclerFragment extends Fragment {
 
             Drawable drawableFitness = ContextCompat.getDrawable(getContext(),R.drawable.baseline_fitness_center_18);
             Drawable drawableGymnastic = ContextCompat.getDrawable(getContext(),R.drawable.baseline_sports_gymnastics_24);
+            int color = ContextCompat.getColor(getContext(), R.color.gymColorDark);
+            drawableFitness.setTint(color);
+            drawableGymnastic.setTint(color);
+
             holder.mTxtViewProductTitle.setText(orderList.get(position).getProductTitle());
             if (orderList.get(position).getProductType() == 1){
                 holder.mTxtViewProductTitle.setCompoundDrawablesWithIntrinsicBounds(drawableGymnastic,null,null,null);

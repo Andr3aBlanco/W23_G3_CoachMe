@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,9 @@ import com.bawp.coachme.R;
 import com.bawp.coachme.model.Appointment;
 import com.bawp.coachme.model.Trainer;
 import com.bawp.coachme.utils.DBHelper;
+import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -53,6 +57,7 @@ public class HomeAppRecyclerFragment extends Fragment {
         CardView mCardView;
         TextView mTxtViewProductTitle;
         TextView mTxtViewProductDetail;
+        ImageView mImgViewTrainerPhoto;
 
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -63,6 +68,7 @@ public class HomeAppRecyclerFragment extends Fragment {
             mCardView = itemView.findViewById(R.id.home_item_card_container);
             mTxtViewProductTitle = itemView.findViewById(R.id.txtViewProductTitle);
             mTxtViewProductDetail = itemView.findViewById(R.id.txtViewProductDetail);
+            mImgViewTrainerPhoto = itemView.findViewById(R.id.imgViewTrainerPhoto);
         }
     }
 
@@ -91,6 +97,14 @@ public class HomeAppRecyclerFragment extends Fragment {
                 //appointments
                 String trainerId = appointmentList.get(position).getTrainerId();
                 Trainer trainer = dbHelper.getTrainerById(trainerId);
+
+                //Downloading the logo from firebase storage
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                String imageURL = trainer.getTrainerProfileImage();
+                StorageReference imageRef = storage.getReferenceFromUrl(imageURL);
+                Glide.with(getContext())
+                        .load(imageRef)
+                        .into(holder.mImgViewTrainerPhoto);
 
                 holder.mTxtViewProductTitle.setText("Training with "+trainer.getFirstName());
 

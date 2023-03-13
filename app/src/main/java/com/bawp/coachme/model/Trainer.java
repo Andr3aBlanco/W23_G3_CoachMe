@@ -12,11 +12,13 @@ public class Trainer {
     private double flatPrice;
     private String phoneNumber;
     private String address;
+    private String trainerProfileImage;
+    private double rating;
 
     public Trainer(){
 
     }
-    public Trainer(String id, String firstName, String lastName, String email, double latitudeCoord, double longitudeCoord, double radius, double flatPrice, String phoneNumber, String address) {
+    public Trainer(String id, String firstName, String lastName, String email, double latitudeCoord, double longitudeCoord, double radius, double flatPrice, String phoneNumber, String address, String trainerProfileImage) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -27,6 +29,22 @@ public class Trainer {
         this.flatPrice = flatPrice;
         this.phoneNumber = phoneNumber;
         this.address = address;
+        this.trainerProfileImage = trainerProfileImage;
+    }
+
+    public Trainer(String id, String firstName, String lastName, String email, double latitudeCoord, double longitudeCoord, double radius, double flatPrice, String phoneNumber, String address, String trainerProfileImage, double rating) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.latitudeCoord = latitudeCoord;
+        this.longitudeCoord = longitudeCoord;
+        this.radius = radius;
+        this.flatPrice = flatPrice;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.trainerProfileImage = trainerProfileImage;
+        this.rating = rating;
     }
 
     public String getId() {
@@ -107,5 +125,21 @@ public class Trainer {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getTrainerProfileImage() {
+        return trainerProfileImage;
+    }
+
+    public void setTrainerProfileImage(String trainerProfileImage) {
+        this.trainerProfileImage = trainerProfileImage;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 }

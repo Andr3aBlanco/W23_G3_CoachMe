@@ -106,12 +106,19 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                         StorageReference csvFileWST = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_SELF_WORKOUT_SESSION_TYPES_TABLE);
                         StorageReference csvFileEx = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_SELF_PLAN_EXERCISES_TABLE);
                         StorageReference csvFileTrainer = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_TRAINER_TABLE);
+                        StorageReference csvFileRatings = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_RATINGS_TABLE);
+                        StorageReference csvFileTrainerService = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_TRAINERSERVICE_TABLE);
+                        StorageReference csvFileSchedule = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_TRAINER_OPEN_SCHEDULE_TABLE);
 
                         List<Task<byte[]>> downloadTasks = new ArrayList<>();
                         downloadTasks.add(csvFileWp.getBytes(Long.MAX_VALUE));
                         downloadTasks.add(csvFileWST.getBytes(Long.MAX_VALUE));
                         downloadTasks.add(csvFileEx.getBytes(Long.MAX_VALUE));
                         downloadTasks.add(csvFileTrainer.getBytes(Long.MAX_VALUE));
+                        downloadTasks.add(csvFileRatings.getBytes(Long.MAX_VALUE));
+                        downloadTasks.add(csvFileTrainerService.getBytes(Long.MAX_VALUE));
+                        downloadTasks.add(csvFileSchedule.getBytes(Long.MAX_VALUE));
+
                         txtViewLoadingText.setText("Downloading Datasets...");
                         // Wait for all Tasks to complete
                         Task<List<byte[]>> allTasks = Tasks.whenAllSuccess(downloadTasks);
@@ -123,15 +130,22 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                                 byte[] csvFileWSTByte = task.getResult().get(1);
                                 byte[] csvFileExByte = task.getResult().get(2);
                                 byte[] csvFileTrainerByte = task.getResult().get(3);
+                                byte[] csvFileRatingsByte = task.getResult().get(4);
+                                byte[] csvFileTrainerServiceByte = task.getResult().get(5);
+                                byte[] csvScheduleByte = task.getResult().get(6);
+
                                 dbHelper.uploadSelfWorkoutPlans(csvFileWpByte);
                                 dbHelper.uploadSelfWorkoutSessionTypes(csvFileWSTByte);
                                 dbHelper.uploadSelfWorkoutPlanExercises(csvFileExByte);
                                 dbHelper.uploadTrainers(csvFileTrainerByte);
 
+                                // do there the trainers
+                                dbHelper.uploadRatings(csvFileRatingsByte);
+                                dbHelper.uploadTrainerService(csvFileTrainerServiceByte);
+                                dbHelper.uploadTrainerSchedule(csvScheduleByte);
                                 //some dump data
                                 dbHelper.uploadSampleAppointment();
                                 dbHelper.uploadSampleWorkoutPlanByUser();
-
 
                                 moveToMainActivity();
                             }
@@ -147,8 +161,6 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
     }
 
     private void moveToMainActivity(){
-
-
         txtViewLoadingText.setText("Welcome!");
         TimerTask timerTask = new TimerTask() {
             @Override
@@ -160,6 +172,5 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
         };
         Timer timer = new Timer();
         timer.schedule(timerTask,3000);
-
     }
 }
