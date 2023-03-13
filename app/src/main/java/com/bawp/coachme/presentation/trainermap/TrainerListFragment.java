@@ -218,13 +218,9 @@ public class TrainerListFragment extends Fragment {
                     unsortedTrainers.sort(Comparator.comparingDouble(Trainer::getRating));
                 }
             } else if (sortingOpt == 2) {
-                    System.out.println("need to create method for the distance");
 
                 TrainerDistanceSorter sorter = new TrainerDistanceSorter();
                 unsortedTrainers = sorter.sortByDistance(unsortedTrainers, yourLatitude, yourLongitude);
-
-
-
 
             } else{
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
