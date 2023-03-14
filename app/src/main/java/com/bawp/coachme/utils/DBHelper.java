@@ -91,6 +91,7 @@ public class DBHelper extends SQLiteOpenHelper {
             "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
             "sessionStatus INT," +
             "sessionDate BIGINT,"+
+            "status INT,"+
             "selfWorkoutPlansByUserId INT," +
             "selfWorkoutSessionTypeId TEXT," +
             "FOREIGN KEY(selfWorkoutPlansByUserId) REFERENCES selfWorkoutPlansByUser(_id)," +
@@ -737,7 +738,7 @@ public class DBHelper extends SQLiteOpenHelper {
                  planPrice, posterUrlFirestore, mainGoals, duration, daysPerWeek, level);
 
                 SelfWorkoutPlanByUser selfWorkoutPlanByUser = new SelfWorkoutPlanByUser(selfWorkoutPlanByUserId,
-                selfWorkoutPlan, new Date(requestedDate), status, new Date(paymentDate), paymentId);
+                selfWorkoutPlan, new Date(requestedDate).getTime(), status, new Date(paymentDate).getTime(), paymentId);
 
                 selfWorkoutPlanByUsersList.add(selfWorkoutPlanByUser);
 
@@ -809,7 +810,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     planPrice, posterUrlFirestore, mainGoals, duration, daysPerWeek, level);
 
             selfWorkoutPlanByUser = new SelfWorkoutPlanByUser(selfWorkoutPlanByUserId,
-                    selfWorkoutPlan, new Date(requestedDate), status, new Date(paymentDate), paymentId);
+                    selfWorkoutPlan, new Date(requestedDate).getTime(), status, new Date(paymentDate).getTime(), paymentId);
 
         }
 
@@ -852,7 +853,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         planPrice, posterUrlFirestore, mainGoals, duration, daysPerWeek, level);
 
                 SelfWorkoutPlanByUser selfWorkoutPlanByUser = new SelfWorkoutPlanByUser(selfWorkoutPlanByUserId,
-                        selfWorkoutPlan, new Date(requestedDate), status, new Date(paymentDate), paymentId);
+                        selfWorkoutPlan, new Date(requestedDate).getTime(), status, new Date(paymentDate).getTime(), paymentId);
 
                 selfWorkoutPlanByUsersList.add(selfWorkoutPlanByUser);
 
@@ -1027,7 +1028,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         // Create a ContentValues object with the new value of the "status" field
         ContentValues values = new ContentValues();
-        values.put("status", 2);
+        values.put("status", status);
 
         // Update the appointments table with the new value of the "status" field
         int numRowsUpdated = db.update("selfWorkoutSessions", values, "_id=?", new String[] {Integer.toString(id)});
@@ -1057,6 +1058,7 @@ public class DBHelper extends SQLiteOpenHelper {
         ses.setId(id.intValue());
         ses.setSessionDate(sessionDate);
         ses.setSessionStatus(status);
+
         SelfWorkoutPlanByUser swpUser = getSelfWorkoutPlanByUserById(selfworkoutUserId);
         SelfWorkoutSessionType ssT = getSessionTypeById(sessionTypeId);
         ses.setSelfWorkoutPlanByUser(swpUser);
@@ -1065,6 +1067,8 @@ public class DBHelper extends SQLiteOpenHelper {
         //Setting exercises Logs
         List<SelfWorkoutPlanExercise> exercisesList = getSelfWorkoutExerciseBySessionTypeId(ssT.getId());
 
+        Log.d("SIZE LIST",Integer.toString(exercisesList.size()));
+
         for(SelfWorkoutPlanExercise exercise : exercisesList){
 
             db = getWritableDatabase();
@@ -1072,7 +1076,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
             log.put("selfWorkoutSessionId",id.intValue());
             log.put("selfWorkoutPlanExerciseId",exercise.getId());
-            log.put("status",1);
+            log.put("status",1); //pending
 
             db.insert("selfWorkoutSessionLogs", null, log);
 

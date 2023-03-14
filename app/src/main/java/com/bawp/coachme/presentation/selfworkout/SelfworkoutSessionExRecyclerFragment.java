@@ -100,6 +100,7 @@ public class SelfworkoutSessionExRecyclerFragment extends Fragment {
                     SelfWorkoutSessionLog exerciseDetail = exercisesLog.get(selectedPosition);
                     Bundle dataToPass = new Bundle();
                     dataToPass.putSerializable("exerciseDetail",(Serializable) exerciseDetail);
+                    dataToPass.putInt("sessionId",sessionId);
 
                     SelfworkoutExerciseDetailFragment selfworkoutExerciseDetailFragment = new SelfworkoutExerciseDetailFragment();
                     selfworkoutExerciseDetailFragment.setArguments(dataToPass);

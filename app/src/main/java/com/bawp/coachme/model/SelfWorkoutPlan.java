@@ -16,6 +16,7 @@ package com.bawp.coachme.model;
 
 public class SelfWorkoutPlan {
 
+    private String id;
     private String title;
     private String description;
     private double planPrice;
@@ -29,11 +30,31 @@ public class SelfWorkoutPlan {
 
     }
 
+    public SelfWorkoutPlan(String id,String title, String description, double planPrice, String posterUrlFirestore, String mainGoals, String duration, int daysPerWeek, String level) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.planPrice = planPrice;
+        this.posterUrlFirestore = posterUrlFirestore;
+        this.mainGoals = mainGoals;
+        this.duration = duration;
+        this.daysPerWeek = daysPerWeek;
+        this.level = level;
+    }
+
     public SelfWorkoutPlan(String title, String description, double planPrice, String posterUrlFirestore) {
         this.title = title;
         this.description = description;
         this.planPrice = planPrice;
         this.posterUrlFirestore = posterUrlFirestore;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitle() {

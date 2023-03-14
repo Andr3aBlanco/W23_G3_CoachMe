@@ -22,7 +22,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,14 +42,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bawp.coachme.R;
 import com.bawp.coachme.model.Appointment;
 import com.bawp.coachme.model.Order;
-import com.bawp.coachme.model.SelfWorkoutPlanByUser;
-import com.bawp.coachme.utils.UserSingleton;
+import com.bawp.coachme.utils.DBHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -109,82 +106,66 @@ public class OrderListRecyclerFragment extends Fragment {
 
         private List<Order> orderList;
         private OrdersFragment parentFragment;
+        private DBHelper dbHelper;
 
         public RecyclerViewAdapter(List<Order> orderList, OrdersFragment parentFragment) {
             this.orderList = orderList;
             this.parentFragment = parentFragment;
+            this.dbHelper = new DBHelper(getContext());
         }
 
         public void cancelOrder(String orderId, int productType, int orderPosition){
             if(productType == 1){
-                FirebaseDatabase CoachMeDatabaseInstance = FirebaseDatabase.getInstance();
-                DatabaseReference CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
-                DatabaseReference appRef = CoachMeDatabaseRef.child("appointments");
-                Task appointmentQuery = appRef.child(orderId).get();
 
-                appointmentQuery.addOnCompleteListener(new OnCompleteListener() {
-                    @Override
-                    public void onComplete(@NonNull Task task) {
-                        if(task.isSuccessful()){
-                            DataSnapshot dsResult = (DataSnapshot) task.getResult();
-                            Appointment appObj = dsResult.getValue(Appointment.class);
-                            appObj.setStatus(2); //cancelled
-                            appObj.setPaymentDate(0);
-                            appObj.setPaymentId(null);
-                            appRef.child(orderId).setValue(appObj);
-                            orderList.remove(orderPosition);
-                            notifyDataSetChanged();
-                            parentFragment.updateSubtotalAfterCancelling();
-                            Toast.makeText(getContext(),"Appointment has been cancelled",Toast.LENGTH_SHORT).show();
-                            updateUIByOrderListSize();
-                        }else{
-                            Exception error = task.getException();
-                            System.out.println("At least one task failed: " + error.getMessage());
+                //Here we have to make 2 updates, first locally in SQL and into Firebase Database,
+                //to have both databases available and let free 1 spot of the trainer
+
+                int numRowsUpdated = dbHelper.updateAppointmentStatus(orderId,3);
+
+                if (numRowsUpdated>0){
+                    FirebaseDatabase CoachMeDatabaseInstance = FirebaseDatabase.getInstance();
+                    DatabaseReference CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
+                    DatabaseReference appRef = CoachMeDatabaseRef.child("appointments");
+                    Task appointmentQuery = appRef.child(orderId).get();
+
+                    appointmentQuery.addOnCompleteListener(new OnCompleteListener() {
+                        @Override
+                        public void onComplete(@NonNull Task task) {
+                            if(task.isSuccessful()){
+                                DataSnapshot dsResult = (DataSnapshot) task.getResult();
+                                Appointment appObj = dsResult.getValue(Appointment.class);
+                                appObj.setStatus(2); //cancelled
+                                appObj.setPaymentDate(0);
+                                appObj.setPaymentId(null);
+                                appRef.child(orderId).setValue(appObj);
+                                orderList.remove(orderPosition);
+                                notifyDataSetChanged();
+                                parentFragment.updateSubtotalAfterCancelling();
+                                Toast.makeText(getContext(),"Appointment has been cancelled",Toast.LENGTH_SHORT).show();
+                                updateUIByOrderListSize();
+                            }else{
+                                Exception error = task.getException();
+                                System.out.println("At least one task failed: " + error.getMessage());
+                            }
                         }
-                    }
-                });
-
+                    });
+                }else{
+                    Toast.makeText(getContext(),"An error occurred while cancelling the self-workout plan",Toast.LENGTH_SHORT).show();
+                }
             }else{
 
-                FirebaseDatabase CoachMeDatabaseInstance = FirebaseDatabase.getInstance();
-                DatabaseReference CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
-                DatabaseReference swpRef = CoachMeDatabaseRef.child("selfWorkoutPlansByUser");
+                int numRowsUpdated = dbHelper.updateSelfWorkoutPlanByUserStatus(
+                        orderId,3);
 
-                Query swpQuery = swpRef.orderByChild("customerId").equalTo(UserSingleton.getInstance().getUserId());
-                Task swpRefTask = swpQuery.get();
-
-                swpRefTask.addOnCompleteListener(new OnCompleteListener() {
-                    @Override
-                    public void onComplete(@NonNull Task task) {
-                        if(task.isSuccessful()){
-                            DataSnapshot dsResult = (DataSnapshot) task.getResult();
-                            for (DataSnapshot ds: dsResult.getChildren()){
-
-                                SelfWorkoutPlanByUser swpObj = ds.getValue(SelfWorkoutPlanByUser.class);
-                                Log.d("FIREBASE",swpObj.getSelfworkoutplanId());
-                                Log.d("FIREBASE",orderId);
-                                String swpKey = ds.getKey();
-                                if (swpObj.getSelfworkoutplanId().equals(orderId)){
-                                    //cancel it!
-                                    swpObj.setStatus(2);
-                                    swpObj.setPaymentDate(0);
-                                    swpObj.setPaymentId(null);
-                                    swpRef.child(swpKey).setValue(swpObj);
-                                    orderList.remove(orderPosition);
-                                    notifyDataSetChanged();
-                                    parentFragment.updateSubtotalAfterCancelling();
-                                    Toast.makeText(getContext(),"Self-workout purchase has been cancelled",Toast.LENGTH_SHORT).show();
-                                    updateUIByOrderListSize();
-                                }
-                            }
-
-                        }else{
-                            Exception error = task.getException();
-                            System.out.println("At least one task failed: " + error.getMessage());
-                        }
-                    }
-                });
-
+                if (numRowsUpdated > 0){
+                    orderList.remove(orderPosition);
+                    notifyDataSetChanged();
+                    parentFragment.updateSubtotalAfterCancelling();
+                    Toast.makeText(getContext(),"Self-workout purchase has been cancelled",Toast.LENGTH_SHORT).show();
+                    updateUIByOrderListSize();
+                }else{
+                    Toast.makeText(getContext(),"An error occurred while cancelling the self-workout plan",Toast.LENGTH_SHORT).show();
+                }
             }
         }
 
@@ -210,6 +191,10 @@ public class OrderListRecyclerFragment extends Fragment {
 
             Drawable drawableFitness = ContextCompat.getDrawable(getContext(),R.drawable.baseline_fitness_center_18);
             Drawable drawableGymnastic = ContextCompat.getDrawable(getContext(),R.drawable.baseline_sports_gymnastics_24);
+            int color = ContextCompat.getColor(getContext(), R.color.gymColorDark);
+            drawableFitness.setTint(color);
+            drawableGymnastic.setTint(color);
+
             holder.mTxtViewProductTitle.setText(orderList.get(position).getProductTitle());
             if (orderList.get(position).getProductType() == 1){
                 holder.mTxtViewProductTitle.setCompoundDrawablesWithIntrinsicBounds(drawableGymnastic,null,null,null);
