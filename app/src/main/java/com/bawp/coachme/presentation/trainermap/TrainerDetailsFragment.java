@@ -138,12 +138,12 @@ public class TrainerDetailsFragment extends Fragment {
         TextView tvBio = view.findViewById(R.id.tvTrainerBio);
         TextView tvRating = view.findViewById(R.id.tvTrainerRating);
 
-        ImageButton seeMore = view.findViewById(R.id.btnTrainerSeeAppTable);
+        Button seeMore = view.findViewById(R.id.btnTrainerSeeAppTable);
         RelativeLayout calendarLayout = view.findViewById(R.id.calLayout); //ok
         ListView listViewHours = view.findViewById(R.id.lvTimes);
-        ImageButton closeBtn = view.findViewById(R.id.btnCloseCard);
+        Button closeBtn = view.findViewById(R.id.btnCloseCard);
         CardView wholeCard = view.findViewById(R.id.cardViewTrainerDetails);
-        ImageButton addCart = view.findViewById(R.id.btnAddCart);
+        Button addCart = view.findViewById(R.id.btnAddCart);
 //        calendarView = view.findViewById(R.id.cvDates); //check this
 
         calendarView = view.findViewById(R.id.cvDates);
@@ -341,9 +341,10 @@ public class TrainerDetailsFragment extends Fragment {
                     endOfHour = calendar.getTimeInMillis();
 
                     dbHelper.removeFromSchedule(trainerId, bookedDate, endOfHour);
+                    String deviceToken = UserSingleton.getInstance().getUserDeviceToken();
 
                     // Create query to add appointment by time
-                    dbHelper.addAppToCart(appId, bookedDate, registeredDate, serviceType, 1, totalPrice, location, trainerId, customerId);
+                    dbHelper.addAppToCart(appId, bookedDate, registeredDate, serviceType, 1, totalPrice, location, trainerId, customerId, deviceToken);
                 }
             }
         });

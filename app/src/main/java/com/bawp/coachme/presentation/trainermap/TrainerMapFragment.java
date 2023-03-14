@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.bawp.coachme.R;
 import com.bawp.coachme.model.Trainer;
 import com.bawp.coachme.model.User;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -71,6 +72,10 @@ public class TrainerMapFragment extends Fragment {
             @Override
             public void onMapReady(@NonNull GoogleMap map) {
                 googleMap = map;
+
+                // Set the initial position and zoom level
+                LatLng initialPosition = new LatLng(49.18308405089783, -122.95854180247775); // Vancouver Metro 49.18308405089783, -122.95854180247775
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 10f));
 
                 Log.d("Andrea", "Map Ready");
                 checkLocationPermissionAndEnableMyLocation();

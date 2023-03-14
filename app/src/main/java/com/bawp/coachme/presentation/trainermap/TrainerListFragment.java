@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -74,6 +75,7 @@ public class TrainerListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        trainerList = new ArrayList<>();
         if (getArguments() != null) {
             unsortTrainers = (HashMap<String, Trainer>) getArguments().getSerializable("FILTERED_TRAINERS");
             sortOption = getArguments().getInt("SORTING_OPTION");
@@ -117,12 +119,12 @@ public class TrainerListFragment extends Fragment {
         private TextView tvBio;
         private TextView tvRating;
 
-        private  ImageButton seeMore;
-        private ImageButton closeCard;
+        private Button seeMore;
+        private Button closeCard;
         private RelativeLayout calendarLayout;
         private  ListView listViewHours;
-        private  ImageButton closeBtn;
-        private ImageButton addCart;
+        private  Button closeBtn;
+        private Button addCart;
         private CalendarView calendarView;
 
         // constructor OK
@@ -185,6 +187,7 @@ public class TrainerListFragment extends Fragment {
         List<Long> availApp = new ArrayList<>();
         HashMap<String, List<Integer>> appointmentsMap = new HashMap<>();
 
+        /*
         /*
         * Sorting options comes from the filter static parent
         * 1 -> Distance
@@ -411,9 +414,10 @@ public class TrainerListFragment extends Fragment {
                     endOfHour = calendar.getTimeInMillis();
 
                     dbHelper.removeFromSchedule(trainerId, bookedDate, endOfHour);
+                    String deviceToken = UserSingleton.getInstance().getUserDeviceToken();
 
                     // Create query to add appointment by time
-                    dbHelper.addAppToCart(appId, bookedDate, registeredDate, serviceType, 1, totalPrice, location, trainerId, customerId);
+                    dbHelper.addAppToCart(appId, bookedDate, registeredDate, serviceType, 1, totalPrice, location, trainerId, customerId, deviceToken);
                 }
             });
 

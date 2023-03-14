@@ -5,9 +5,9 @@
     android:id="@+id/cardViewTrainerDetails"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp"
+    android:layout_margin="6dp"
+    app:cardCornerRadius="6dp"
+    app:cardElevation="6dp"
     tools:context=".presentation.trainermap.TrainerDetailsFragment">
 
     <RelativeLayout
@@ -28,9 +28,11 @@
             android:id="@+id/tvTrainerName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/tranerNameText"
             android:layout_toRightOf="@+id/ivTrainerPic"
-            android:textSize="20sp" />
+            android:text="@string/tranerNameText"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvTrainerBio"
@@ -38,7 +40,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/tvTrainerName"
             android:layout_toRightOf="@id/ivTrainerPic"
-            android:text="@string/trainerBioText" />
+            android:text="@string/trainerBioText"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
         <TextView
             android:id="@+id/tvPriceHour"
@@ -60,33 +63,33 @@
             android:text="@string/tvTrainingRating"
             android:textSize="12sp" />
 
-        <ImageButton
+        <Button
             android:id="@+id/btnCloseCard"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            app:srcCompat="@drawable/ic_cancel_white_18dp" />
+            android:layout_marginEnd="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            app:icon="@drawable/ic_link_close" />
 
-        <ImageButton
+        <Button
             android:id="@+id/btnTrainerSeeAppTable"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_below="@id/btnCloseCard"
-            android:layout_marginStart="145dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="100dp"
-            android:layout_marginBottom="8dp"
-            android:layout_toEndOf="@id/tvTrainerRating"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="2dp"
+            android:layout_alignParentEnd="true"
             android:backgroundTint="#173F51B5"
-            android:src="@drawable/ic_link_close"
             android:text="@string/btnTrainerSeeAppTable"
             android:textColor="#4A4A48"
             android:textSize="11sp"
             android:textStyle="bold"
-            />
+            app:icon="@drawable/baseline_expand_more_24" />
 
         <RelativeLayout
             android:id="@+id/calLayout"
@@ -110,7 +113,7 @@
 
             </ListView>
 
-            <ImageButton
+            <Button
                 android:id="@+id/btnAddCart"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
@@ -118,7 +121,8 @@
                 android:layout_toRightOf="@id/cvDates"
                 android:layout_marginTop="20dp"
                 android:layout_marginLeft="20dp"
-                android:src="@drawable/baseline_add_shopping_cart_24" />
+                app:icon="@drawable/baseline_add_shopping_cart_24"
+                style = "@style/Widget.MaterialComponents.Button.TextButton"/>
         </RelativeLayout>
     </RelativeLayout>
 

@@ -502,9 +502,10 @@ public class DBHelper extends SQLiteOpenHelper {
                 String trainerId = cursor.getString(cursor.getColumnIndex("trainerId"));
                 String paymentId = cursor.getString(cursor.getColumnIndex("paymentId"));
                 Long paymentDate = cursor.getLong(cursor.getColumnIndex("paymentDate"));
+//                String deviceToken = cursor.getString(cursor.getColumnIndex("deviceToken"));
 
                 Appointment appointment = new Appointment(id,bookedDate,registeredDate,serviceType,status,
-                        totalPrice,location,trainerId,UserSingleton.getInstance().getUserId());
+                        totalPrice,location,trainerId,UserSingleton.getInstance().getUserId(), paymentId, paymentDate, UserSingleton.getInstance().getUserDeviceToken());
 
                 if (paymentId == null){
                     appointment.setPaymentId(null);
@@ -563,7 +564,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public void addAppToCart(String id,long bookedDate,long registeredDate, String serviceType, int status,
                              double totalPrice, String location,
-                             String trainerId, String customerId){
+                             String trainerId, String customerId, String deviceToken){
 
         ContentValues values = new ContentValues();
         values.put("_id", id);
@@ -575,6 +576,7 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put("location", location);
         values.put("trainerId", trainerId);
         values.put("customerId", customerId);
+        values.put("deviceToken", deviceToken);
 
         SQLiteDatabase db = this.getWritableDatabase();
         long result = db.insert("appointments", null, values);
@@ -767,7 +769,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "trainers.latitudeCoord, trainers.longitudeCoord, trainers.radius, trainers.flatPrice, trainers.phoneNumber," +
                 "trainers.address, AVG(ratings.rating) AS avgRating " +
                 " FROM trainers " +
-                "JOIN ratings ON trainers._id = ratings.trainerID " +
+                "LEFT JOIN ratings ON trainers._id = ratings.trainerID " +
                 "JOIN trainerservice ON trainers._id = trainerservice.trainerID " +
                 "JOIN schedule ON trainers._id = schedule.trainerID " +
                 "WHERE schedule.time BETWEEN " + dateFrom +" AND " + dateTo ;
@@ -775,7 +777,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
         // Add service filtering if services list is not empty
         if (!services.isEmpty()) {
-            String serviceList = TextUtils.join(",", services);
+            String serviceList = "'" + TextUtils.join("','", services) + "'";
+            System.out.println(serviceList);
             selectQuery += " AND trainerservice.service IN (" + serviceList + ") ";
         }
 

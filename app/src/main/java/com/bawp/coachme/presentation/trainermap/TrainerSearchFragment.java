@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
@@ -80,7 +81,7 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
     CheckBox pilates;
 
 
-    ImageButton search;
+    Button search;
 
     private DatePickerDialog datePickerDialog;
 
@@ -352,6 +353,7 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
             @Override
             public void onClick(View v) {
 
+                selectedServices = new ArrayList<>();
                 // Reset the filtered list
                 filteredTrainersHM = new HashMap<>();
 
