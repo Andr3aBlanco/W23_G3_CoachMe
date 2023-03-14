@@ -108,7 +108,8 @@ public class DBHelper extends SQLiteOpenHelper {
             "trainerId TEXT," +
             "customerId TEXT," +
             "paymentId TEXT," +
-            "paymentDate BIGINT" +
+            "paymentDate BIGINT," +
+            "deviceToken TEXT" +
             ");";
 
     private static final String CREATE_TRAINERS_TABLE = "CREATE TABLE trainers(" +
@@ -872,6 +873,38 @@ public class DBHelper extends SQLiteOpenHelper {
 
         db.close();
     }
+
+    public ArrayList<Appointment> getAllAppointmentsByStatusAndUsername(int status, String username) {
+        ArrayList<Appointment> appointments = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT * FROM appointments WHERE status=? AND customerId=(SELECT _id FROM customers WHERE username=?)";
+        Cursor cursor = db.rawQuery(query, new String[] {String.valueOf(status), username});
+
+        if (cursor.moveToFirst()) {
+            do {
+                Appointment appointment = new Appointment();
+                appointment.setId(cursor.getString(cursor.getColumnIndex("_id")));
+                appointment.setBookedDate(cursor.getLong(cursor.getColumnIndex("bookedDate")));
+                appointment.setRegisteredDate(cursor.getLong(cursor.getColumnIndex("registeredDate")));
+                appointment.setServiceType(cursor.getString(cursor.getColumnIndex("serviceType")));
+                appointment.setStatus(cursor.getInt(cursor.getColumnIndex("status")));
+                appointment.setTotalPrice(cursor.getFloat(cursor.getColumnIndex("totalPrice")));
+                appointment.setLocation(cursor.getString(cursor.getColumnIndex("location")));
+                appointment.setTrainerId(cursor.getString(cursor.getColumnIndex("trainerId")));
+                appointment.setCustomerId(cursor.getString(cursor.getColumnIndex("customerId")));
+                appointment.setPaymentId(cursor.getString(cursor.getColumnIndex("paymentId")));
+                appointment.setPaymentDate(cursor.getLong(cursor.getColumnIndex("paymentDate")));
+                appointment.setDeviceToken(UserSingleton.getInstance().getUserDeviceToken());
+                appointments.add(appointment);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return appointments;
+    }
+
+
 
 
 }

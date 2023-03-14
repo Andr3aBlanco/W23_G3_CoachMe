@@ -157,7 +157,7 @@ public class TrainerMapFragment extends Fragment {
                     .position(position)
                     .title(theTrainer.getFirstName())
                     .snippet(key) //To pass to trainer details
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
 
 
 
