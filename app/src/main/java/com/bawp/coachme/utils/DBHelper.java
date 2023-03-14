@@ -851,4 +851,27 @@ public class DBHelper extends SQLiteOpenHelper {
         // Close the database connection
         db.close();
     }
+
+    public void insertSchedule(long time, String trainerID) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        String query = "SELECT MAX(_id) FROM schedule";
+        Cursor cursor = db.rawQuery(query, null);
+        int maxId = 0;
+        if (cursor.moveToFirst()) {
+            maxId = cursor.getInt(0);
+        }
+        maxId++;
+
+        ContentValues values = new ContentValues();
+        values.put("_id", maxId);
+        values.put("time", time);
+        values.put("trainerID", trainerID);
+
+        db.insert("schedule", null, values);
+
+        db.close();
+    }
+
+
 }
