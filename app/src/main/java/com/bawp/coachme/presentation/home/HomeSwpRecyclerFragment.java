@@ -134,7 +134,7 @@ public class HomeSwpRecyclerFragment extends Fragment {
                     fragmentTransaction.replace(R.id.barFrame, selfworkoutFragment);
 
                     // Add the transaction to the back stack
-                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.addToBackStack("self-workout-main");
 
                     // Commit the transaction
                     fragmentTransaction.commit();

@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +28,7 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class SelfworkoutExerciseDetailFragment extends Fragment {
@@ -39,11 +43,13 @@ public class SelfworkoutExerciseDetailFragment extends Fragment {
     ProgressBar pbExerciseDetail;
     LinearLayout llExerciseDetailLayout;
     Button btnMarkCompleted;
+    Button btnGoBackExerciseDetail;
     DBHelper dbHelper;
 
     public SelfworkoutExerciseDetailFragment() {
         // Required empty public constructor
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -76,6 +82,7 @@ public class SelfworkoutExerciseDetailFragment extends Fragment {
         txtViewRestTime = view.findViewById(R.id.txtViewRestTime);
         imgViewExercise = view.findViewById(R.id.imgViewExercise);
         btnMarkCompleted = view.findViewById(R.id.btnMarkCompleted);
+        btnGoBackExerciseDetail = view.findViewById(R.id.btnGoBackExerciseDetail);
 
         pbExerciseDetail = view.findViewById(R.id.pbExerciseDetail);
         llExerciseDetailLayout = view.findViewById(R.id.llExerciseDetailLayout);
@@ -105,18 +112,72 @@ public class SelfworkoutExerciseDetailFragment extends Fragment {
                 int numRowsUpdated = dbHelper.updateSelfWorkoutSessionLogByStatus(exerciseDetail.getId(),3);
                 if (numRowsUpdated > 0){
                     //We can proceed
-                    Intent moveToCompletedActivity = new Intent(getActivity(),SelfworkoutExerciseCompletedActivity.class);
-                    moveToCompletedActivity.putExtra("sessionId",sessionId);
-                    startActivity(moveToCompletedActivity);
+                    /*
+                        Intent moveToCompletedActivity = new Intent(getActivity(),SelfworkoutExerciseCompletedActivity.class);
+                        moveToCompletedActivity.putExtra("sessionId",sessionId);
+                        startActivity(moveToCompletedActivity);
+                    */
+                    Bundle passDataToFragment = new Bundle();
+                    passDataToFragment.putInt("sessionId",sessionId);
+
+                    SelfworkoutExerciseCompletedFragment selfworkoutExerciseCompletedFragment = new SelfworkoutExerciseCompletedFragment();
+                    selfworkoutExerciseCompletedFragment.setArguments(passDataToFragment);
+
+                    FragmentManager fm = getParentFragmentManager();
+                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+                    // Replace the current fragment with the new one
+                    fragmentTransaction.replace(R.id.barFrame, selfworkoutExerciseCompletedFragment);
+
+                    // Commit the transaction
+                    fragmentTransaction.commit();
+
                 }else{
                     Toast.makeText(getContext(),"There is an error while updating the database",Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
+        btnGoBackExerciseDetail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<SelfWorkoutSessionLog> exercisesLog = dbHelper.getSessionLogs(sessionId);
+
+                if (exercisesLog.size() > 0 ){
+                    //Let's send the data into the next fragment
+                    Bundle dataToPass = new Bundle();
+                    dataToPass.putSerializable("exercisesLog",(Serializable) exercisesLog);
+                    dataToPass.putInt("sessionId",sessionId);
+
+                    SelfworkoutSessionExerciseFragment selfworkoutSessionExerciseFragment = new SelfworkoutSessionExerciseFragment();
+                    selfworkoutSessionExerciseFragment.setArguments(dataToPass);
+
+                    FragmentManager fm = getParentFragmentManager();
+                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+                    // Replace the current fragment with the new one
+                    fragmentTransaction.replace(R.id.barFrame, selfworkoutSessionExerciseFragment);
+
+                    // Add the transaction to the back stack
+                    fragmentTransaction.addToBackStack("self-workout-session-exercises-options");
+
+                    // Commit the transaction
+                    fragmentTransaction.commit();
+                }else{
+                    Toast.makeText(getContext(),"No exercises routine available for this session!",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        if(exerciseDetail.getSessionExerciseStatus() == 3){
+            btnMarkCompleted.setVisibility(View.GONE);
+        }
+
         pbExerciseDetail.setVisibility(View.GONE);
         llExerciseDetailLayout.setVisibility(View.VISIBLE);
 
         return view;
     }
+
+
 }

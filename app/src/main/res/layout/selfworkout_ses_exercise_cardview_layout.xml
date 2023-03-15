@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,13 +8,14 @@
     android:id="@+id/card_container_sw_exercise"
     app:cardCornerRadius="10dp"
     app:cardElevation="8dp"
+    app:strokeColor="#6B66C7"
+    app:strokeWidth="2dp"
     >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:background="#F0F0F0"
         >
 
         <TextView
@@ -24,18 +25,15 @@
             android:layout_weight="0.6"
             android:text="TextView"
             android:textSize="20dp"
-            android:textColor="#FE685E"
+            android:textColor="#6B66C7"
             android:fontFamily="@font/poppins_bold"
             android:gravity = "center|left"
             android:paddingLeft="10dp"
             android:layout_margin="10dp"
             />
 
-
-        <!--FE685E-->
-
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>
 
 

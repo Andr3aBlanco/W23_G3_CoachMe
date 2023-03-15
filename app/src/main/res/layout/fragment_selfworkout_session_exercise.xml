@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/coachme_background"
+    android:background="#F9F9F9"
     android:orientation="vertical"
     tools:context=".presentation.selfworkout.SelfworkoutSessionExerciseFragment">
 
@@ -36,8 +36,9 @@
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="20dp"
                 android:textSize="25dp"
-                android:textColor="#FE685E"
+                android:textColor="#200E32"
                 android:drawableLeft="@drawable/baseline_shopping_cart_24"
+                android:drawableTint="#200E32"
                 android:fontFamily="@font/poppins_bold"
                 android:text="Select an Exercise"/>
 
@@ -64,25 +65,17 @@
             <!--
                 Buttons
             -->
-            <LinearLayout
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBackToSessionTypes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="20dp">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnOrderCheckout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Back"
-                    android:backgroundTint="#FE685E"
-                    android:fontFamily="@font/poppins_bold"
-                    android:drawableLeft="@drawable/baseline_arrow_back_36"
-                    app:cornerRadius="10dp"
-                    />
-
-            </LinearLayout>
+                android:text="Back"
+                android:backgroundTint="#6B66C7"
+                android:fontFamily="@font/poppins_bold"
+                android:drawableLeft="@drawable/baseline_arrow_back_36"
+                app:cornerRadius="10dp"
+                />
 
         </LinearLayout>
     </RelativeLayout>

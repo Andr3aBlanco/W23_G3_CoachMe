@@ -1,6 +1,7 @@
 package com.bawp.coachme.presentation.selfworkout;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,6 +94,9 @@ public class SelfworkoutSessionExRecyclerFragment extends Fragment {
             int selectedPosition = position;
             holder.mTxtViewExerciseName.setText(exercisesLog.get(position).getSelfWorkoutExercise().getExerciseName().toUpperCase());
 
+            if(exercisesLog.get(position).getSessionExerciseStatus() == 3){
+                holder.mCardView.setBackgroundColor(getResources().getColor(R.color.disabled_color));
+            }
             //Set the event when the user click on one card
             holder.mCardView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -112,12 +116,13 @@ public class SelfworkoutSessionExRecyclerFragment extends Fragment {
                     fragmentTransaction.replace(R.id.barFrame, selfworkoutExerciseDetailFragment);
 
                     // Add the transaction to the back stack
-                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.addToBackStack("self-workout-session-exercise-detail");
 
                     // Commit the transaction
                     fragmentTransaction.commit();
                 }
             });
+
         }
 
         @Override

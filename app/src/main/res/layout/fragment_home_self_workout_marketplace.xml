@@ -6,7 +6,7 @@ android:layout_height="match_parent"
 xmlns:app="http://schemas.android.com/apk/res-auto"
 android:background="#F9F9F9"
 android:orientation="vertical"
-tools:context=".presentation.selfworkout.SelfworkoutSessionTypeFragment">
+tools:context=".presentation.home.HomeSelfWorkoutMarketplaceFragment">
 
 <RelativeLayout
     android:layout_width="match_parent"
@@ -17,7 +17,7 @@ tools:context=".presentation.selfworkout.SelfworkoutSessionTypeFragment">
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        android:id="@+id/pbSelfworkoutSessionType"
+        android:id="@+id/pbSelfworkoutMarketplace"
         />
 
     <!--
@@ -27,7 +27,7 @@ tools:context=".presentation.selfworkout.SelfworkoutSessionTypeFragment">
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:id="@+id/llSelfworkoutSessionType">
+        android:id="@+id/llSelfworkoutMarketplace">
 
         <TextView
             android:id="@+id/textView2"
@@ -40,7 +40,7 @@ tools:context=".presentation.selfworkout.SelfworkoutSessionTypeFragment">
             android:drawableLeft="@drawable/baseline_shopping_cart_24"
             android:drawableTint="#200E32"
             android:fontFamily="@font/poppins_bold"
-            android:text="Select a Session"/>
+            android:text="Workout Marketplace"/>
 
         <!--
             FrameLayout to display the CardViews
@@ -49,7 +49,7 @@ tools:context=".presentation.selfworkout.SelfworkoutSessionTypeFragment">
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:id="@+id/sessionTypeFragmentContainer"
+            android:id="@+id/marketplaceFragmentContainer"
             />
 
         <!--
@@ -63,7 +63,7 @@ tools:context=".presentation.selfworkout.SelfworkoutSessionTypeFragment">
             android:layout_marginTop="20dp">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnBackToWorkoutMain"
+                android:id="@+id/btnBackToHome"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Back"

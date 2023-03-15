@@ -6,10 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".presentation.selfworkout.SelfworkoutExerciseCompletedActivity">
 
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/animation_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

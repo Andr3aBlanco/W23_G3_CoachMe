@@ -1,5 +1,7 @@
 package com.bawp.coachme.presentation.selfworkout;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bawp.coachme.R;
 import com.bawp.coachme.model.SelfWorkoutPlan;
@@ -57,6 +60,7 @@ public class SelfworkoutFragment extends Fragment {
     ProgressBar pbSelfworkoutMain;
     LinearLayout llSelfworkoutMainLayout;
     Button btnStartResumeWorkout;
+    Button btnRestartWorkout;
     int selfworkoutUserId;
     String selfworkoutPlanId;
     SelfWorkoutSession currentSession;
@@ -96,6 +100,7 @@ public class SelfworkoutFragment extends Fragment {
         txtViewSelfworkoutDpW = view.findViewById(R.id.txtViewSelfworkoutDpW);
         txtViewSelfworkoutTotalWeeks = view.findViewById(R.id.txtViewSelfworkoutTotalWeeks);
         btnStartResumeWorkout = view.findViewById(R.id.btnStartResumeWorkout);
+        btnRestartWorkout = view.findViewById(R.id.btnRestartWorkout);
 
         imgViewSelfworkout = view.findViewById(R.id.imgViewSelfworkout);
         pbSelfworkoutMain = view.findViewById(R.id.pbSelfworkoutMain);
@@ -107,74 +112,97 @@ public class SelfworkoutFragment extends Fragment {
         //Get the information from the user
         getWorkoutPlan();
 
+        //Get a session if exists
+        SelfWorkoutSession session = dbHelper.getTodaySelfWorkoutSession(selfworkoutUserId);
+
+        //Get all the possible session types
+        List<SelfWorkoutSessionType> sessionTypes = dbHelper.getSessionTypesByPlanId(selfworkoutPlanId);
+
         btnStartResumeWorkout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                //Validate if it is a resume or a start
-                Date currentDate = new Date();
-                // Set the start time to the beginning of the current day
-                Calendar calendar = Calendar.getInstance();
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH);
-                int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-
-                //set initial dates
-                calendar.set(year, month, dayOfMonth, 0, 0, 0);
-                Long startTime = calendar.getTime().getTime();
-                calendar.set(year, month, dayOfMonth, 23, 59, 59);
-                Long endTime = calendar.getTime().getTime();
-
-                SelfWorkoutSession session = dbHelper.getActiveSelfWorkoutSession(selfworkoutUserId);
-                List<SelfWorkoutSessionType> sessionTypes = dbHelper.getSessionTypesByPlanId(selfworkoutPlanId);
-
                 if(session != null){
                     //Let's check if the session is in the same day
-                    if(session.getSessionDate() >= startTime & session.getSessionDate() <= endTime){
+                    if(session.getSessionStatus() == 1){
 
                         //We are resuming
                         isNewSession = false;
                         currentSession = session;
-                        Log.d("SESSION","RESUMING");
+                        moveToSelfWorkoutSessions(sessionTypes,session);
 
                     }else{
 
-                        //The user starts a session days before and he/she forgot to finish it
-                        //We have to restart it
-                        isNewSession = true;
-                        dbHelper.updateSelfWorkoutSessionStatus(session.getId(),2);
-                        Log.d("SESSION","RESTART");
+                        //The user wants to restart the session
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setTitle("Attention!");
+                        builder.setMessage("You have finished your workout plan for today. Do you want to restart the session?");
+                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                isNewSession = true;
+                                dbHelper.updateSelfWorkoutSessionStatus(session.getId(),1);
+                                dbHelper.deleteSelfWorkoutSessionLogsBySessionId(session.getId());
+
+                                SelfWorkoutSession updatedSession = dbHelper.getSessionById(session.getId());
+
+                                dialog.dismiss();
+                                moveToSelfWorkoutSessions(sessionTypes, updatedSession);
+                            }
+                        });
+                        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+
                     }
 
                 }else{
                     //This is a new session
                     isNewSession = true;
+                    moveToSelfWorkoutSessions(sessionTypes,null);
                 }
-
-                Bundle passDataToFragment = new Bundle();
-                passDataToFragment.putSerializable("sessionTypesList",(Serializable) sessionTypes);
-                passDataToFragment.putSerializable("sessionObj",(Serializable) currentSession ) ;
-                passDataToFragment.putSerializable("workoutUserId",selfworkoutUserId ) ;
-                passDataToFragment.putBoolean("isNewSession",isNewSession);
-
-                SelfworkoutSessionTypeFragment selfworkoutSessionTypeFragment = new SelfworkoutSessionTypeFragment();
-                selfworkoutSessionTypeFragment.setArguments(passDataToFragment);
-
-                FragmentManager fm = getParentFragmentManager();
-                FragmentTransaction fragmentTransaction = fm.beginTransaction();
-
-                // Replace the current fragment with the new one
-                fragmentTransaction.replace(R.id.barFrame, selfworkoutSessionTypeFragment);
-
-                // Add the transaction to the back stack
-                fragmentTransaction.addToBackStack(null);
-
-                // Commit the transaction
-                fragmentTransaction.commit();
-
 
             }
         });
+
+        if (session!= null){
+
+            btnRestartWorkout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //The user wants to restart the session
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("Attention!");
+                    builder.setMessage("Are you sure you want to restart your session?");
+                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dbHelper.deleteSelfWorkoutSessionLogsBySessionId(session.getId());
+                            dbHelper.deleteSelfWorkoutSessionBySessionId(session.getId());
+                            dialog.dismiss();
+                            isNewSession = true;
+                            moveToSelfWorkoutSessions(sessionTypes, null);
+                        }
+                    });
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+            });
+        }else{
+            Toast.makeText(getContext(),"No session for today created!",Toast.LENGTH_SHORT).show();
+        }
+
 
         return view;
     }
@@ -204,4 +232,30 @@ public class SelfworkoutFragment extends Fragment {
         llSelfworkoutMainLayout.setVisibility(View.VISIBLE);
 
     }
+
+    public void moveToSelfWorkoutSessions(List<SelfWorkoutSessionType> sessionTypes, SelfWorkoutSession session){
+
+
+        Bundle passDataToFragment = new Bundle();
+        passDataToFragment.putSerializable("sessionTypesList",(Serializable) sessionTypes);
+        passDataToFragment.putSerializable("sessionObj",(Serializable) currentSession ) ;
+        passDataToFragment.putSerializable("workoutUserId",selfworkoutUserId ) ;
+        passDataToFragment.putBoolean("isNewSession",isNewSession);
+
+        SelfworkoutSessionTypeFragment selfworkoutSessionTypeFragment = new SelfworkoutSessionTypeFragment();
+        selfworkoutSessionTypeFragment.setArguments(passDataToFragment);
+
+        FragmentManager fm = getParentFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+        // Replace the current fragment with the new one
+        fragmentTransaction.replace(R.id.barFrame, selfworkoutSessionTypeFragment);
+
+        // Add the transaction to the back stack
+        fragmentTransaction.addToBackStack("self-workout-session-types-options");
+
+        // Commit the transaction
+        fragmentTransaction.commit();
+    }
 }
+

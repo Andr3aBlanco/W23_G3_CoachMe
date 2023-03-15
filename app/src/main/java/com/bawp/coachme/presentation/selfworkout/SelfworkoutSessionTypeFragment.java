@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -25,14 +26,15 @@ import java.util.List;
 
 public class SelfworkoutSessionTypeFragment extends Fragment {
 
-    private List<SelfWorkoutSessionType> selfWorkoutSessionTypes;
-    private SelfWorkoutSession currentSession;
-    private Boolean isNewSession;
-    private int selfworkoutUserId;
+    List<SelfWorkoutSessionType> selfWorkoutSessionTypes;
+    SelfWorkoutSession currentSession;
+    Boolean isNewSession;
+    int selfworkoutUserId;
     FragmentManager fm;
     Fragment fragment;
     ProgressBar pbSelfworkoutSessionType;
     LinearLayout llSelfworkoutSessionType;
+    Button btnBackToWorkoutMain;
 
     public SelfworkoutSessionTypeFragment() {
         // Required empty public constructor
@@ -57,6 +59,8 @@ public class SelfworkoutSessionTypeFragment extends Fragment {
 
         SelfworkoutSessionTypeFragment currentFragment = this;
 
+        btnBackToWorkoutMain = view.findViewById(R.id.btnBackToWorkoutMain);
+
         pbSelfworkoutSessionType = view.findViewById(R.id.pbSelfworkoutSessionType);
         llSelfworkoutSessionType = view.findViewById(R.id.llSelfworkoutSessionType);
 
@@ -71,13 +75,35 @@ public class SelfworkoutSessionTypeFragment extends Fragment {
             fm.beginTransaction()
                     .add(R.id.sessionTypeFragmentContainer,fragment)
                     .commit();
+
         }else{
             fragment = SelfworkoutSessionTypeRecyclerFragment.newInstance(selfWorkoutSessionTypes,currentSession,selfworkoutUserId,currentFragment);
 
             fm.beginTransaction()
                     .replace(R.id.sessionTypeFragmentContainer,fragment)
                     .commit();
+
         }
+
+        btnBackToWorkoutMain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int selfWorkoutPlanUser = currentSession.getSelfWorkoutPlanByUser().getId();
+                Bundle dataToPass = new Bundle();
+                dataToPass.putInt("workoutUserId",selfWorkoutPlanUser);
+
+                SelfworkoutFragment selfworkoutFragment = new SelfworkoutFragment();
+                selfworkoutFragment.setArguments(dataToPass);
+
+                FragmentManager fm = getParentFragmentManager();
+                FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+                // Replace the current fragment with the new one
+                fragmentTransaction.replace(R.id.barFrame, selfworkoutFragment);
+
+                fragmentTransaction.commit();
+            }
+        });
 
         pbSelfworkoutSessionType.setVisibility(View.GONE);
         llSelfworkoutSessionType.setVisibility(View.VISIBLE);

@@ -20,9 +20,10 @@
  */
 package com.bawp.coachme.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class SelfWorkoutPlanByUser {
+public class SelfWorkoutPlanByUser implements Serializable {
 
     private int id;
     private SelfWorkoutPlan selfworkoutplan;

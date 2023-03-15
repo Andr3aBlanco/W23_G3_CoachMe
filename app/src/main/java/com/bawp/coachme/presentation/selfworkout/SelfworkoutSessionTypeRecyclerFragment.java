@@ -117,6 +117,37 @@ public class SelfworkoutSessionTypeRecyclerFragment extends Fragment {
 
             holder.mTxtViewSessionType.setText(swpSTList.get(position).getSessionType().toUpperCase());
 
+
+            if(session != null) {
+                if (!session.getSelfworkoutSessionType().getId().equals(swpSTList.get(position).getId())) {
+                    holder.mCardView.setBackgroundColor(getResources().getColor(R.color.disabled_color));
+                }
+            }
+
+            holder.mCardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //check if we don't have any log for this session
+                    if (session == null){
+                        //This is a new session, we have to create it into the database
+                        List<SelfWorkoutPlanExercise> exercisesList = dbHelper.getSelfWorkoutExerciseBySessionTypeId(swpSTList.get(holder.getAdapterPosition()).getId());
+                        if (exercisesList.size()>0){
+                            session = dbHelper.createNewSession(selfworkoutUserId,swpSTList.get(holder.getAdapterPosition()).getId(),new Date().getTime(),1);
+                            moveToExercisesList(session.getId());
+                        }else{
+                            Toast.makeText(getContext(),"No exercises routine available for this session!",Toast.LENGTH_SHORT).show();
+                        }
+
+                    }else{
+                        if (session.getSelfworkoutSessionType().getId().equals(swpSTList.get(holder.getAdapterPosition()).getId())){
+                            //Keep enabled to move to the next screen
+                            moveToExercisesList(session.getId());
+                        }
+                    }
+
+                }
+            });
+
             //getting image from session type
             FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -128,46 +159,43 @@ public class SelfworkoutSessionTypeRecyclerFragment extends Fragment {
                     .load(imageRef)
                     .into(holder.mImgViewSessionType);
 
-            //Set an event when the CardView has been clicked
-            holder.mCardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //check if we don't have any log for this session
-                    if (session == null){
-                        //This is a new session, we have to create it into the database
-                        session = dbHelper.createNewSession(selfworkoutUserId,swpSTList.get(holder.getAdapterPosition()).getId(),new Date().getTime(),1);
-                    }
 
-                    List<SelfWorkoutSessionLog> exercisesLog = dbHelper.getSessionLogs(session.getId());
-
-                    //Let's send the data into the next fragment
-                    Bundle dataToPass = new Bundle();
-                    dataToPass.putSerializable("exercisesLog",(Serializable) exercisesLog);
-                    dataToPass.putInt("sessionId",session.getId());
-
-                    SelfworkoutSessionExerciseFragment selfworkoutSessionExerciseFragment = new SelfworkoutSessionExerciseFragment();
-                    selfworkoutSessionExerciseFragment.setArguments(dataToPass);
-
-                    FragmentManager fm = getParentFragmentManager();
-                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
-
-                    // Replace the current fragment with the new one
-                    fragmentTransaction.replace(R.id.barFrame, selfworkoutSessionExerciseFragment);
-
-                    // Add the transaction to the back stack
-                    fragmentTransaction.addToBackStack(null);
-
-                    // Commit the transaction
-                    fragmentTransaction.commit();
-
-                }
-            });
 
         }
 
         @Override
         public int getItemCount() {
             return swpSTList.size();
+        }
+
+        public void moveToExercisesList(int sessionId){
+            List<SelfWorkoutSessionLog> exercisesLog = dbHelper.getSessionLogs(sessionId);
+
+            if (exercisesLog.size() > 0 ){
+                //Let's send the data into the next fragment
+                Bundle dataToPass = new Bundle();
+                dataToPass.putSerializable("exercisesLog",(Serializable) exercisesLog);
+                dataToPass.putInt("sessionId",sessionId);
+
+                SelfworkoutSessionExerciseFragment selfworkoutSessionExerciseFragment = new SelfworkoutSessionExerciseFragment();
+                selfworkoutSessionExerciseFragment.setArguments(dataToPass);
+
+                FragmentManager fm = getParentFragmentManager();
+                FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+                // Replace the current fragment with the new one
+                fragmentTransaction.replace(R.id.barFrame, selfworkoutSessionExerciseFragment);
+
+                // Add the transaction to the back stack
+                fragmentTransaction.addToBackStack("self-workout-session-exercises-options");
+
+                // Commit the transaction
+                fragmentTransaction.commit();
+            }else{
+                Toast.makeText(getContext(),"No exercises routine available for this session!",Toast.LENGTH_SHORT).show();
+            }
+
+
         }
     }
 }

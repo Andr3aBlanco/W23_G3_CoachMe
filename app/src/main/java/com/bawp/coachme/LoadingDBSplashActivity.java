@@ -145,7 +145,7 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                                 dbHelper.uploadTrainerSchedule(csvScheduleByte);
                                 //some dump data
                                 dbHelper.uploadSampleAppointment();
-                                dbHelper.uploadSampleWorkoutPlanByUser();
+                                //dbHelper.uploadSampleWorkoutPlanByUser();
 
                                 moveToMainActivity();
                             }

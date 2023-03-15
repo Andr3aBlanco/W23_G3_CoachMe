@@ -14,7 +14,9 @@
  */
 package com.bawp.coachme.model;
 
-public class SelfWorkoutPlan {
+import java.io.Serializable;
+
+public class SelfWorkoutPlan implements Serializable {
 
     private String id;
     private String title;
