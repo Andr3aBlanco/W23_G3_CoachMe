@@ -874,6 +874,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    @SuppressLint("Range")
     public ArrayList<Appointment> getAllAppointmentsByStatusAndUsername(int status, String username) {
         ArrayList<Appointment> appointments = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
