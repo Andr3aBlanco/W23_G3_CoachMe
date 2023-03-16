@@ -14,7 +14,9 @@
  */
 package com.bawp.coachme.model;
 
-public class SelfWorkoutPlan {
+import java.io.Serializable;
+
+public class SelfWorkoutPlan implements Serializable {
 
     private String id;
     private String title;
@@ -30,16 +32,7 @@ public class SelfWorkoutPlan {
 
     }
 
-    public SelfWorkoutPlan(String id,String title, String description, double planPrice, String posterUrlFirestore) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.planPrice = planPrice;
-        this.posterUrlFirestore = posterUrlFirestore;
-    }
-
-    public SelfWorkoutPlan(String id, String title, String description, double planPrice, String posterUrlFirestore,
-                           String mainGoals, String duration, int daysPerWeek, String level) {
+    public SelfWorkoutPlan(String id,String title, String description, double planPrice, String posterUrlFirestore, String mainGoals, String duration, int daysPerWeek, String level) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -49,6 +42,13 @@ public class SelfWorkoutPlan {
         this.duration = duration;
         this.daysPerWeek = daysPerWeek;
         this.level = level;
+    }
+
+    public SelfWorkoutPlan(String title, String description, double planPrice, String posterUrlFirestore) {
+        this.title = title;
+        this.description = description;
+        this.planPrice = planPrice;
+        this.posterUrlFirestore = posterUrlFirestore;
     }
 
     public String getId() {

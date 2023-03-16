@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -11,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,11 +22,14 @@ import com.bawp.coachme.R;
 import com.bawp.coachme.model.Appointment;
 import com.bawp.coachme.model.SelfWorkoutPlanByUser;
 import com.bawp.coachme.model.Trainer;
+import com.bawp.coachme.presentation.selfworkout.SelfworkoutFragment;
+import com.bawp.coachme.presentation.selfworkout.SelfworkoutSessionTypeFragment;
 import com.bawp.coachme.utils.DBHelper;
 import com.bumptech.glide.Glide;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -60,6 +67,7 @@ public class HomeSwpRecyclerFragment extends Fragment {
         TextView mTxtViewProductTitle;
         TextView mTxtViewProductDetail;
         ImageView mImgViewSelfWorkoutLogo;
+        ImageButton mBtnCheckSelfWorkout;
 
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -71,6 +79,7 @@ public class HomeSwpRecyclerFragment extends Fragment {
             mTxtViewProductTitle = itemView.findViewById(R.id.txtViewProductTitle);
             mTxtViewProductDetail = itemView.findViewById(R.id.txtViewProductDetail);
             mImgViewSelfWorkoutLogo = itemView.findViewById(R.id.imgViewSelfWorkoutLogo);
+            mBtnCheckSelfWorkout = itemView.findViewById(R.id.btnCheckSelfWorkout);
         }
     }
 
@@ -108,6 +117,29 @@ public class HomeSwpRecyclerFragment extends Fragment {
             Glide.with(getContext())
                     .load(imageRef)
                     .into(holder.mImgViewSelfWorkoutLogo);
+
+            holder.mBtnCheckSelfWorkout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Bundle passDataToFragment = new Bundle();
+                    passDataToFragment.putSerializable("workoutUserId",selfWorkoutPlanByUsersList.get(holder.getAdapterPosition()).getId());
+
+                    SelfworkoutFragment selfworkoutFragment = new SelfworkoutFragment();
+                    selfworkoutFragment.setArguments(passDataToFragment);
+
+                    FragmentManager fm = getParentFragmentManager();
+                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+                    // Replace the current fragment with the new one
+                    fragmentTransaction.replace(R.id.barFrame, selfworkoutFragment);
+
+                    // Add the transaction to the back stack
+                    fragmentTransaction.addToBackStack("self-workout-main");
+
+                    // Commit the transaction
+                    fragmentTransaction.commit();
+                }
+            });
 
         }
 

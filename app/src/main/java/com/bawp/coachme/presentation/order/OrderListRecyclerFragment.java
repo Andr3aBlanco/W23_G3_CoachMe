@@ -155,7 +155,7 @@ public class OrderListRecyclerFragment extends Fragment {
             }else{
 
                 int numRowsUpdated = dbHelper.updateSelfWorkoutPlanByUserStatus(
-                        orderId,3);
+                        orderId,2);
 
                 if (numRowsUpdated > 0){
                     orderList.remove(orderPosition);

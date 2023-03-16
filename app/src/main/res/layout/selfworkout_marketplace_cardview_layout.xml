@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="450dp"
+    android:id="@+id/card_container_sw_marketplace"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="8dp"
+    app:strokeColor="#6B66C7"
+    app:strokeWidth="2dp"
+    android:layout_margin="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imgViewMktWorkoutLogo"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:scaleType="fitXY"
+            android:src="@drawable/stripe_logo"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:layout_weight="0.5">
+
+            <!-- Title and Level -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.3"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txtViewMktWorkoutTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.6"
+                    android:text="Workout Plan"
+                    android:gravity="center"
+                    android:textSize="20dp"
+                    android:fontFamily="@font/poppins_bold"/>
+
+                <TextView
+                    android:id="@+id/txtViewMktWorkoutLevel"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.4"
+                    android:text="Extreme!"
+                    android:gravity="center"
+                    android:textSize="18dp"
+                    android:fontFamily="@font/poppins_semibold"/>
+
+            </LinearLayout>
+
+            <!-- Descriptipn and Prices -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.7"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:id="@+id/txtViewMktWorkoutDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.6"
+                    android:paddingLeft="10dp"
+                    android:textSize="12dp"
+                    android:gravity="center|start|left"
+                    android:text="Description / Main Goals"
+                    />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.4"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtViewMktWorkoutPrice"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.5"
+                        android:text="$19.99"
+                        android:gravity="center"
+                        android:textSize="20dp"
+                        android:fontFamily="@font/poppins_semibold"
+                        />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnAddWorkoutToCart"
+                        android:layout_width="match_parent"
+                        android:backgroundTint="#6B66C7"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.5"
+                        android:layout_margin="20dp"
+                        android:gravity="center"
+                        android:drawableLeft="@drawable/baseline_add_shopping_cart_24"
+                        android:drawableTint="@color/white"
+                        android:text="Add to cart"
+                        android:textSize="8dp"
+                        android:fontFamily="@font/poppins_bold"
+                        />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+
+</com.google.android.material.card.MaterialCardView>

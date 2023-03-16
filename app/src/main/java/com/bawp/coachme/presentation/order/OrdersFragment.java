@@ -43,7 +43,9 @@ import com.bawp.coachme.utils.UserSingleton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -98,6 +100,17 @@ public class OrdersFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_orders, container, false);
+
+        //Check if the navbar has been hidden
+        BottomAppBar btnNavigationAppBar =  getActivity().findViewById(R.id.bottomNavBarWrapper);
+        if (btnNavigationAppBar.getVisibility() == View.GONE){
+            btnNavigationAppBar.setVisibility(View.VISIBLE);
+        }
+
+        FloatingActionButton btnActionButton = getActivity().findViewById(R.id.floatingAdd);
+        if (btnActionButton.getVisibility() == View.GONE){
+            btnActionButton.setVisibility(View.VISIBLE);
+        }
 
         OrdersFragment currentFragment = this;
         customerId = UserSingleton.getInstance().getUserId();
@@ -268,32 +281,6 @@ public class OrdersFragment extends Fragment {
                 orderTypeArray.add(order.getProductType());
             }
         }
-    }
-
-    public void lookForAppointments(){
-        FirebaseDatabase CoachMeDatabaseInstance = FirebaseDatabase.getInstance();
-        DatabaseReference CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
-
-        DatabaseReference appRef = CoachMeDatabaseRef.child("appointments");
-        DatabaseReference userRef = CoachMeDatabaseRef.child("users");
-
-        List<Task<DataSnapshot>> tasks = new ArrayList<>();
-
-        Query queryAppStatus = appRef.orderByChild("status").equalTo(3);
-
-        tasks.add(queryAppStatus.get());
-        tasks.add(userRef.get());
-
-        Task<List<DataSnapshot>> allTasks = Tasks.whenAllSuccess(tasks);
-
-        allTasks.addOnCompleteListener(new OnCompleteListener<List<DataSnapshot>>() {
-            @Override
-            public void onComplete(@NonNull Task<List<DataSnapshot>> task) {
-
-            }
-        });
-
-
     }
 
 }

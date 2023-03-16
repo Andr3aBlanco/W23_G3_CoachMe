@@ -15,6 +15,10 @@ import com.bawp.coachme.model.Appointment;
 import com.bawp.coachme.model.Payment;
 import com.bawp.coachme.model.SelfWorkoutPlan;
 import com.bawp.coachme.model.SelfWorkoutPlanByUser;
+import com.bawp.coachme.model.SelfWorkoutPlanExercise;
+import com.bawp.coachme.model.SelfWorkoutSession;
+import com.bawp.coachme.model.SelfWorkoutSessionLog;
+import com.bawp.coachme.model.SelfWorkoutSessionType;
 import com.bawp.coachme.model.Trainer;
 import com.bawp.coachme.model.User;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -32,6 +36,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -71,7 +76,7 @@ public class DBHelper extends SQLiteOpenHelper {
             "repetitions TEXT," +
             "restTime TEXT," +
             "selfWorkoutSessionTypeId TEXT," +
-            "execiseImageURLFirestore TEXT," +
+            "exerciseImageURLFirestore TEXT," +
             "FOREIGN KEY(selfWorkoutSessionTypeId) REFERENCES selfWorkoutPlans(_id)" +
             ");";
 
@@ -88,9 +93,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_SELF_WORKOUT_SESSIONS_TABLE = "CREATE TABLE selfWorkoutSessions(" +
             "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-            "sessionStatus INT," +
+            "sessionDate BIGINT,"+
+            "status INT,"+
             "selfWorkoutPlansByUserId INT," +
-            "FOREIGN KEY(selfWorkoutPlansByUserId) REFERENCES selfWorkoutPlansByUser(_id)" +
+            "selfWorkoutSessionTypeId TEXT," +
+            "FOREIGN KEY(selfWorkoutPlansByUserId) REFERENCES selfWorkoutPlansByUser(_id)," +
+            "FOREIGN KEY(selfWorkoutSessionTypeId) REFERENCES selfWorkoutSessionTypes(_id)" +
             ");";
 
     private static final String CREATE_SELF_WORKOUT_SESSION_LOGS_TABLE = "CREATE TABLE selfWorkoutSessionLogs(" +
@@ -308,7 +316,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 selfWorkoutExerciseContent.put("repetitions",nextLine[3]);
                 selfWorkoutExerciseContent.put("restTime",nextLine[4]);
                 selfWorkoutExerciseContent.put("selfWorkoutSessionTypeId",nextLine[5]);
-                selfWorkoutExerciseContent.put("execiseImageURLFirestore",nextLine[6]);
+                selfWorkoutExerciseContent.put("exerciseImageURLFirestore",nextLine[6]);
                 db.insert("selfWorkoutPlanExercises", null, selfWorkoutExerciseContent);
 
             }
@@ -744,7 +752,7 @@ public class DBHelper extends SQLiteOpenHelper {
                  planPrice, posterUrlFirestore, mainGoals, duration, daysPerWeek, level);
 
                 SelfWorkoutPlanByUser selfWorkoutPlanByUser = new SelfWorkoutPlanByUser(selfWorkoutPlanByUserId,
-                selfWorkoutPlan, new Date(requestedDate), status, new Date(paymentDate), paymentId);
+                selfWorkoutPlan, new Date(requestedDate).getTime(), status, new Date(paymentDate).getTime(), paymentId);
 
                 selfWorkoutPlanByUsersList.add(selfWorkoutPlanByUser);
 
@@ -753,6 +761,75 @@ public class DBHelper extends SQLiteOpenHelper {
 
         db.close();
         return selfWorkoutPlanByUsersList;
+    }
+
+   @SuppressLint("Range")
+   public SelfWorkoutPlan getSelfWorkoutPlanById(String id){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM selfWorkoutPlans WHERE _id = '"+id+"'",null);
+
+        if(cursor.moveToFirst()){
+
+            String selfWorkoutPlanId = cursor.getString(cursor.getColumnIndex("_id"));
+            String title = cursor.getString(cursor.getColumnIndex("title"));
+            String description= cursor.getString(cursor.getColumnIndex("description"));
+            Double planPrice = cursor.getDouble(cursor.getColumnIndex("planPrice"));
+            String mainGoals = cursor.getString(cursor.getColumnIndex("mainGoals"));
+            String level = cursor.getString(cursor.getColumnIndex("level"));
+            String duration = cursor.getString(cursor.getColumnIndex("duration"));
+            Integer daysPerWeek = cursor.getInt(cursor.getColumnIndex("daysPerWeek"));
+            String posterUrlFirestore = cursor.getString(cursor.getColumnIndex("posterUrlFirestore"));
+            SelfWorkoutPlan selfWorkoutPlan = new SelfWorkoutPlan(selfWorkoutPlanId, title, description,
+                    planPrice, posterUrlFirestore, mainGoals, duration, daysPerWeek, level);
+
+            db.close();
+            return selfWorkoutPlan;
+        }
+
+        db.close();
+        return null;
+    }
+
+    @SuppressLint("Range")
+    public SelfWorkoutPlanByUser getSelfWorkoutPlanByUserById(int id){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT \n" +
+                "su._id as selfWorkoutPlanByUserId, su.paymentId, su.paymentDate, su.requestedDate, su.status,\n" +
+                " sp._id as selfWorkoutPlanId, sp.title,  sp.description, sp.planPrice, sp.mainGoals, sp.daysPerWeek,\n" +
+                " sp.level,  sp.duration, sp.posterUrlFirestore\n" +
+                "FROM  selfWorkoutPlansByUser su \n" +
+                "JOIN selfWorkoutPlans sp \n" +
+                "ON su.selfWorkoutPlanId = sp._id \n"+
+                "WHERE su._id = "+id,null);
+
+        SelfWorkoutPlanByUser selfWorkoutPlanByUser = null;
+
+        if(cursor.moveToFirst()){
+            Integer selfWorkoutPlanByUserId = cursor.getInt(cursor.getColumnIndex("selfWorkoutPlanByUserId"));
+            Long requestedDate = cursor.getLong(cursor.getColumnIndex("requestedDate"));
+            Long paymentDate = cursor.getLong(cursor.getColumnIndex("paymentDate"));
+            String paymentId = cursor.getString(cursor.getColumnIndex("paymentId"));
+            int status = cursor.getInt(cursor.getColumnIndex("status"));
+            String selfWorkoutPlanId = cursor.getString(cursor.getColumnIndex("selfWorkoutPlanId"));
+            String title = cursor.getString(cursor.getColumnIndex("title"));
+            String description= cursor.getString(cursor.getColumnIndex("description"));
+            Double planPrice = cursor.getDouble(cursor.getColumnIndex("planPrice"));
+            String mainGoals = cursor.getString(cursor.getColumnIndex("mainGoals"));
+            String level = cursor.getString(cursor.getColumnIndex("level"));
+            String duration = cursor.getString(cursor.getColumnIndex("duration"));
+            Integer daysPerWeek = cursor.getInt(cursor.getColumnIndex("daysPerWeek"));
+            String posterUrlFirestore = cursor.getString(cursor.getColumnIndex("posterUrlFirestore"));
+
+            SelfWorkoutPlan selfWorkoutPlan = new SelfWorkoutPlan(selfWorkoutPlanId, title, description,
+                    planPrice, posterUrlFirestore, mainGoals, duration, daysPerWeek, level);
+
+            selfWorkoutPlanByUser = new SelfWorkoutPlanByUser(selfWorkoutPlanByUserId,
+                    selfWorkoutPlan, new Date(requestedDate).getTime(), status, new Date(paymentDate).getTime(), paymentId);
+
+        }
+
+        db.close();
+        return selfWorkoutPlanByUser;
     }
 
     @SuppressLint("Range")
@@ -790,7 +867,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         planPrice, posterUrlFirestore, mainGoals, duration, daysPerWeek, level);
 
                 SelfWorkoutPlanByUser selfWorkoutPlanByUser = new SelfWorkoutPlanByUser(selfWorkoutPlanByUserId,
-                        selfWorkoutPlan, new Date(requestedDate), status, new Date(paymentDate), paymentId);
+                        selfWorkoutPlan, new Date(requestedDate).getTime(), status, new Date(paymentDate).getTime(), paymentId);
 
                 selfWorkoutPlanByUsersList.add(selfWorkoutPlanByUser);
 
@@ -833,6 +910,537 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return numRowsUpdated;
     }
+
+    public void createWorkoutPlanByUser(String customerId, String selfWorkoutPlanId){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues swpByUser = new ContentValues();
+
+        swpByUser.put("customerId",customerId);
+        swpByUser.put("paymentDate", (Long)null);
+        swpByUser.put("paymentId",(String)null);
+        swpByUser.put("requestedDate",new Date().getTime());
+        swpByUser.put("selfworkoutplanId",selfWorkoutPlanId);
+        swpByUser.put("status", 1);
+
+        db.insert("selfWorkoutPlansByUser", null, swpByUser);
+
+        db.close();
+    }
+
+    /* ---------------------------------------
+    -----------SELF WORKOUT SESSIONS----------
+    ------------------------------------------ */
+
+    @SuppressLint("Range")
+    public SelfWorkoutSession getActiveSelfWorkoutSession(int swpUserId){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT \n" +
+                "ss.*\n" +
+                "FROM selfWorkoutSessions ss\n" +
+                "JOIN selfWorkoutPlansByUser swu ON ss.selfWorkoutPlansByUserId = swu._id\n" +
+                "JOIN selfWorkoutSessionTypes swt ON ss.selfWorkoutSessionTypeId = swt._id\n" +
+                "WHERE swu._id = "+ swpUserId +" AND ss.sessionStatus = 1\n",null);
+
+        SelfWorkoutSession selfWorkoutSession = null;
+        int selfWorkoutPlansByUserId;
+        String selfWorkoutSessionTypeId;
+
+        if(cursor.moveToFirst()){
+            Integer sessionId = cursor.getInt(cursor.getColumnIndex("_id"));
+            int sessionStatus = cursor.getInt(cursor.getColumnIndex("status"));
+            Long sessionDate = cursor.getLong(cursor.getColumnIndex("sessionDate"));
+            selfWorkoutPlansByUserId = cursor.getInt(cursor.getColumnIndex("selfWorkoutPlansByUserId"));
+            selfWorkoutSessionTypeId = cursor.getString(cursor.getColumnIndex("selfWorkoutSessionTypeId"));
+            selfWorkoutSession = new SelfWorkoutSession(sessionId,null,null,
+                    sessionDate,sessionStatus);
+
+        }else{
+            db.close();
+            return null;
+        }
+
+        db.close();
+
+        //get the workout object of the user
+        SelfWorkoutPlanByUser swpUser = getSelfWorkoutPlanByUserById(selfWorkoutPlansByUserId);
+
+        //get the workout session type of the session
+        SelfWorkoutSessionType ssType = getSelfWorkoutSessionTypeById(selfWorkoutSessionTypeId);
+
+        selfWorkoutSession.setSelfWorkoutPlanByUser(swpUser);
+        selfWorkoutSession.setSelfworkoutSessionType(ssType);
+
+        return selfWorkoutSession;
+    }
+
+    @SuppressLint("Range")
+    public SelfWorkoutSession getTodaySelfWorkoutSession(int swpUserId){
+
+        //Validate if it is a resume or a start
+        Date currentDate = new Date();
+        // Set the start time to the beginning of the current day
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+
+        //set initial dates
+        calendar.set(year, month, dayOfMonth, 0, 0, 0);
+        Long startTime = calendar.getTime().getTime();
+        calendar.set(year, month, dayOfMonth, 23, 59, 59);
+        Long endTime = calendar.getTime().getTime();
+
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT \n" +
+                "ss.*\n" +
+                "FROM selfWorkoutSessions ss\n" +
+                "JOIN selfWorkoutPlansByUser swu ON ss.selfWorkoutPlansByUserId = swu._id\n" +
+                "JOIN selfWorkoutSessionTypes swt ON ss.selfWorkoutSessionTypeId = swt._id\n" +
+                "WHERE swu._id = "+ swpUserId + " AND ss.sessionDate BETWEEN "+startTime+" AND "+endTime;
+
+        Cursor cursor = db.rawQuery(query,null);
+
+        SelfWorkoutSession selfWorkoutSession = null;
+        int selfWorkoutPlansByUserId;
+        String selfWorkoutSessionTypeId;
+
+        if(cursor.moveToFirst()){
+            Integer sessionId = cursor.getInt(cursor.getColumnIndex("_id"));
+            int sessionStatus = cursor.getInt(cursor.getColumnIndex("status"));
+            Long sessionDate = cursor.getLong(cursor.getColumnIndex("sessionDate"));
+            selfWorkoutPlansByUserId = cursor.getInt(cursor.getColumnIndex("selfWorkoutPlansByUserId"));
+            selfWorkoutSessionTypeId = cursor.getString(cursor.getColumnIndex("selfWorkoutSessionTypeId"));
+            selfWorkoutSession = new SelfWorkoutSession(sessionId,null,null,
+                    sessionDate,sessionStatus);
+
+        }else{
+            db.close();
+            return null;
+        }
+
+        db.close();
+
+        //get the workout object of the user
+        SelfWorkoutPlanByUser swpUser = getSelfWorkoutPlanByUserById(selfWorkoutPlansByUserId);
+
+        //get the workout session type of the session
+        SelfWorkoutSessionType ssType = getSelfWorkoutSessionTypeById(selfWorkoutSessionTypeId);
+
+        selfWorkoutSession.setSelfWorkoutPlanByUser(swpUser);
+        selfWorkoutSession.setSelfworkoutSessionType(ssType);
+
+        return selfWorkoutSession;
+    }
+
+    @SuppressLint("Range")
+    public SelfWorkoutSession getSessionById(int swpUserId){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT \n" +
+                "ss.*\n" +
+                "FROM selfWorkoutSessions ss\n" +
+                "JOIN selfWorkoutPlansByUser swu ON ss.selfWorkoutPlansByUserId = swu._id\n" +
+                "JOIN selfWorkoutSessionTypes swt ON ss.selfWorkoutSessionTypeId = swt._id\n" +
+                "WHERE ss._id = "+ swpUserId,null);
+
+        SelfWorkoutSession selfWorkoutSession = null;
+        int selfWorkoutPlansByUserId;
+        String selfWorkoutSessionTypeId;
+
+        if(cursor.moveToFirst()){
+            Integer sessionId = cursor.getInt(cursor.getColumnIndex("_id"));
+            int sessionStatus = cursor.getInt(cursor.getColumnIndex("status"));
+            Long sessionDate = cursor.getLong(cursor.getColumnIndex("sessionDate"));
+            selfWorkoutPlansByUserId = cursor.getInt(cursor.getColumnIndex("selfWorkoutPlansByUserId"));
+            selfWorkoutSessionTypeId = cursor.getString(cursor.getColumnIndex("selfWorkoutSessionTypeId"));
+            selfWorkoutSession = new SelfWorkoutSession(sessionId,null,null,
+                    sessionDate,sessionStatus);
+
+        }else{
+            db.close();
+            return null;
+        }
+
+        db.close();
+
+        //get the workout object of the user
+        SelfWorkoutPlanByUser swpUser = getSelfWorkoutPlanByUserById(selfWorkoutPlansByUserId);
+
+        //get the workout session type of the session
+        SelfWorkoutSessionType ssType = getSelfWorkoutSessionTypeById(selfWorkoutSessionTypeId);
+
+        selfWorkoutSession.setSelfWorkoutPlanByUser(swpUser);
+        selfWorkoutSession.setSelfworkoutSessionType(ssType);
+
+        return selfWorkoutSession;
+    }
+
+    @SuppressLint("Range")
+    public List<SelfWorkoutPlan> getSelfWorkoutPlanAvailable (String customerId){
+        SQLiteDatabase db = getReadableDatabase();
+
+        String query = "SELECT sp.* \n" +
+                "FROM selfWorkoutPlans sp\n" +
+                "LEFT JOIN (\n" +
+                "\tSELECT  selfWorkoutPlanId, customerId \n" +
+                "\tFROM selfWorkoutPlansByUser \n" +
+                "\tWHERE customerId = '"+customerId+"' AND status IN (1,3) \n" +
+                "\t)spu\n" +
+                "ON sp._id = spu.selfWorkoutPlanId\n" +
+                "WHERE spu.selfWorkoutPlanId IS NULL";
+
+        Cursor cursor = db.rawQuery(query,null);
+
+        List<SelfWorkoutPlan> selfWorkoutPlanList = new ArrayList<>();
+
+        if(cursor.moveToFirst()){
+            do{
+
+                String selfWorkoutPlanId = cursor.getString(cursor.getColumnIndex("_id"));
+                String title = cursor.getString(cursor.getColumnIndex("title"));
+                String description= cursor.getString(cursor.getColumnIndex("description"));
+                Double planPrice = cursor.getDouble(cursor.getColumnIndex("planPrice"));
+                String mainGoals = cursor.getString(cursor.getColumnIndex("mainGoals"));
+                String level = cursor.getString(cursor.getColumnIndex("level"));
+                String duration = cursor.getString(cursor.getColumnIndex("duration"));
+                Integer daysPerWeek = cursor.getInt(cursor.getColumnIndex("daysPerWeek"));
+                String posterUrlFirestore = cursor.getString(cursor.getColumnIndex("posterUrlFirestore"));
+                SelfWorkoutPlan selfWorkoutPlan = new SelfWorkoutPlan(selfWorkoutPlanId, title, description,
+                        planPrice, posterUrlFirestore, mainGoals, duration, daysPerWeek, level);
+
+                selfWorkoutPlanList.add(selfWorkoutPlan);
+
+            }while (cursor.moveToNext());
+        }
+
+        db.close();
+        return selfWorkoutPlanList;
+    }
+
+    public void deleteSelfWorkoutSessionLogsBySessionId(int sessionId){
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("selfWorkoutSessionLogs","selfWorkoutSessionId" +
+                " = ?",new String[]{Integer.toString(sessionId)});
+        db.close();
+    }
+
+    public void deleteSelfWorkoutSessionBySessionId(int sessionId){
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("selfWorkoutSessions","_id" +
+                " = ?",new String[]{Integer.toString(sessionId)});
+        db.close();
+    }
+
+    @SuppressLint("Range")
+    public SelfWorkoutSessionType getSelfWorkoutSessionTypeById(String id){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM selfWorkoutSessionTypes WHERE _id = '"+id+"'",null);
+
+        if(cursor.moveToFirst()){
+
+            String sessionType = cursor.getString(cursor.getColumnIndex("sessionType"));
+            String sessionTypeIconURLFirestore = cursor.getString(cursor.getColumnIndex("sessionTypeIconURLFirestore"));
+            String selfWorkoutPlanId = cursor.getString(cursor.getColumnIndex("selfWorkoutPlanId"));
+
+            SelfWorkoutSessionType swType = new SelfWorkoutSessionType();
+            swType.setId(id);
+            swType.setSessionType(sessionType);
+            swType.setSessionTypeIconURLFirestore(sessionTypeIconURLFirestore);
+
+            db.close();
+
+            SelfWorkoutPlan selfWorkoutPlan = getSelfWorkoutPlanById(selfWorkoutPlanId);
+            swType.setSelfWorkoutPlan(selfWorkoutPlan);
+            return swType;
+
+        }
+
+        db.close();
+        return null;
+
+    }
+
+    @SuppressLint("Range")
+    public List<SelfWorkoutSessionType> getSessionTypesByPlanId(String id){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM selfWorkoutSessionTypes WHERE " +
+                "selfWorkoutPlanId ='"+id+"'",null);
+
+        List<SelfWorkoutSessionType> selfWorkoutSessionTypes = new ArrayList<>();
+
+        if(cursor.moveToFirst()){
+            do{
+                String sessionTypeId = cursor.getString(cursor.getColumnIndex("_id"));
+                String sessionType = cursor.getString(cursor.getColumnIndex("sessionType"));
+                String sessionTypeIconURLFirestore = cursor.getString(cursor.getColumnIndex("sessionTypeIconURLFirestore"));
+                SelfWorkoutSessionType selfWorkoutSessionType = new SelfWorkoutSessionType();
+
+                selfWorkoutSessionType.setId(sessionTypeId);
+                selfWorkoutSessionType.setSessionType(sessionType);
+                selfWorkoutSessionType.setSessionTypeIconURLFirestore(sessionTypeIconURLFirestore);
+
+                selfWorkoutSessionTypes.add(selfWorkoutSessionType);
+
+            }while(cursor.moveToNext());
+        }
+
+        db.close();
+        return selfWorkoutSessionTypes;
+    }
+
+    @SuppressLint("Range")
+    public SelfWorkoutSessionType getSessionTypeById(String id){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM selfWorkoutSessionTypes WHERE " +
+                "_id ='"+id+"'",null);
+
+        SelfWorkoutSessionType selfWorkoutSessionType = null;
+
+        if(cursor.moveToFirst()){
+
+            String sessionType = cursor.getString(cursor.getColumnIndex("sessionType"));
+            String sessionTypeIconURLFirestore = cursor.getString(cursor.getColumnIndex("sessionTypeIconURLFirestore"));
+
+            selfWorkoutSessionType = new SelfWorkoutSessionType();
+            selfWorkoutSessionType.setId(id);
+            selfWorkoutSessionType.setSessionType(sessionType);
+            selfWorkoutSessionType.setSessionTypeIconURLFirestore(sessionTypeIconURLFirestore);
+
+        }
+
+        db.close();
+        return selfWorkoutSessionType;
+    }
+
+    public int updateSelfWorkoutSessionStatus(int id, int status){
+        SQLiteDatabase db = getWritableDatabase();
+        // Create a ContentValues object with the new value of the "status" field
+        ContentValues values = new ContentValues();
+        values.put("status", status);
+
+        // Update the appointments table with the new value of the "status" field
+        int numRowsUpdated = db.update("selfWorkoutSessions", values, "_id=?", new String[] {Integer.toString(id)});
+
+        // Close the database connection
+        db.close();
+
+        return numRowsUpdated;
+    }
+
+    @SuppressLint("Range")
+    public SelfWorkoutSession createNewSession(int selfworkoutUserId,String sessionTypeId,Long sessionDate,int status){
+
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues session = new ContentValues();
+
+        session.put("status",status);
+        session.put("sessionDate",sessionDate);
+        session.put("selfWorkoutPlansByUserId",selfworkoutUserId);
+        session.put("selfWorkoutSessionTypeId",sessionTypeId);
+
+        Long id = db.insert("selfWorkoutSessions", null, session);
+
+        db.close();
+
+        SelfWorkoutSession ses = new SelfWorkoutSession();
+        ses.setId(id.intValue());
+        ses.setSessionDate(sessionDate);
+        ses.setSessionStatus(status);
+
+        SelfWorkoutPlanByUser swpUser = getSelfWorkoutPlanByUserById(selfworkoutUserId);
+        SelfWorkoutSessionType ssT = getSessionTypeById(sessionTypeId);
+        ses.setSelfWorkoutPlanByUser(swpUser);
+        ses.setSelfworkoutSessionType(ssT);
+
+        //Setting exercises Logs
+        List<SelfWorkoutPlanExercise> exercisesList = getSelfWorkoutExerciseBySessionTypeId(ssT.getId());
+
+        Log.d("SIZE LIST",Integer.toString(exercisesList.size()));
+
+        for(SelfWorkoutPlanExercise exercise : exercisesList){
+
+            db = getWritableDatabase();
+            ContentValues log = new ContentValues();
+
+            log.put("selfWorkoutSessionId",id.intValue());
+            log.put("selfWorkoutPlanExerciseId",exercise.getId());
+            log.put("status",1); //pending
+
+            db.insert("selfWorkoutSessionLogs", null, log);
+
+            db.close();
+
+        }
+
+        return ses;
+
+    }
+
+    /* ------------------------------------------------
+    --------------SESSION EXERCISES (LOGS)-------------
+    --------------------------------------------------- */
+    @SuppressLint("Range")
+    public List<SelfWorkoutPlanExercise> getSelfWorkoutExerciseBySessionTypeId(String id){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM selfWorkoutPlanExercises WHERE " +
+                "selfWorkoutSessionTypeId ='"+id+"'",null);
+
+        List<SelfWorkoutPlanExercise> selfWorkoutPlanExercises = new ArrayList<>();
+
+        if(cursor.moveToFirst()){
+            do{
+                String exerciseId = cursor.getString(cursor.getColumnIndex("_id"));
+                String exerciseName = cursor.getString(cursor.getColumnIndex("exerciseName"));
+                int numSets = cursor.getInt(cursor.getColumnIndex("numSets"));
+                String repetitions = cursor.getString(cursor.getColumnIndex("repetitions"));
+                String restTime = cursor.getString(cursor.getColumnIndex("restTime"));
+                String selfWorkoutSessionTypeId = cursor.getString(cursor.getColumnIndex("selfWorkoutSessionTypeId"));
+                String exerciseImageURLFirestore = cursor.getString(cursor.getColumnIndex("exerciseImageURLFirestore"));
+
+                SelfWorkoutPlanExercise selfWorkoutPlanExercise = new SelfWorkoutPlanExercise();
+
+                selfWorkoutPlanExercise.setId(exerciseId);
+                selfWorkoutPlanExercise.setExerciseName(exerciseName);
+                selfWorkoutPlanExercise.setSelfWorkoutSessionTypeId(selfWorkoutSessionTypeId);
+                selfWorkoutPlanExercise.setExerciseImageURLFirestore(exerciseImageURLFirestore);
+                selfWorkoutPlanExercise.setNumSets(numSets);
+                selfWorkoutPlanExercise.setRestTime(restTime);
+                selfWorkoutPlanExercise.setRepetitions(repetitions);
+
+                selfWorkoutPlanExercises.add(selfWorkoutPlanExercise);
+
+            }while(cursor.moveToNext());
+        }
+
+        db.close();
+        return selfWorkoutPlanExercises;
+    }
+
+    @SuppressLint("Range")
+    public List<SelfWorkoutSessionLog> getSessionLogs(int sessionId){
+
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT \n" +
+                "slogs._id,\n" +
+                "slogs.selfWorkoutSessionId,\n"+
+                "slogs.status,\n" +
+                "exercises.exerciseName,\n" +
+                "exercises._id as exerciseId,\n" +
+                "exercises.numSets,\n" +
+                "exercises.repetitions,\n" +
+                "exercises.restTime,\n" +
+                "exercises.exerciseImageURLFirestore,\n" +
+                "exercises.selfWorkoutSessionTypeId\n" +
+                "FROM selfWorkoutSessionLogs slogs\n" +
+                "JOIN selfWorkoutPlanExercises exercises on slogs.selfWorkoutPlanExerciseId = exercises._id\n" +
+                "WHERE selfWorkoutSessionId = '"+sessionId+"'",null);
+
+        List<SelfWorkoutSessionLog> selfWorkoutSessionLogs = new ArrayList<>();
+
+        if(cursor.moveToFirst()){
+            do{
+
+                int id = cursor.getInt(cursor.getColumnIndex("_id"));
+                int selfWorkoutSessionId = cursor.getInt(cursor.getColumnIndex("selfWorkoutSessionId"));
+                int status = cursor.getInt(cursor.getColumnIndex("status"));
+                String exerciseId = cursor.getString(cursor.getColumnIndex("exerciseId"));
+                String exerciseName = cursor.getString(cursor.getColumnIndex("exerciseName"));
+                int numSets = cursor.getInt(cursor.getColumnIndex("numSets"));
+                String repetitions = cursor.getString(cursor.getColumnIndex("repetitions"));
+                String restTime = cursor.getString(cursor.getColumnIndex("restTime"));
+                String selfWorkoutSessionTypeId = cursor.getString(cursor.getColumnIndex("selfWorkoutSessionTypeId"));
+                String exerciseImageURLFirestore = cursor.getString(cursor.getColumnIndex("exerciseImageURLFirestore"));
+
+                SelfWorkoutPlanExercise selfWorkoutPlanExercise = new SelfWorkoutPlanExercise(exerciseId,selfWorkoutSessionTypeId,exerciseName,numSets,repetitions,restTime,exerciseImageURLFirestore);
+                SelfWorkoutSessionLog selfWorkoutSessionLog = new SelfWorkoutSessionLog(id,selfWorkoutSessionId,selfWorkoutPlanExercise,status);
+                selfWorkoutSessionLogs.add(selfWorkoutSessionLog);
+
+            }while (cursor.moveToNext());
+        }
+
+        db.close();
+        return selfWorkoutSessionLogs;
+
+    }
+
+    @SuppressLint("Range")
+    public void createNewSessionLog(int selfWorkoutSessionId,String exerciseId,int status){
+
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues sessionLog = new ContentValues();
+
+        sessionLog.put("selfWorkoutSessionId",selfWorkoutSessionId);
+        sessionLog.put("selfWorkoutPlanExerciseId",exerciseId);
+        sessionLog.put("status",status);
+
+        db.insert("selfWorkoutSessionLogs", null, sessionLog);
+
+        db.close();
+
+    }
+
+    @SuppressLint("Range")
+    public SelfWorkoutSessionLog getSessionLogById(int sessionLogId){
+
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT \n" +
+                "slogs._id,\n" +
+                "slogs.status,\n" +
+                "exercises.exerciseName,\n" +
+                "exercises._id as exerciseId,\n" +
+                "exercises.numSets,\n" +
+                "exercises.repetitions,\n" +
+                "exercises.restTime,\n" +
+                "exercises.execiseImageURLFirestore,\n" +
+                "exercises.selfWorkoutSessionTypeId\n" +
+                "FROM selfWorkoutSessionLogs slogs\n" +
+                "JOIN selfWorkoutPlanExercises exercises on slogs.selfWorkoutPlanExerciseId = exercises._id\n" +
+                "WHERE _id = "+sessionLogId,null);
+
+        SelfWorkoutSessionLog selfWorkoutSessionLog = null;
+
+        if(cursor.moveToFirst()){
+            do{
+
+                int id = cursor.getInt(cursor.getColumnIndex("_id"));
+                int selfWorkoutSessionId = cursor.getInt(cursor.getColumnIndex("selfWorkoutSessionId"));
+                int status = cursor.getInt(cursor.getColumnIndex("status"));
+                String exerciseId = cursor.getString(cursor.getColumnIndex("exerciseId"));
+                String exerciseName = cursor.getString(cursor.getColumnIndex("exerciseName"));
+                int numSets = cursor.getInt(cursor.getColumnIndex("numSets"));
+                String repetitions = cursor.getString(cursor.getColumnIndex("repetitions"));
+                String restTime = cursor.getString(cursor.getColumnIndex("restTime"));
+                String selfWorkoutSessionTypeId = cursor.getString(cursor.getColumnIndex("selfWorkoutSessionTypeId"));
+                String exerciseImageURLFirestore = cursor.getString(cursor.getColumnIndex("exerciseImageURLFirestore"));
+
+                SelfWorkoutPlanExercise selfWorkoutPlanExercise = new SelfWorkoutPlanExercise(exerciseId,selfWorkoutSessionTypeId,exerciseName,numSets,repetitions,restTime,exerciseImageURLFirestore);
+                selfWorkoutSessionLog = new SelfWorkoutSessionLog(id,selfWorkoutSessionId,selfWorkoutPlanExercise,status);
+
+
+            }while (cursor.moveToNext());
+        }
+
+        db.close();
+        return selfWorkoutSessionLog;
+
+    }
+
+    public int updateSelfWorkoutSessionLogByStatus(int selfWorkoutSessionLogId,int status){
+        SQLiteDatabase db = getWritableDatabase();
+        // Create a ContentValues object with the new value of the "status" field
+        ContentValues values = new ContentValues();
+        values.put("status", status);
+
+        // Update the appointments table with the new value of the "status" field
+        int numRowsUpdated = db.update("selfWorkoutSessionLogs", values, "_id=?", new String[] {Integer.toString(selfWorkoutSessionLogId)});
+
+        // Close the database connection
+        db.close();
+
+        return numRowsUpdated;
+    }
+
 
     /* -------------------------------
     --------------TRAINER-------------

@@ -14,4 +14,8 @@
     <color name="cm_bright_pink">#FFF20089</color>
     <color name="cm_colorOnPrimary">#FFf9f9f9</color>
     <color name="gymColorDark">#200E32</color>
+    <color name="disabled_color">#CCCCCC</color>
+    <color name="easy_workout_color">#87CEEB</color>
+    <color name="medium_workout_color">#FFA500</color>
+    <color name="intense_workout_color">#6A1B9A</color>
 </resources>
