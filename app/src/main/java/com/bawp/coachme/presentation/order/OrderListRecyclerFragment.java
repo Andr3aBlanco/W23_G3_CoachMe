@@ -21,15 +21,10 @@ package com.bawp.coachme.presentation.order;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.Icon;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
@@ -47,17 +42,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bawp.coachme.R;
 import com.bawp.coachme.model.Appointment;
 import com.bawp.coachme.model.Order;
-import com.bawp.coachme.model.SelfWorkoutPlanByUser;
 import com.bawp.coachme.utils.DBHelper;
-import com.bawp.coachme.utils.UserSingleton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-
-import org.w3c.dom.Text;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -74,8 +64,8 @@ public class OrderListRecyclerFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.order_recycler_view_fragment, container, false);
-        recyclerView = view.findViewById(R.id.order_recycler_view);
+        View view = inflater.inflate(R.layout.recycler_view_fragment, container, false);
+        recyclerView = view.findViewById(R.id.recycler_view_layout);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         orderListAdapter = new OrderListRecyclerFragment.RecyclerViewAdapter(orderList,orderFragment);
         recyclerView.setAdapter(orderListAdapter);
@@ -201,6 +191,10 @@ public class OrderListRecyclerFragment extends Fragment {
 
             Drawable drawableFitness = ContextCompat.getDrawable(getContext(),R.drawable.baseline_fitness_center_18);
             Drawable drawableGymnastic = ContextCompat.getDrawable(getContext(),R.drawable.baseline_sports_gymnastics_24);
+            int color = ContextCompat.getColor(getContext(), R.color.gymColorDark);
+            drawableFitness.setTint(color);
+            drawableGymnastic.setTint(color);
+
             holder.mTxtViewProductTitle.setText(orderList.get(position).getProductTitle());
             if (orderList.get(position).getProductType() == 1){
                 holder.mTxtViewProductTitle.setCompoundDrawablesWithIntrinsicBounds(drawableGymnastic,null,null,null);

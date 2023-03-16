@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:id="@+id/home_item_card_container"
+    app:cardCornerRadius="10dp"
+    app:strokeColor="#6B66C7"
+    app:strokeWidth="2dp"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:orientation="horizontal"
+
+            >
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.2"
+                android:padding="20dp"
+                android:src="@drawable/package_product"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="0.5">
+
+                <TextView
+                    android:id="@+id/txtViewOrderNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.4"
+                    android:text="TextView"
+                    android:textSize="18dp"
+                    android:textColor="#200E32"
+                    android:fontFamily="@font/poppins_bold"
+                    android:gravity = "center"
+                    android:paddingLeft="10dp"
+                    />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.6"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/txtViewOrderDate"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.6"
+                        android:text="TextView"
+                        android:textSize="13dp"
+                        android:textColor="#200E32"
+                        android:fontFamily="@font/poppins_regular"
+                        android:gravity = "top|left|start"
+                        android:paddingLeft="10dp"
+                        />
+
+                    <TextView
+                        android:id="@+id/txtViewTotalPrice"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.4"
+                        android:text="TextView"
+                        android:textSize="18dp"
+                        android:textColor="#200E32"
+                        android:fontFamily="@font/poppins_regular"
+                        android:gravity = "center"
+                        android:paddingLeft="10dp"
+                        />
+
+
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llTableOrderDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginBottom="15dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_border_bottom">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.5"
+                    android:text="Product Type"
+                    android:textSize="13dp"
+                    android:textColor="#200E32"
+                    android:fontFamily="@font/poppins_bold"
+                    android:gravity = "center"
+                    android:paddingLeft="10dp"
+                    />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.5"
+                    android:text="Description"
+                    android:textSize="13dp"
+                    android:textColor="#200E32"
+                    android:fontFamily="@font/poppins_bold"
+                    android:gravity = "center"
+                    android:paddingLeft="10dp"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</com.google.android.material.card.MaterialCardView>
+
+

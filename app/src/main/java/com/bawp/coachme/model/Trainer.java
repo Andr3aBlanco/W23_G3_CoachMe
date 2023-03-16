@@ -14,13 +14,15 @@ public class Trainer implements Serializable {
     private double flatPrice;
     private String phoneNumber;
     private String address;
+    private String trainerProfileImage;
+    private double rating;
 
     private double rating;
 
     public Trainer(){
 
     }
-    public Trainer(String id, String firstName, String lastName, String email, double latitudeCoord, double longitudeCoord, double radius, double flatPrice, String phoneNumber, String address, double rating) {
+    public Trainer(String id, String firstName, String lastName, String email, double latitudeCoord, double longitudeCoord, double radius, double flatPrice, String phoneNumber, String address, String trainerProfileImage) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -31,6 +33,21 @@ public class Trainer implements Serializable {
         this.flatPrice = flatPrice;
         this.phoneNumber = phoneNumber;
         this.address = address;
+        this.trainerProfileImage = trainerProfileImage;
+    }
+
+    public Trainer(String id, String firstName, String lastName, String email, double latitudeCoord, double longitudeCoord, double radius, double flatPrice, String phoneNumber, String address, String trainerProfileImage, double rating) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.latitudeCoord = latitudeCoord;
+        this.longitudeCoord = longitudeCoord;
+        this.radius = radius;
+        this.flatPrice = flatPrice;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.trainerProfileImage = trainerProfileImage;
         this.rating = rating;
     }
 
@@ -112,6 +129,14 @@ public class Trainer implements Serializable {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getTrainerProfileImage() {
+        return trainerProfileImage;
+    }
+
+    public void setTrainerProfileImage(String trainerProfileImage) {
+        this.trainerProfileImage = trainerProfileImage;
     }
 
     public double getRating() {

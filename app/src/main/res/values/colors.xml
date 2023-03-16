@@ -13,4 +13,5 @@
     <color name="cm_purple2">#FF8900F2</color>
     <color name="cm_bright_pink">#FFF20089</color>
     <color name="cm_colorOnPrimary">#FFf9f9f9</color>
+    <color name="gymColorDark">#200E32</color>
 </resources>

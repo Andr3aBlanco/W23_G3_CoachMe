@@ -76,6 +76,8 @@ public class OrdersFragment extends Fragment {
     TextView txtViewTotal;
     List<Order> orderList;
     MaterialButton btnCheckout;
+
+    MaterialButton btnOrderHistory;
     ArrayList<String> orderIdArray;
     ArrayList<Integer> orderTypeArray;
     DBHelper dbHelper;
@@ -104,6 +106,7 @@ public class OrdersFragment extends Fragment {
         txtViewTax = view.findViewById(R.id.txtViewTax);
         txtViewTotal = view.findViewById(R.id.txtViewTotal);
         btnCheckout = view.findViewById(R.id.btnOrderCheckout);
+        btnOrderHistory = view.findViewById(R.id.btnOrderHistory);
 
         llNoItemsInCart = view.findViewById(R.id.llNoItemsInCart);
         flOrderFragmentContainer = view.findViewById(R.id.orderFragmentContainer);
@@ -114,6 +117,22 @@ public class OrdersFragment extends Fragment {
 
         orderList = new ArrayList<>();
         updateShoppingCart(currentFragment);
+
+        btnOrderHistory.setOnClickListener(View -> {
+            OrderHistoryFragment orderHistoryFragment = new OrderHistoryFragment();
+
+            FragmentManager fm = getParentFragmentManager();
+            FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+            // Replace the current fragment with the new one
+            fragmentTransaction.replace(R.id.barFrame, orderHistoryFragment);
+
+            // Add the transaction to the back stack
+            fragmentTransaction.addToBackStack(null);
+
+            // Commit the transaction
+            fragmentTransaction.commit();
+        });
 
         btnCheckout.setOnClickListener(View -> {
 
@@ -178,7 +197,7 @@ public class OrdersFragment extends Fragment {
                     Integer.toString(swpByUser.getId()),
                     "SELF-WORKOUT PLAN",
                     2,
-                    swpByUser.getSelfworkoutplan().getTitle(),
+                    "Plan Name:\n"+swpByUser.getSelfworkoutplan().getTitle(),
                     swpByUser.getSelfworkoutplan().getPlanPrice(),
                     true
             ));
