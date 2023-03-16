@@ -40,14 +40,13 @@ public class Appointment {
     private String customerId;
     private String paymentId;
     private long paymentDate;
+    private String deviceToken;
 
     public Appointment(){
 
     }
 
-    public Appointment(String id,long bookedDate,long registeredDate, String serviceType, int status,
-                       double totalPrice, String location,
-                       String trainerId, String customerId) {
+    public Appointment(String id, long bookedDate, long registeredDate, String serviceType, int status, double totalPrice, String location, String trainerId, String customerId, String paymentId, long paymentDate, String deviceToken) {
         this.id = id;
         this.bookedDate = bookedDate;
         this.registeredDate = registeredDate;
@@ -57,7 +56,11 @@ public class Appointment {
         this.location = location;
         this.trainerId = trainerId;
         this.customerId = customerId;
+        this.paymentId = paymentId;
+        this.paymentDate = paymentDate;
+        this.deviceToken = deviceToken;
     }
+
 
     public String getId() {
         return id;
@@ -145,6 +148,14 @@ public class Appointment {
 
     public void setPaymentDate(long paymentDate) {
         this.paymentDate = paymentDate;
+    }
+
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
     }
 
     @Override

@@ -19,6 +19,8 @@ import com.bawp.coachme.model.Trainer;
 import com.bawp.coachme.model.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.opencsv.CSVReader;
@@ -32,6 +34,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -110,7 +113,8 @@ public class DBHelper extends SQLiteOpenHelper {
             "trainerId TEXT," +
             "customerId TEXT," +
             "paymentId TEXT," +
-            "paymentDate BIGINT" +
+            "paymentDate BIGINT," +
+            "deviceToken TEXT" +
             ");";
 
     private static final String CREATE_TRAINERS_TABLE = "CREATE TABLE trainers(" +
@@ -125,7 +129,7 @@ public class DBHelper extends SQLiteOpenHelper {
             "phoneNumber TEXT," +
             "address TEXT," +
             "trainerProfileImage TEXT"+
-            ")";
+            ");";
 
     private static final String CREATE_PAYMENTS_TABLE = "CREATE TABLE payments(" +
             "_id TEXT PRIMARY KEY," +
@@ -154,15 +158,15 @@ public class DBHelper extends SQLiteOpenHelper {
             "trainerID TEXT, " +
             "FOREIGN KEY(trainerID) REFERENCES trainers(_id) " +
             ");";
-
     public static final String URL_FIRESTORE_SELF_WORKOUT_PLANS_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutPlans.csv";
     public static final String URL_FIRESTORE_SELF_WORKOUT_SESSION_TYPES_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutSessionTypes.csv";
     public static final String URL_FIRESTORE_SELF_PLAN_EXERCISES_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutPlanExercises.csv";
     public static final String URL_FIRESTORE_TRAINER_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/trainers.csv";
+
     public static  final String URL_FIRESTORE_RATINGS_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/ratings.csv";
+
     public static final String URL_FIRESTORE_TRAINERSERVICE_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/trainerService.csv";
     public static final String URL_FIRESTORE_TRAINER_OPEN_SCHEDULE_TABLE="gs://w23-g3-coachme.appspot.com/sqlite_datasets/schedule.csv";
-
     public DBHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -198,6 +202,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TRAINERSERVICE_TABLE);
         db.execSQL(CREATE_TRAINER_OPEN_SCHEDULE_TABLE);
         databaseJustCreated=true;
+        //uploadSelfWorkoutPlans();
 
     }
 
@@ -210,8 +215,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS selfWorkoutSessions");
         db.execSQL("DROP TABLE IF EXISTS selfWorkoutSessionLogs");
         db.execSQL("DROP TABLE IF EXISTS appointments");
-        db.execSQL("DROP TABLE IF EXISTS trainers");
         db.execSQL("DROP TABLE IF EXISTS payments");
+        db.execSQL("DROP TABLE IF EXISTS trainers");
         db.execSQL("DROP TABLE IF EXISTS ratings");
         db.execSQL("DROP TABLE IF EXISTS trainerservice");
         db.execSQL("DROP TABLE IF EXISTS schedule");
@@ -360,6 +365,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
     }
+
 
     // Upload ratings
     public void uploadRatings(byte[] bytes){
@@ -512,9 +518,10 @@ public class DBHelper extends SQLiteOpenHelper {
                 String trainerId = cursor.getString(cursor.getColumnIndex("trainerId"));
                 String paymentId = cursor.getString(cursor.getColumnIndex("paymentId"));
                 Long paymentDate = cursor.getLong(cursor.getColumnIndex("paymentDate"));
+//                String deviceToken = cursor.getString(cursor.getColumnIndex("deviceToken"));
 
                 Appointment appointment = new Appointment(id,bookedDate,registeredDate,serviceType,status,
-                        totalPrice,location,trainerId,UserSingleton.getInstance().getUserId());
+                        totalPrice,location,trainerId,UserSingleton.getInstance().getUserId(), paymentId, paymentDate, UserSingleton.getInstance().getUserDeviceToken());
 
                 if (paymentId == null){
                     appointment.setPaymentId(null);
@@ -563,19 +570,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 Long paymentDate = cursor.getLong(cursor.getColumnIndex("paymentDate"));
 
                 Appointment appointment = new Appointment(id,bookedDate,registeredDate,serviceType,statusValue,
-                        totalPrice,location,trainerId,UserSingleton.getInstance().getUserId());
-
-                if (paymentId == null){
-                    appointment.setPaymentId(null);
-                }else{
-                    appointment.setPaymentId(paymentId);
-                }
-
-                if (paymentDate == null){
-                    appointment.setPaymentDate(0);
-                }else{
-                    appointment.setPaymentDate(paymentDate);
-                }
+                        totalPrice,location,trainerId,UserSingleton.getInstance().getUserId(),paymentId,paymentDate,UserSingleton.getInstance().getUserDeviceToken());
 
                 appointmentsList.add(appointment);
 
@@ -606,7 +601,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 Long paymentDate = cursor.getLong(cursor.getColumnIndex("paymentDate"));
 
                 Appointment appointment = new Appointment(id,bookedDate,registeredDate,serviceType,statusValue,
-                        totalPrice,location,trainerId,UserSingleton.getInstance().getUserId());
+                        totalPrice,location,trainerId,UserSingleton.getInstance().getUserId(),paymentId,paymentDate,UserSingleton.getInstance().getUserDeviceToken());
 
                 if (paymentId == null){
                     appointment.setPaymentId(null);
@@ -662,9 +657,27 @@ public class DBHelper extends SQLiteOpenHelper {
         return numRowsUpdated;
     }
 
+
     public void addAppToCart(String id,long bookedDate,long registeredDate, String serviceType, int status,
                              double totalPrice, String location,
-                             String trainerId, String customerId){
+                             String trainerId, String customerId, String deviceToken){
+
+        //Adding the appointment into firebase
+        FirebaseDatabase CoachMeDatabaseInstance = FirebaseDatabase.getInstance();
+        DatabaseReference CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
+        DatabaseReference newAppRef = CoachMeDatabaseRef.child("appointments").child(id);
+
+        newAppRef.child("bookedDate").setValue(bookedDate);
+        newAppRef.child("registeredDate").setValue(registeredDate);
+        newAppRef.child("serviceType").setValue(serviceType);
+        newAppRef.child("status").setValue(status);
+        newAppRef.child("totalPrice").setValue(totalPrice);
+        newAppRef.child("location").setValue(location);
+        newAppRef.child("trainerId").setValue(trainerId);
+        newAppRef.child("customerId").setValue(customerId);
+        newAppRef.child("deviceToken").setValue(deviceToken);
+
+        //Now let's add the new appointment
 
         ContentValues values = new ContentValues();
         values.put("_id", id);
@@ -676,6 +689,7 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put("location", location);
         values.put("trainerId", trainerId);
         values.put("customerId", customerId);
+        values.put("deviceToken", deviceToken);
 
         SQLiteDatabase db = this.getWritableDatabase();
         long result = db.insert("appointments", null, values);
@@ -827,9 +841,13 @@ public class DBHelper extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public Trainer getTrainerById(String trainerId){
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * \n" +
-                "FROM trainers \n"+
-                "WHERE _id = '"+trainerId+"'",null);
+        Cursor cursor = db.rawQuery("SELECT t._id, t.firstName, t.lastName, t.email, \n" +
+                        "t.latitudeCoord, t.longitudeCoord, t.radius, t.flatPrice, t.phoneNumber,t.trainerProfileImage," +
+                        "t.address, AVG(r.rating) AS avgRating " +
+                        "FROM trainers t \n" +
+                        "JOIN ratings r ON t._id = r.trainerID \n" +
+                        "WHERE t._id = '"+trainerId+"'" +
+                        "GROUP BY t._id, t.firstName, t.lastName, t.email, t.latitudeCoord, t.longitudeCoord, t.radius, t.flatPrice, t.phoneNumber, t.address, t.trainerProfileImage ",null);
 
         Trainer trainer = null;
 
@@ -844,10 +862,11 @@ public class DBHelper extends SQLiteOpenHelper {
             String phoneNumber = cursor.getString(cursor.getColumnIndex("phoneNumber"));
             String address = cursor.getString(cursor.getColumnIndex("address"));
             String trainerProfileImage = cursor.getString(cursor.getColumnIndex("trainerProfileImage"));
+            Double rating = cursor.getDouble(cursor.getColumnIndex("avgRating"));
 
             trainer = new Trainer(trainerId, firstName, lastName, email,
                     latitudeCoord, longitudeCoord,  radius, flatPrice,
-                     phoneNumber, address, trainerProfileImage);
+                     phoneNumber, address, trainerProfileImage, rating);
 
         }
 
@@ -855,15 +874,16 @@ public class DBHelper extends SQLiteOpenHelper {
         return trainer;
     }
 
+
     @SuppressLint("Range")
     public List<Trainer> getTrainers(){
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT t._id, t.firstName, t.lastName, t.email, \n" +
-                        "t.latitudeCoord, t.longitudeCoord, t.radius, t.flatPrice, t.phoneNumber," +
-                        "t.address, AVG(r.rating) AS avgRating " +
-                        "FROM trainers t \n" +
-                        "JOIN ratings r ON t._id = r.trainerID \n" +
-                        "GROUP BY t._id, t.firstName, t.lastName, t.email, t.latitudeCoord, t.longitudeCoord, t.radius, t.flatPrice, t.phoneNumber, t.address  "
+                "t.latitudeCoord, t.longitudeCoord, t.radius, t.flatPrice, t.phoneNumber," +
+                "t.address,t.trainerProfileImage, AVG(r.rating) AS avgRating " +
+                "FROM trainers t \n" +
+                "JOIN ratings r ON t._id = r.trainerID \n" +
+                "GROUP BY t._id, t.firstName, t.lastName, t.email, t.latitudeCoord, t.longitudeCoord, t.radius, t.flatPrice, t.phoneNumber, t.address,t.trainerProfileImage  "
                 ,null);
 
         List<Trainer> tempTrainers =  new ArrayList<>(); // List for the trainers
@@ -882,12 +902,12 @@ public class DBHelper extends SQLiteOpenHelper {
                 Double flatPrice = cursor.getDouble(cursor.getColumnIndex("flatPrice"));
                 String phoneNumber = cursor.getString(cursor.getColumnIndex("phoneNumber"));
                 String address = cursor.getString(cursor.getColumnIndex("address"));
-                String trainerProfileImage = cursor.getString(cursor.getColumnIndex("trainerProfileImage"));
                 Double rating = cursor.getDouble(cursor.getColumnIndex("avgRating"));
+                String trainerProfileImage = cursor.getString(cursor.getColumnIndex("trainerProfileImage"));
 
                 trainer = new Trainer(trainerId, firstName, lastName, email,
                         latitudeCoord, longitudeCoord, radius, flatPrice,
-                        phoneNumber, address,trainerProfileImage ,rating);
+                        phoneNumber, address,trainerProfileImage, rating);
 
                 tempTrainers.add(trainer);
                 count++;
@@ -908,9 +928,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
         String selectQuery = "SELECT trainers._id, trainers.firstName, trainers.lastName, trainers.email, " +
                 "trainers.latitudeCoord, trainers.longitudeCoord, trainers.radius, trainers.flatPrice, trainers.phoneNumber," +
-                "trainers.address, AVG(ratings.rating) AS avgRating " +
+                "trainers.address,trainers.trainerProfileImage, AVG(ratings.rating) AS avgRating " +
                 " FROM trainers " +
-                "JOIN ratings ON trainers._id = ratings.trainerID " +
+                "LEFT JOIN ratings ON trainers._id = ratings.trainerID " +
                 "JOIN trainerservice ON trainers._id = trainerservice.trainerID " +
                 "JOIN schedule ON trainers._id = schedule.trainerID " +
                 "WHERE schedule.time BETWEEN " + dateFrom +" AND " + dateTo ;
@@ -918,13 +938,14 @@ public class DBHelper extends SQLiteOpenHelper {
 
         // Add service filtering if services list is not empty
         if (!services.isEmpty()) {
-            String serviceList = TextUtils.join(",", services);
+            String serviceList = "'" + TextUtils.join("','", services) + "'";
+            System.out.println(serviceList);
             selectQuery += " AND trainerservice.service IN (" + serviceList + ") ";
         }
 
         selectQuery += "\n GROUP BY trainers._id, trainers.firstName, trainers.lastName, trainers.email,  " +
                 " trainers.latitudeCoord, trainers.longitudeCoord, trainers.radius, trainers.flatPrice, trainers.phoneNumber, " +
-                "trainers.address";
+                "trainers.address, trainers.trainerProfileImage";
 
         Cursor cursor = db.rawQuery(selectQuery, null);
 
@@ -943,6 +964,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 trainer.setPhoneNumber(cursor.getString(cursor.getColumnIndex("phoneNumber")));
                 trainer.setAddress(cursor.getString(cursor.getColumnIndex("address")));
                 trainer.setRating(cursor.getDouble(cursor.getColumnIndex("avgRating")));
+                trainer.setTrainerProfileImage(cursor.getString(cursor.getColumnIndex("trainerProfileImage")));
 
                 System.out.println("NNNNN " + cursor.getString(cursor.getColumnIndex("_id")));
 
@@ -992,6 +1014,58 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void insertSchedule(long time, String trainerID) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        String query = "SELECT MAX(_id) FROM schedule";
+        Cursor cursor = db.rawQuery(query, null);
+        int maxId = 0;
+        if (cursor.moveToFirst()) {
+            maxId = cursor.getInt(0);
+        }
+        maxId++;
+
+        ContentValues values = new ContentValues();
+        values.put("_id", maxId);
+        values.put("time", time);
+        values.put("trainerID", trainerID);
+
+        db.insert("schedule", null, values);
+
+        db.close();
+    }
+
+    @SuppressLint("Range")
+    public ArrayList<Appointment> getAllAppointmentsByStatusAndUsername(int status, String username) {
+        ArrayList<Appointment> appointments = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT * FROM appointments WHERE status=? AND customerId=(SELECT _id FROM customers WHERE username=?)";
+        Cursor cursor = db.rawQuery(query, new String[] {String.valueOf(status), username});
+
+        if (cursor.moveToFirst()) {
+            do {
+                Appointment appointment = new Appointment();
+                appointment.setId(cursor.getString(cursor.getColumnIndex("_id")));
+                appointment.setBookedDate(cursor.getLong(cursor.getColumnIndex("bookedDate")));
+                appointment.setRegisteredDate(cursor.getLong(cursor.getColumnIndex("registeredDate")));
+                appointment.setServiceType(cursor.getString(cursor.getColumnIndex("serviceType")));
+                appointment.setStatus(cursor.getInt(cursor.getColumnIndex("status")));
+                appointment.setTotalPrice(cursor.getFloat(cursor.getColumnIndex("totalPrice")));
+                appointment.setLocation(cursor.getString(cursor.getColumnIndex("location")));
+                appointment.setTrainerId(cursor.getString(cursor.getColumnIndex("trainerId")));
+                appointment.setCustomerId(cursor.getString(cursor.getColumnIndex("customerId")));
+                appointment.setPaymentId(cursor.getString(cursor.getColumnIndex("paymentId")));
+                appointment.setPaymentDate(cursor.getLong(cursor.getColumnIndex("paymentDate")));
+                appointment.setDeviceToken(UserSingleton.getInstance().getUserDeviceToken());
+                appointments.add(appointment);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return appointments;
+    }
+
     /* -------------------------------
     -----------ORDER HISTORY----------
     ------------------------------- */
@@ -1039,5 +1113,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return orderHistory;
     }
+
+
 
 }
