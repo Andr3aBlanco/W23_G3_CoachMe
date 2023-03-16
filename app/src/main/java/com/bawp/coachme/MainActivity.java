@@ -10,6 +10,8 @@ import androidx.fragment.app.FragmentTransaction;
 import com.bawp.coachme.databinding.ActivityMainBinding;
 import com.bawp.coachme.presentation.home.HomeFragment;
 import com.bawp.coachme.presentation.order.OrdersFragment;
+import com.bawp.coachme.presentation.trainermap.TrainerListFragment;
+import com.bawp.coachme.presentation.trainermap.TrainerSearchFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,12 +46,12 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case R.id.menu_profile:
-                    replaceFragment(new ProfileFragment());
+                    replaceFragment(new TrainerSearchFragment());
 
                     break;
 
                 case R.id.menu_stats:
-                    replaceFragment(new StatsFragment());
+                    replaceFragment(new TrainerListFragment());
 
                     break;
 

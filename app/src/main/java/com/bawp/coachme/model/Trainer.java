@@ -1,6 +1,8 @@
 package com.bawp.coachme.model;
 
-public class Trainer {
+import java.io.Serializable;
+
+public class Trainer implements Serializable {
 
     private String id;
     private String firstName;
