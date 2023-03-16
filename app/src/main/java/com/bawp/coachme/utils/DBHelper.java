@@ -12,12 +12,15 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.bawp.coachme.model.Appointment;
+import com.bawp.coachme.model.Payment;
 import com.bawp.coachme.model.SelfWorkoutPlan;
 import com.bawp.coachme.model.SelfWorkoutPlanByUser;
 import com.bawp.coachme.model.Trainer;
 import com.bawp.coachme.model.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.opencsv.CSVReader;
@@ -29,7 +32,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -122,8 +127,15 @@ public class DBHelper extends SQLiteOpenHelper {
             "radius INT," +
             "flatPrice FLOAT," +
             "phoneNumber TEXT," +
-            "address TEXT" +
+            "address TEXT," +
+            "trainerProfileImage TEXT"+
             ");";
+
+    private static final String CREATE_PAYMENTS_TABLE = "CREATE TABLE payments(" +
+            "_id TEXT PRIMARY KEY," +
+            "paymentDate BIGINT,"+
+            "finalPrice FLOAT" +
+            ")";
 
     private static final String CREATE_RATINGS_TABLE = "CREATE TABLE ratings(" +
             "_id TEXT PRIMARY KEY, " +
@@ -558,19 +570,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 Long paymentDate = cursor.getLong(cursor.getColumnIndex("paymentDate"));
 
                 Appointment appointment = new Appointment(id,bookedDate,registeredDate,serviceType,statusValue,
-                        totalPrice,location,trainerId,UserSingleton.getInstance().getUserId());
-
-                if (paymentId == null){
-                    appointment.setPaymentId(null);
-                }else{
-                    appointment.setPaymentId(paymentId);
-                }
-
-                if (paymentDate == null){
-                    appointment.setPaymentDate(0);
-                }else{
-                    appointment.setPaymentDate(paymentDate);
-                }
+                        totalPrice,location,trainerId,UserSingleton.getInstance().getUserId(),paymentId,paymentDate,UserSingleton.getInstance().getUserDeviceToken());
 
                 appointmentsList.add(appointment);
 
@@ -601,7 +601,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 Long paymentDate = cursor.getLong(cursor.getColumnIndex("paymentDate"));
 
                 Appointment appointment = new Appointment(id,bookedDate,registeredDate,serviceType,statusValue,
-                        totalPrice,location,trainerId,UserSingleton.getInstance().getUserId());
+                        totalPrice,location,trainerId,UserSingleton.getInstance().getUserId(),paymentId,paymentDate,UserSingleton.getInstance().getUserDeviceToken());
 
                 if (paymentId == null){
                     appointment.setPaymentId(null);
@@ -661,6 +661,23 @@ public class DBHelper extends SQLiteOpenHelper {
     public void addAppToCart(String id,long bookedDate,long registeredDate, String serviceType, int status,
                              double totalPrice, String location,
                              String trainerId, String customerId, String deviceToken){
+
+        //Adding the appointment into firebase
+        FirebaseDatabase CoachMeDatabaseInstance = FirebaseDatabase.getInstance();
+        DatabaseReference CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
+        DatabaseReference newAppRef = CoachMeDatabaseRef.child("appointments").child(id);
+
+        newAppRef.child("bookedDate").setValue(bookedDate);
+        newAppRef.child("registeredDate").setValue(registeredDate);
+        newAppRef.child("serviceType").setValue(serviceType);
+        newAppRef.child("status").setValue(status);
+        newAppRef.child("totalPrice").setValue(totalPrice);
+        newAppRef.child("location").setValue(location);
+        newAppRef.child("trainerId").setValue(trainerId);
+        newAppRef.child("customerId").setValue(customerId);
+        newAppRef.child("deviceToken").setValue(deviceToken);
+
+        //Now let's add the new appointment
 
         ContentValues values = new ContentValues();
         values.put("_id", id);
@@ -866,7 +883,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "t.address,t.trainerProfileImage, AVG(r.rating) AS avgRating " +
                 "FROM trainers t \n" +
                 "JOIN ratings r ON t._id = r.trainerID \n" +
-                "GROUP BY t._id, t.firstName, t.lastName, t.email, t.latitudeCoord, t.longitudeCoord, t.radius, t.flatPrice, t.phoneNumber, t.address, ,t.trainerProfileImage  "
+                "GROUP BY t._id, t.firstName, t.lastName, t.email, t.latitudeCoord, t.longitudeCoord, t.radius, t.flatPrice, t.phoneNumber, t.address,t.trainerProfileImage  "
                 ,null);
 
         List<Trainer> tempTrainers =  new ArrayList<>(); // List for the trainers
@@ -947,7 +964,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 trainer.setPhoneNumber(cursor.getString(cursor.getColumnIndex("phoneNumber")));
                 trainer.setAddress(cursor.getString(cursor.getColumnIndex("address")));
                 trainer.setRating(cursor.getDouble(cursor.getColumnIndex("avgRating")));
-                trainer.setTrainerProfileImage(cursor.getColumnIndex("trainerProfileImage"));
+                trainer.setTrainerProfileImage(cursor.getString(cursor.getColumnIndex("trainerProfileImage")));
 
                 System.out.println("NNNNN " + cursor.getString(cursor.getColumnIndex("_id")));
 

@@ -32,7 +32,6 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.bawp.coachme.HomeFragment;
 import com.bawp.coachme.R;
 import com.bawp.coachme.model.Trainer;
 import com.bawp.coachme.model.User;

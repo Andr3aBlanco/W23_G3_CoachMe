@@ -17,8 +17,6 @@ public class Trainer implements Serializable {
     private String trainerProfileImage;
     private double rating;
 
-    private double rating;
-
     public Trainer(){
 
     }

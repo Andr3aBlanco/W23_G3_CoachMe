@@ -10,6 +10,8 @@ import androidx.fragment.app.FragmentTransaction;
 import com.bawp.coachme.databinding.ActivityMainBinding;
 import com.bawp.coachme.presentation.home.HomeFragment;
 import com.bawp.coachme.presentation.order.OrdersFragment;
+import com.bawp.coachme.presentation.trainermap.TrainerListFragment;
+import com.bawp.coachme.presentation.trainermap.TrainerSearchFragment;
 
 public class MainActivity extends AppCompatActivity {
 
