@@ -1571,7 +1571,7 @@ public class DBHelper extends SQLiteOpenHelper {
             } while(cursor.moveToNext());
         }
 
-        Log.d("Andrea", "Trainers from SQLLite " + count);
+//        Log.d("Andrea", "Trainers from SQLLite " + count);
 
         db.close();
         return tempTrainers;
@@ -1752,6 +1752,57 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+     //get appoitnment by appointmentid -> this mifght not be necessary because the recycler has ll the appointmnest
+    // added just in case
+    @SuppressLint("Range")
+    public Appointment getAppointmentById(String appId){
+        Appointment appointment = new Appointment();
+        SQLiteDatabase db = getReadableDatabase();
+
+        String query = "SELECT * FROM appointments WHERE _id = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{appId});
+
+        if(cursor.moveToFirst()){
+
+            String appointmentId = cursor.getString(cursor.getColumnIndex("_id"));
+            long bookedDate = cursor.getLong(cursor.getColumnIndex("bookedDate"));
+            long registeredDate = cursor.getLong(cursor.getColumnIndex("registeredDate"));
+            String serviceType = cursor.getString(cursor.getColumnIndex("serviceType"));
+            int appointmentStatus = cursor.getInt(cursor.getColumnIndex("status"));
+            float totalPrice = cursor.getFloat(cursor.getColumnIndex("totalPrice"));
+            String location = cursor.getString(cursor.getColumnIndex("location"));
+            String appointmentTrainerId = cursor.getString(cursor.getColumnIndex("trainerId"));
+            String appointmentcustomerId = cursor.getString(cursor.getColumnIndex("customerId"));
+            String paymentId = cursor.getString(cursor.getColumnIndex("paymentId"));
+            long paymentDate = cursor.getLong(cursor.getColumnIndex("paymentDate"));
+            String deviceToken = cursor.getString(cursor.getColumnIndex("deviceToken"));
+            int rating = cursor.getInt(cursor.getColumnIndex("rating"));
+
+            appointment = new Appointment(appointmentId, bookedDate, registeredDate, serviceType, appointmentStatus, totalPrice, location, appointmentTrainerId, appointmentcustomerId, paymentId, paymentDate, deviceToken);
+            appointment.setRating(rating);
+        }
+
+        cursor.close();
+        db.close();
+
+        return appointment;
+    }
+
+    // Update rating -> initial zero for validation purposes valid values from 1 - 5
+    public int updateAppointmentRating(String appId, int rating){
+        SQLiteDatabase db = getReadableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("rating", rating);
+
+        int numRowsUpdated = db.update("appointments", values, "_id=?", new String[] {appId});
+
+        db.close();
+
+        return numRowsUpdated;
+
+    }
 
     /* -------------------------------
     -----------ORDER HISTORY----------
