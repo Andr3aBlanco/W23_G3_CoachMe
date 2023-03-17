@@ -109,6 +109,7 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                         StorageReference csvFileRatings = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_RATINGS_TABLE);
                         StorageReference csvFileTrainerService = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_TRAINERSERVICE_TABLE);
                         StorageReference csvFileSchedule = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_TRAINER_OPEN_SCHEDULE_TABLE);
+                        StorageReference csvFileAppointments = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_APPOINTMENTS_TABLE);
 
                         List<Task<byte[]>> downloadTasks = new ArrayList<>();
                         downloadTasks.add(csvFileWp.getBytes(Long.MAX_VALUE));
@@ -118,6 +119,7 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                         downloadTasks.add(csvFileRatings.getBytes(Long.MAX_VALUE));
                         downloadTasks.add(csvFileTrainerService.getBytes(Long.MAX_VALUE));
                         downloadTasks.add(csvFileSchedule.getBytes(Long.MAX_VALUE));
+                        downloadTasks.add(csvFileAppointments.getBytes(Long.MAX_VALUE));
 
                         txtViewLoadingText.setText("Downloading Datasets...");
                         // Wait for all Tasks to complete
@@ -133,6 +135,7 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                                 byte[] csvFileRatingsByte = task.getResult().get(4);
                                 byte[] csvFileTrainerServiceByte = task.getResult().get(5);
                                 byte[] csvScheduleByte = task.getResult().get(6);
+                                byte[] csvAppointmentByte = task.getResult().get(7);
 
                                 dbHelper.uploadSelfWorkoutPlans(csvFileWpByte);
                                 dbHelper.uploadSelfWorkoutSessionTypes(csvFileWSTByte);
@@ -143,6 +146,7 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                                 dbHelper.uploadRatings(csvFileRatingsByte);
                                 dbHelper.uploadTrainerService(csvFileTrainerServiceByte);
                                 dbHelper.uploadTrainerSchedule(csvScheduleByte);
+                                dbHelper.uploadAppointments(csvAppointmentByte);
                                 //some dump data
                                 dbHelper.uploadSampleAppointment();
                                 //dbHelper.uploadSampleWorkoutPlanByUser();

@@ -42,6 +42,10 @@ public class Appointment {
     private long paymentDate;
     private String deviceToken;
 
+    // modification to simplify the model
+    private int rating;  // one per appointment
+    private String comment;
+
     public Appointment(){
 
     }
@@ -59,6 +63,9 @@ public class Appointment {
         this.paymentId = paymentId;
         this.paymentDate = paymentDate;
         this.deviceToken = deviceToken;
+        // new attribute
+        this.rating = 0;
+        this.comment = "";
     }
 
 
@@ -156,6 +163,14 @@ public class Appointment {
 
     public void setDeviceToken(String deviceToken) {
         this.deviceToken = deviceToken;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 
     @Override
