@@ -32,6 +32,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -153,6 +154,8 @@ public class OrderPaymentOptionsFragment extends Fragment {
         });
 
         searchCustomerIdStripe();
+
+
 
         return view;
     }
@@ -446,4 +449,38 @@ public class OrderPaymentOptionsFragment extends Fragment {
 
 
     }
+
+    private void replaceFragment(Fragment fragment){
+
+        FragmentManager fragmentManager = getParentFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.barFrame, fragment);
+        fragmentTransaction.commit();
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(getView() == null){
+            return;
+        }
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+                    replaceFragment(new OrdersFragment());
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+
 }

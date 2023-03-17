@@ -50,12 +50,11 @@
 
         </LinearLayout>
 
-        <FrameLayout
+        <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:id="@+id/orderHistoryFragmentContainer"
-            />
+            android:id="@+id/orderHistoryRecyclerView"/>
 
     </LinearLayout>
 

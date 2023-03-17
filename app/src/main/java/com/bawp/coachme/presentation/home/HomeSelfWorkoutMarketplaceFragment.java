@@ -4,6 +4,8 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,6 +50,12 @@ public class HomeSelfWorkoutMarketplaceFragment extends Fragment {
 
         List<SelfWorkoutPlan> selfWorkoutPlanList = dbHelper.getSelfWorkoutPlanAvailable(customerId);
 
+        HomeSelfWorkoutMktpRecyclerAdapter mktpAdapter = new HomeSelfWorkoutMktpRecyclerAdapter(selfWorkoutPlanList, getContext());
+        RecyclerView recyclerViewMktp = view.findViewById(R.id.marketplaceRecyclerView);
+        recyclerViewMktp.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerViewMktp.setAdapter(mktpAdapter);
+
+        /*
         fm = getActivity().getSupportFragmentManager();
         fragment = fm.findFragmentById(R.id.marketplaceFragmentContainer);
         if (fragment == null){
@@ -63,7 +71,7 @@ public class HomeSelfWorkoutMarketplaceFragment extends Fragment {
                     .replace(R.id.marketplaceFragmentContainer,fragment)
                     .commit();
         }
-
+        */
         pbSelfworkoutMarketplace.setVisibility(View.GONE);
         llSelfworkoutMarketplace.setVisibility(View.VISIBLE);
 

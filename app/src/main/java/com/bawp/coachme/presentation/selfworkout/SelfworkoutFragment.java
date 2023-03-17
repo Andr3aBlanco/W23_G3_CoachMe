@@ -2,14 +2,15 @@ package com.bawp.coachme.presentation.selfworkout;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,33 +22,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bawp.coachme.R;
-import com.bawp.coachme.model.SelfWorkoutPlan;
 import com.bawp.coachme.model.SelfWorkoutPlanByUser;
 import com.bawp.coachme.model.SelfWorkoutSession;
 import com.bawp.coachme.model.SelfWorkoutSessionType;
-import com.bawp.coachme.presentation.order.OrderListRecyclerFragment;
-import com.bawp.coachme.presentation.order.OrderPaymentOptionsFragment;
-import com.bawp.coachme.presentation.order.OrdersFragment;
 import com.bawp.coachme.utils.DBHelper;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class SelfworkoutFragment extends Fragment {
 
@@ -66,9 +53,7 @@ public class SelfworkoutFragment extends Fragment {
     SelfWorkoutSession currentSession;
     Boolean isNewSession;
     DBHelper dbHelper;
-
-    FragmentManager fm;
-    Fragment fragment;
+    LinearLayout llTableSessionsDetail;
 
     public SelfworkoutFragment() {
         // Required empty public constructor
@@ -101,6 +86,7 @@ public class SelfworkoutFragment extends Fragment {
         txtViewSelfworkoutTotalWeeks = view.findViewById(R.id.txtViewSelfworkoutTotalWeeks);
         btnStartResumeWorkout = view.findViewById(R.id.btnStartResumeWorkout);
         btnRestartWorkout = view.findViewById(R.id.btnRestartWorkout);
+        llTableSessionsDetail = view.findViewById(R.id.llTableSessionsDetail);
 
         imgViewSelfworkout = view.findViewById(R.id.imgViewSelfworkout);
         pbSelfworkoutMain = view.findViewById(R.id.pbSelfworkoutMain);
@@ -231,6 +217,8 @@ public class SelfworkoutFragment extends Fragment {
         pbSelfworkoutMain.setVisibility(View.GONE);
         llSelfworkoutMainLayout.setVisibility(View.VISIBLE);
 
+        populateSessionRecords();
+
     }
 
     public void moveToSelfWorkoutSessions(List<SelfWorkoutSessionType> sessionTypes, SelfWorkoutSession session){
@@ -256,6 +244,85 @@ public class SelfworkoutFragment extends Fragment {
 
         // Commit the transaction
         fragmentTransaction.commit();
+    }
+
+    public void populateSessionRecords(){
+        List<SelfWorkoutSession> sessions = dbHelper.getListSessionsByUser(selfworkoutUserId);
+
+        for (SelfWorkoutSession session : sessions){
+            LinearLayout linearLayout = new LinearLayout(getContext());
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+
+            params.setMargins(0,4,0,0);
+
+            linearLayout.setLayoutParams(params);
+            linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+            TextView txtViewType = new TextView(getContext());
+            txtViewType.setLayoutParams(new LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    0.5f));
+            txtViewType.setText(session.getSelfworkoutSessionType().getSessionType());
+            txtViewType.setTextSize(13);
+            txtViewType.setTextColor(Color.parseColor("#200E32"));
+            txtViewType.setTypeface(ResourcesCompat.getFont(getContext(), R.font.poppins_regular));
+            txtViewType.setGravity(Gravity.CENTER);
+            txtViewType.setPadding(10, 0, 0, 0);
+            linearLayout.addView(txtViewType);
+
+            TextView txtViewDate = new TextView(getContext());
+            txtViewDate.setLayoutParams(new LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    0.5f));
+            txtViewDate.setTextSize(13);
+            txtViewDate.setTextColor(Color.parseColor("#200E32"));
+            txtViewDate.setTypeface(ResourcesCompat.getFont(getContext(), R.font.poppins_regular));
+            txtViewDate.setGravity(Gravity.CENTER);
+            txtViewDate.setPadding(10, 0, 0, 0);
+
+            DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+
+            if (session.getSessionEndDate() == 0){
+                txtViewDate.setText("In Progress");
+                linearLayout.addView(txtViewDate);
+            }else{
+                txtViewDate.setText(format.format(session.getSessionDate()));
+                linearLayout.addView(txtViewDate);
+
+                TextView txtViewDuration = new TextView(getContext());
+                txtViewDuration.setLayoutParams(new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        0.5f));
+                txtViewDuration.setTextSize(13);
+                txtViewDuration.setTextColor(Color.parseColor("#200E32"));
+                txtViewDuration.setTypeface(ResourcesCompat.getFont(getContext(), R.font.poppins_regular));
+                txtViewDuration.setGravity(Gravity.CENTER);
+                txtViewDuration.setPadding(10, 0, 0, 0);
+
+                Long endDate = session.getSessionEndDate();
+                Long startDate = session.getSessionDate();
+
+                long diff = Math.abs(startDate - endDate); // Difference in milliseconds
+                long minutes = TimeUnit.MILLISECONDS.toMinutes(diff);
+
+                txtViewDuration.setText(Long.toString(minutes) + " min");
+
+                linearLayout.addView(txtViewDuration);
+
+            }
+
+
+
+            llTableSessionsDetail.addView(linearLayout);
+
+        }
+
     }
 }
 

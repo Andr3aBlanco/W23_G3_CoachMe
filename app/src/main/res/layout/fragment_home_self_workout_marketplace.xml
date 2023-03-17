@@ -45,13 +45,19 @@ tools:context=".presentation.home.HomeSelfWorkoutMarketplaceFragment">
         <!--
             FrameLayout to display the CardViews
         -->
+        <!--
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:id="@+id/marketplaceFragmentContainer"
             />
-
+        -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:id="@+id/marketplaceRecyclerView"></androidx.recyclerview.widget.RecyclerView>
         <!--
             Buttons
         -->

@@ -14,12 +14,15 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bawp.coachme.R;
 import com.bawp.coachme.model.Appointment;
 import com.bawp.coachme.model.Payment;
 import com.bawp.coachme.model.SelfWorkoutPlan;
 import com.bawp.coachme.model.SelfWorkoutPlanByUser;
+import com.bawp.coachme.presentation.selfworkout.SelfworkoutFragment;
 import com.bawp.coachme.presentation.selfworkout.SelfworkoutSessionTypeFragment;
 import com.bawp.coachme.utils.DBHelper;
 import com.bawp.coachme.utils.UserSingleton;
@@ -31,29 +34,19 @@ import java.util.List;
 public class HomeFragment extends Fragment {
 
     DBHelper dbHelper;
-    FragmentManager fm;
-    Fragment fragment;
-    Fragment fragmentSwp;
     ProgressBar pbHomeFragment;
     LinearLayout llHomeFragment;
-    FrameLayout flAppointments;
-    FrameLayout flSelfWorkouts;
     LinearLayout llNoSwpAvailable;
     LinearLayout llNoAppAvailable;
     Button btnGoToWorkoutMktp;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        HomeFragment currentFragment = this;
-
         dbHelper = new DBHelper(getContext());
 
-        flAppointments = view.findViewById(R.id.homeAppFragmentContainer);
-        flSelfWorkouts = view.findViewById(R.id.homeSwpFragmentContainer);
         llNoSwpAvailable = view.findViewById(R.id.llNoSwpAvailable);
         llNoAppAvailable = view.findViewById(R.id.llNoAppsAvailable);
 
@@ -66,54 +59,56 @@ public class HomeFragment extends Fragment {
         //Getting the current appointments
         int[] statusList = new int[]{3,4};
         List<Appointment> activeAppointments = dbHelper.getAppointmentsByStatusList(statusList);
+        RecyclerView homeAppRecyclerView = view.findViewById(R.id.homeAppRecyclerView);
 
         if (activeAppointments.size()>0){
-            //Display into recycler fragment
-            fm = getActivity().getSupportFragmentManager();
-            fragment = fm.findFragmentById(R.id.homeAppFragmentContainer);
-            if (fragment == null){
-                fragment = HomeAppRecyclerFragment.newInstance(activeAppointments,currentFragment );
-
-                fm.beginTransaction()
-                        .add(R.id.homeAppFragmentContainer,fragment)
-                        .commit();
-            }else{
-                fragment = HomeAppRecyclerFragment.newInstance(activeAppointments,currentFragment);
-
-                fm.beginTransaction()
-                        .replace(R.id.homeAppFragmentContainer,fragment)
-                        .commit();
-            }
-            flAppointments.setVisibility(View.VISIBLE);
+            homeAppRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            HomeAppRecyclerAdapter appRecyclerAdapter = new HomeAppRecyclerAdapter(activeAppointments, getContext(), new HomeAppRecyclerAdapter.SetOnItemClickListener() {
+                @Override
+                public void setOnItemClick(int i) {
+                    Log.d("INFO","This will include the method to display the detail of the appointment");
+                }
+            });
+            homeAppRecyclerView.setAdapter(appRecyclerAdapter);
             llNoAppAvailable.setVisibility(View.GONE);
         }else{
-            flAppointments.setVisibility(View.GONE);
+            homeAppRecyclerView.setVisibility(View.GONE);
             llNoAppAvailable.setVisibility(View.VISIBLE);
         }
 
         List<SelfWorkoutPlanByUser> activeSelfWorkouts = dbHelper.getSelfWorkoutPlanByUserByStatus(3);
+        RecyclerView homeSwpRecyclerView = view.findViewById(R.id.homeSwpRecyclerView);
 
         if (activeSelfWorkouts.size()>0){
-            //Display into recycler fragment
-            fm = getActivity().getSupportFragmentManager();
-            fragmentSwp = fm.findFragmentById(R.id.homeSwpFragmentContainer);
-            if (fragmentSwp == null){
-                fragmentSwp = HomeSwpRecyclerFragment.newInstance(activeSelfWorkouts,currentFragment );
+            //Display into recycler view
+            homeSwpRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            HomeSwpRecyclerAdapter swpRecyclerAdapter = new HomeSwpRecyclerAdapter(activeSelfWorkouts, getContext(), new HomeSwpRecyclerAdapter.SetOnItemClickListener() {
+                @Override
+                public void onItemClick(int i) {
+                    Bundle passDataToFragment = new Bundle();
+                    passDataToFragment.putSerializable("workoutUserId",activeSelfWorkouts.get(i).getId());
 
-                fm.beginTransaction()
-                        .add(R.id.homeSwpFragmentContainer,fragmentSwp)
-                        .commit();
-            }else{
-                fragmentSwp = HomeSwpRecyclerFragment.newInstance(activeSelfWorkouts,currentFragment);
+                    SelfworkoutFragment selfworkoutFragment = new SelfworkoutFragment();
+                    selfworkoutFragment.setArguments(passDataToFragment);
 
-                fm.beginTransaction()
-                        .replace(R.id.homeSwpFragmentContainer,fragmentSwp)
-                        .commit();
-            }
-            flSelfWorkouts.setVisibility(View.VISIBLE);
+                    FragmentManager fm = getParentFragmentManager();
+                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+                    // Replace the current fragment with the new one
+                    fragmentTransaction.replace(R.id.barFrame, selfworkoutFragment);
+
+                    // Add the transaction to the back stack
+                    fragmentTransaction.addToBackStack("self-workout-main");
+
+                    // Commit the transaction
+                    fragmentTransaction.commit();
+                }
+            });
+            homeSwpRecyclerView.setAdapter(swpRecyclerAdapter);
+
             llNoSwpAvailable.setVisibility(View.GONE);
         }else{
-            flSelfWorkouts.setVisibility(View.GONE);
+            homeSwpRecyclerView.setVisibility(View.GONE);
             llNoSwpAvailable.setVisibility(View.VISIBLE);
         }
 
@@ -149,7 +144,7 @@ public class HomeFragment extends Fragment {
         pbHomeFragment.setVisibility(View.GONE);
         llHomeFragment.setVisibility(View.VISIBLE);
 
-
         return view;
     }
+
 }
