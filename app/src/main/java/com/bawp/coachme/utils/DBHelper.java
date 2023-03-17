@@ -1694,12 +1694,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // This one is not necessary
     @SuppressLint("Range")
-    public List<Appointment> getAppointmentsByCustomerIdAndStatus(String trainerId, int status) {
+    public List<Appointment> getAppointmentsByCustomerIdAndStatus(String customerId, int status) {
         List<Appointment> appointments = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
 
         String query = "SELECT * FROM appointments WHERE status=? AND customerId='?'";
-        Cursor cursor = db.rawQuery(query, new String[] {String.valueOf(status), trainerId});
+        Cursor cursor = db.rawQuery(query, new String[] {String.valueOf(status), customerId});
 
         if (cursor.moveToFirst()) {
             do {
@@ -1711,13 +1711,13 @@ public class DBHelper extends SQLiteOpenHelper {
                 float totalPrice = cursor.getFloat(cursor.getColumnIndex("totalPrice"));
                 String location = cursor.getString(cursor.getColumnIndex("location"));
                 String appointmentTrainerId = cursor.getString(cursor.getColumnIndex("trainerId"));
-                String customerId = cursor.getString(cursor.getColumnIndex("customerId"));
+                String appointmentcustomerId = cursor.getString(cursor.getColumnIndex("customerId"));
                 String paymentId = cursor.getString(cursor.getColumnIndex("paymentId"));
                 long paymentDate = cursor.getLong(cursor.getColumnIndex("paymentDate"));
                 String deviceToken = cursor.getString(cursor.getColumnIndex("deviceToken"));
                 int rating = cursor.getInt(cursor.getColumnIndex("rating"));
 
-                Appointment appointment = new Appointment(appointmentId, bookedDate, registeredDate, serviceType, appointmentStatus, totalPrice, location, appointmentTrainerId, customerId, paymentId, paymentDate, deviceToken);
+                Appointment appointment = new Appointment(appointmentId, bookedDate, registeredDate, serviceType, appointmentStatus, totalPrice, location, appointmentTrainerId, appointmentcustomerId, paymentId, paymentDate, deviceToken);
                 appointments.add(appointment);
             } while (cursor.moveToNext());
         }
@@ -1725,6 +1725,32 @@ public class DBHelper extends SQLiteOpenHelper {
         return appointments;
     }
 
+
+    // Call after rating any appointment
+    @SuppressLint("Range") // For update
+    public void updateTrainerRating(String trainerId) {
+        float avgRating = 0;
+        // query for completed appointments for the specified trainer
+        String query = "SELECT AVG(rating) as avgRating FROM appointments WHERE trainerId = ? AND status = 5";
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, new String[]{trainerId});
+
+        // iterate over the cursor and calculate the rating sum and count
+        if(cursor.moveToFirst()){
+
+                avgRating = cursor.getFloat(cursor.getColumnIndex("avgRating"));
+        }
+
+        System.out.println("This is the average rating for trainer " + trainerId + " " + avgRating);
+
+        ContentValues values = new ContentValues();
+        values.put("rating", avgRating);
+        db.update("trainers", values, "_id = ?", new String[]{trainerId});
+
+        cursor.close();
+        db.close();
+    }
 
 
     /* -------------------------------
