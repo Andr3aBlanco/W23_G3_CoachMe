@@ -65,6 +65,7 @@ public class DBHelper extends SQLiteOpenHelper {
             "_id TEXT PRIMARY KEY," +
             "selfWorkoutPlanId TEXT," +
             "sessionType TEXT," +
+            "sessionDate BIGINT," +
             "sessionTypeIconURLFirestore TEXT," +
             "FOREIGN KEY(selfWorkoutPlanId) REFERENCES selfWorkoutPlans(_id)" +
             ");";
