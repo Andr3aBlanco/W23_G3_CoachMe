@@ -139,7 +139,8 @@ public class DBHelper extends SQLiteOpenHelper {
             "flatPrice FLOAT," +
             "phoneNumber TEXT," +
             "address TEXT," +
-            "trainerProfileImage TEXT"+
+            "trainerProfileImage TEXT,"+
+            "rating FLOAT" +
             ");";
 
     private static final String CREATE_PAYMENTS_TABLE = "CREATE TABLE payments(" +
@@ -231,7 +232,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS appointments");
         db.execSQL("DROP TABLE IF EXISTS payments");
         db.execSQL("DROP TABLE IF EXISTS trainers");
-        db.execSQL("DROP TABLE IF EXISTS ratings");
+        db.execSQL("DROP TABLE IF EXISTS ratings");   // Remove this one later
         db.execSQL("DROP TABLE IF EXISTS trainerservice");
         db.execSQL("DROP TABLE IF EXISTS schedule");
         onCreate(db);
