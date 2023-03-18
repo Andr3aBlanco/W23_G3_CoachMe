@@ -33,11 +33,20 @@ public class HomeSelfWorkoutMktpRecyclerAdapter extends RecyclerView.Adapter<Hom
     Context context;
     List<SelfWorkoutPlan> selfWorkoutPlans;
     DBHelper dbHelper;
+    SetOnItemClickListener listener;
 
     public HomeSelfWorkoutMktpRecyclerAdapter(List<SelfWorkoutPlan> selfWorkoutPlans, Context context){
         this.selfWorkoutPlans = selfWorkoutPlans;
         this.context = context;
         this.dbHelper = new DBHelper(context);
+    }
+
+    public SetOnItemClickListener getListener() {
+        return listener;
+    }
+
+    public void setListener(SetOnItemClickListener listener) {
+        this.listener = listener;
     }
 
     @NonNull
@@ -57,10 +66,8 @@ public class HomeSelfWorkoutMktpRecyclerAdapter extends RecyclerView.Adapter<Hom
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String selfWorkoutPlanId = selfWorkoutPlans.get(holder.getAdapterPosition()).getId();
-                        dbHelper.createWorkoutPlanByUser(UserSingleton.getInstance().getUserId(),
-                                selfWorkoutPlanId);
                         dialog.dismiss();
+                        listener.onItemClick(holder.getAdapterPosition());
                     }
                 });
                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -150,6 +157,10 @@ public class HomeSelfWorkoutMktpRecyclerAdapter extends RecyclerView.Adapter<Hom
             mImgViewMktWorkoutLogo = itemView.findViewById(R.id.imgViewMktWorkoutLogo);
             mBtnAddWorkoutToCart = itemView.findViewById(R.id.btnAddWorkoutToCart);
         }
+    }
+
+    public interface SetOnItemClickListener{
+        public void onItemClick(int i);
     }
 
 }

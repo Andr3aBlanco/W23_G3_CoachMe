@@ -42,17 +42,28 @@ tools:context=".presentation.home.HomeSelfWorkoutMarketplaceFragment">
             android:fontFamily="@font/poppins_bold"
             android:text="Workout Marketplace"/>
 
-        <!--
-            FrameLayout to display the CardViews
-        -->
-        <!--
-        <FrameLayout
+        <LinearLayout
+            android:id="@+id/llNoMktpItemsAvailable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:id="@+id/marketplaceFragmentContainer"
-            />
-        -->
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="10dp"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="No workouts plan available :("
+                android:textColor="#6B66C7"
+                android:fontFamily="@font/poppins_bold"
+                android:gravity="center"
+                android:drawableLeft="@drawable/ic_info_white_24dp"
+                android:drawableTint="#6B66C7"
+                ></TextView>
+
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
