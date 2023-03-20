@@ -1698,9 +1698,10 @@ public class DBHelper extends SQLiteOpenHelper {
         List<Appointment> appointments = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
 
-        String query = "SELECT * FROM appointments WHERE status=? AND customerId='?'";
+        String query = "SELECT * FROM appointments WHERE status=? AND customerId= ? "; // revomed '?'
         Cursor cursor = db.rawQuery(query, new String[] {String.valueOf(status), customerId});
 
+        System.out.println("INSIDE getAppointmentsByCustomerIdAndStatus CustomerID " + customerId);
         if (cursor.moveToFirst()) {
             do {
                 String appointmentId = cursor.getString(cursor.getColumnIndex("_id"));
@@ -1725,13 +1726,25 @@ public class DBHelper extends SQLiteOpenHelper {
         return appointments;
     }
 
+    // Update appointment rating
+    public void updateRatingByAppointmentId(int rating, String comment, String appointmentId) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("rating", rating);
+        values.put("comment", comment);
+        String selection = "_id = ?";
+        String[] selectionArgs = { appointmentId };
+        db.update("appointments", values, selection, selectionArgs);
+    }
+
+
 
     // Call after rating any appointment
     @SuppressLint("Range") // For update
     public void updateTrainerRating(String trainerId) {
         float avgRating = 0;
         // query for completed appointments for the specified trainer
-        String query = "SELECT AVG(rating) as avgRating FROM appointments WHERE trainerId = ? AND status = 5";
+        String query = "SELECT AVG(rating) as avgRating FROM appointments WHERE trainerId = ? AND status = 5 AND rating <> 0"; // zero means no rating
 
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(query, new String[]{trainerId});

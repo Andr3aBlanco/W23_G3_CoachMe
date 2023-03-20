@@ -1,6 +1,7 @@
 package com.bawp.coachme.presentation.home;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,11 +21,13 @@ import com.bawp.coachme.model.Appointment;
 import com.bawp.coachme.model.Payment;
 import com.bawp.coachme.model.SelfWorkoutPlan;
 import com.bawp.coachme.model.SelfWorkoutPlanByUser;
+import com.bawp.coachme.presentation.feedback.AppHistoryListFragment;
 import com.bawp.coachme.presentation.selfworkout.SelfworkoutSessionTypeFragment;
 import com.bawp.coachme.utils.DBHelper;
 import com.bawp.coachme.utils.UserSingleton;
 import com.google.firebase.storage.FirebaseStorage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -41,6 +44,7 @@ public class HomeFragment extends Fragment {
     LinearLayout llNoSwpAvailable;
     LinearLayout llNoAppAvailable;
     Button btnGoToWorkoutMktp;
+    Button btnViewPreviousAppointments;
 
 
     @Override
@@ -148,6 +152,42 @@ public class HomeFragment extends Fragment {
 
         pbHomeFragment.setVisibility(View.GONE);
         llHomeFragment.setVisibility(View.VISIBLE);
+
+
+        btnViewPreviousAppointments = view.findViewById(R.id.btnViewPreviousAppointments);
+        btnViewPreviousAppointments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // Get the previous appointments
+
+                List<Appointment> prevAppointments = dbHelper.getAppointmentsByCustomerIdAndStatus(UserSingleton.getInstance().getUserId(), 5);
+
+                System.out.println("OnClick for PrevApp Size: " + prevAppointments.size());
+                if(prevAppointments.size() > 0 ){
+
+                    // Load the prevApp fragment
+                    AppHistoryListFragment historyFragment = new AppHistoryListFragment();
+                    FragmentManager fm = getParentFragmentManager();
+                    FragmentTransaction ft = fm.beginTransaction();
+
+                    // Pass the List
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelableArrayList("PREVAPPLIST", new ArrayList<>(prevAppointments));
+                    historyFragment.setArguments(bundle);
+
+                    //Replace with App Recycler
+                    ft.replace(R.id.barFrame, historyFragment);
+                    ft.addToBackStack("Appointment-History");
+                    ft.commit();
+
+                }else{
+
+                    Toast.makeText(getContext(), "No previous appointments available", Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
 
 
         return view;
