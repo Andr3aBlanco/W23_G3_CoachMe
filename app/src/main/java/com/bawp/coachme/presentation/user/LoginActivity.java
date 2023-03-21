@@ -1,4 +1,4 @@
-package com.bawp.coachme;
+package com.bawp.coachme.presentation.user;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +15,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bawp.coachme.LoadingDBSplashActivity;
+import com.bawp.coachme.MainActivity;
+import com.bawp.coachme.R;
+import com.bawp.coachme.utils.UserSingleton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -28,93 +32,100 @@ public class LoginActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     ImageView googleLoginBtn;
     ImageView fbLoginBtn;
-//importing data
+    // importing data
     EditText usernametxt;
     EditText passwordtxt;
-    TextView goToRegister,txtforgotpass;
+    TextView goToRegister, txtforgotpass;
     ProgressBar porgBar;
+
     @Override
     public void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            Intent intent = new Intent (getApplicationContext(), NewUserForm.class);
-            startActivity (intent);
+            // Setting the user Id into the UserSingleton Static Object
+            UserSingleton.getInstance().setUserId(currentUser.getUid());
+            Intent intent = new Intent(getApplicationContext(), LoadingDBSplashActivity.class);
+            startActivity(intent);
             finish();
-        }}
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_in);
-        mAuth=FirebaseAuth.getInstance();
-        googleLoginBtn=findViewById(R.id.imageGoogleAuth);
-        usernametxt=findViewById(R.id.txtusername);
-        passwordtxt=findViewById(R.id.txtpassword);
-        goToRegister=findViewById(R.id.txtGoToReg);
-        porgBar=findViewById(R.id.pBar);
-        logInBtn=findViewById(R.id.btnregisterConf);
-        fbLoginBtn=findViewById(R.id.imageFacebookAuth);
-        txtforgotpass=findViewById(R.id.txtForgotPassword);
+        mAuth = FirebaseAuth.getInstance();
+        googleLoginBtn = findViewById(R.id.imageGoogleAuth);
+        usernametxt = findViewById(R.id.txtusername);
+        passwordtxt = findViewById(R.id.txtpassword);
+        goToRegister = findViewById(R.id.btnGoToRegister);
+        porgBar = findViewById(R.id.pBar);
+        logInBtn = findViewById(R.id.btnLogin);
+        fbLoginBtn = findViewById(R.id.imageFacebookAuth);
+        txtforgotpass = findViewById(R.id.txtForgotPassword);
 
-        //sending user to create new account page
-        goToRegister.setOnClickListener((View view)->{
-            Intent regIntent=new Intent(LoginActivity.this, RegisterActivity.class);
+        // sending user to create new account page
+        goToRegister.setOnClickListener((View view) -> {
+            Intent regIntent = new Intent(LoginActivity.this, RegisterActivity.class);
             startActivity(regIntent);
         });
 
-        //creating on click listener for googlesign In
-        googleLoginBtn.setOnClickListener((View view)->{
-            Intent regIntent=new Intent(LoginActivity.this, GoogleSignInActivity.class);
+        // creating on click listener for googlesign In
+        googleLoginBtn.setOnClickListener((View view) -> {
+            Intent regIntent = new Intent(LoginActivity.this, GoogleSignInActivity.class);
             startActivity(regIntent);
 
         });
-        //creating on click listener for facebook In
-        fbLoginBtn.setOnClickListener((View view)->{
-            Intent regIntent=new Intent(LoginActivity.this, FaceookSignInActivity.class);
-            startActivity(regIntent);
-
-        });
-
-        //creating on click listener for forgot password
-        txtforgotpass.setOnClickListener((View view)->{
-            Intent regIntent=new Intent(LoginActivity.this, ResetPasswordActivity.class);
+        // creating on click listener for facebook In
+        fbLoginBtn.setOnClickListener((View view) -> {
+            Intent regIntent = new Intent(LoginActivity.this, FacebookSignInActivity.class);
             startActivity(regIntent);
 
         });
 
-        //creating Log in button on click listener
-        logInBtn.setOnClickListener((View View)-> {
+        // creating on click listener for forgot password
+        txtforgotpass.setOnClickListener((View view) -> {
+            Intent regIntent = new Intent(LoginActivity.this, ResetPasswordActivity.class);
+            startActivity(regIntent);
+
+        });
+
+        // creating Log in button on click listener
+        logInBtn.setOnClickListener((View View) -> {
             porgBar.setVisibility(View.GONE);
-            String email, password,name;
+            String email, password, name;
             email = String.valueOf(usernametxt.getText());
             password = String.valueOf(passwordtxt.getText());
 
-            if (TextUtils.isEmpty (email)) {
+            if (TextUtils.isEmpty(email)) {
 
                 Toast.makeText(LoginActivity.this, "Please Enter Email", Toast.LENGTH_SHORT).show();
                 return;
-            }if(!Patterns.EMAIL_ADDRESS.matcher (email).matches()) {
+            }
+            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
 
                 Toast.makeText(LoginActivity.this, "Please provide a valid Email", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (TextUtils.isEmpty (password)) {
+            if (TextUtils.isEmpty(password)) {
                 Toast.makeText(LoginActivity.this, "Please Enter Password", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            //sending request to the firebase to check the  existing user
+            // sending request to the firebase to check the existing user
             mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener( new OnCompleteListener<AuthResult>() {
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 Toast.makeText(LoginActivity.this, "Loged in",
                                         Toast.LENGTH_SHORT).show();
-                                 //starting new Activity when user id password is correct send them to main activity
-                                Intent intent = new Intent (getApplicationContext(), MainActivity.class);
-                                startActivity (intent);
+                                // starting new Activity when user id password is correct send them to main
+                                // activity
+                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                startActivity(intent);
                                 finish();
                             } else {
                                 // If sign in fails, display a message to the user.

@@ -21,6 +21,7 @@
     <string name="facebook_client_token">56789</string>
     <string name="txtresettitle">Reset Your password</string>
     <string name="btnReset">Reset</string>
+    <string name="btnRegister">Register</string>
     <string name="txtBacktoLogIn">Back to Sign In</string>
     <string name="txtGetCurrentLoc">Get Current Location</string>
     <string name="txtForgetPass">Forgot Password?</string>

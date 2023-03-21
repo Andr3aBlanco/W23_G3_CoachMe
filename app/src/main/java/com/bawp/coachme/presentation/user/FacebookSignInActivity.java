@@ -1,11 +1,9 @@
-package com.bawp.coachme;
+package com.bawp.coachme.presentation.user;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.telecom.Call;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -23,7 +21,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 
-public class FaceookSignInActivity extends LoginActivity {
+public class FacebookSignInActivity extends LoginActivity {
 CallbackManager callbackManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +75,7 @@ LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_
                         } else {
                             // If sign in fails, display a message to the user.
 
-                            Toast.makeText(FaceookSignInActivity.this, ""+task.getException(),
+                            Toast.makeText(FacebookSignInActivity.this, ""+task.getException(),
                                     Toast.LENGTH_SHORT).show();
                             updateUI(null);
                             finish();
@@ -87,7 +85,7 @@ LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_
     }
 
     private void updateUI(FirebaseUser user) {
-        Intent intent=new Intent(FaceookSignInActivity.this,NewUserForm.class);
+        Intent intent=new Intent(FacebookSignInActivity.this,NewUserForm.class);
 
         startActivity(intent);
     }

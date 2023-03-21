@@ -1,14 +1,13 @@
-package com.bawp.coachme;
+package com.bawp.coachme.presentation.user;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
+import com.bawp.coachme.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -32,13 +31,15 @@ public class GoogleSignInActivity extends LoginActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-progressDialog =new ProgressDialog(this);
-progressDialog.setMessage("Google Sign In.....");
+        progressDialog =new ProgressDialog(this);
+        progressDialog.setMessage("Google Sign In.....");
+
         // Configure Google Sign In
-        GoogleSignInOptions gso = new GoogleSignInOptions. Builder (GoogleSignInOptions.DEFAULT_SIGN_IN)
-                . requestIdToken (getString (R.string.default_web_client_id))
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
+
         mAuth=FirebaseAuth.getInstance();
         mUser=mAuth.getCurrentUser();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -49,17 +50,17 @@ progressDialog.setMessage("Google Sign In.....");
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult (requestCode, resultCode, data);
-// Result returned from Launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode ==RC_SIGN_IN) {
+
+        // Result returned from Launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
-// Google Sign In was successful, authenticate with Firebase
+                // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                Toast.makeText(this, "Welcom to coachme", Toast.LENGTH_SHORT).show();
-                firebaseAuthWithGoogle (account.getIdToken());
+                Toast.makeText(this, "Welcome to coachme", Toast.LENGTH_SHORT).show();
+                firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
-
-// Google Sign In failed, update UI appropriately
+                // Google Sign In failed, update UI appropriately
                 Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
                 finish();
@@ -90,7 +91,7 @@ progressDialog.setMessage("Google Sign In.....");
 
 
         private void updateUI(FirebaseUser user) {
-Intent intent=new Intent(GoogleSignInActivity.this,NewUserForm.class);
+            Intent intent=new Intent(GoogleSignInActivity.this,NewUserForm.class);
             intent. setFlags (Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }

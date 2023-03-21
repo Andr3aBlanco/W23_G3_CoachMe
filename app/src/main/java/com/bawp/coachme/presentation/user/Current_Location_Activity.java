@@ -1,19 +1,13 @@
-package com.bawp.coachme;
+package com.bawp.coachme.presentation.user;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
-import android.content.Intent;
-import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
+
+import com.bawp.coachme.R;
+import com.bawp.coachme.presentation.user.NewUserForm;
 
 public class Current_Location_Activity extends NewUserForm implements Filterable {
 TextView btn_location;
