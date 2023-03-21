@@ -25,9 +25,12 @@
  */
 package com.bawp.coachme.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Date;
 
-public class Appointment {
+public class Appointment implements Parcelable {
 
     private String id;
     private long bookedDate;
@@ -41,6 +44,10 @@ public class Appointment {
     private String paymentId;
     private long paymentDate;
     private String deviceToken;
+
+    // modification to simplify the model
+    private int rating;  // one per appointment
+    private String comment;
 
     public Appointment(){
 
@@ -59,8 +66,63 @@ public class Appointment {
         this.paymentId = paymentId;
         this.paymentDate = paymentDate;
         this.deviceToken = deviceToken;
+        // new attribute
+        this.rating = 0;
+        this.comment = "";
     }
 
+
+    protected Appointment(Parcel in) {
+        id = in.readString();
+        bookedDate = in.readLong();
+        registeredDate = in.readLong();
+        serviceType = in.readString();
+        status = in.readInt();
+        totalPrice = in.readDouble();
+        location = in.readString();
+        trainerId = in.readString();
+        customerId = in.readString();
+        paymentId = in.readString();
+        paymentDate = in.readLong();
+        deviceToken = in.readString();
+        rating = in.readInt();
+        comment = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeLong(bookedDate);
+        dest.writeLong(registeredDate);
+        dest.writeString(serviceType);
+        dest.writeInt(status);
+        dest.writeDouble(totalPrice);
+        dest.writeString(location);
+        dest.writeString(trainerId);
+        dest.writeString(customerId);
+        dest.writeString(paymentId);
+        dest.writeLong(paymentDate);
+        dest.writeString(deviceToken);
+        dest.writeInt(rating);
+        dest.writeString(comment);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Appointment> CREATOR = new Creator<Appointment>() {
+        @Override
+        public Appointment createFromParcel(Parcel in) {
+            return new Appointment(in);
+        }
+
+        @Override
+        public Appointment[] newArray(int size) {
+            return new Appointment[size];
+        }
+    };
 
     public String getId() {
         return id;
@@ -156,6 +218,14 @@ public class Appointment {
 
     public void setDeviceToken(String deviceToken) {
         this.deviceToken = deviceToken;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 
     @Override

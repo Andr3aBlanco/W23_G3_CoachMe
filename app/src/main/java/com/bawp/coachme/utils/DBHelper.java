@@ -111,6 +111,7 @@ public class DBHelper extends SQLiteOpenHelper {
             "FOREIGN KEY(selfWorkoutPlanExerciseId) REFERENCES selfWorkoutPlanExercises(_id)" +
             ");";
 
+    // Changed this to match the Appointment model
     private static final String CREATE_APPOINTMENTS_TABLE = "CREATE TABLE appointments(" +
             "_id TEXT PRIMARY KEY," +
             "bookedDate BIGINT," +
@@ -123,7 +124,9 @@ public class DBHelper extends SQLiteOpenHelper {
             "customerId TEXT," +
             "paymentId TEXT," +
             "paymentDate BIGINT," +
-            "deviceToken TEXT" +
+            "deviceToken TEXT," +
+            "rating INT," +
+            "comment TEXT" +
             ");";
 
     private static final String CREATE_TRAINERS_TABLE = "CREATE TABLE trainers(" +
@@ -137,7 +140,8 @@ public class DBHelper extends SQLiteOpenHelper {
             "flatPrice FLOAT," +
             "phoneNumber TEXT," +
             "address TEXT," +
-            "trainerProfileImage TEXT"+
+            "trainerProfileImage TEXT,"+
+            "rating FLOAT" +
             ");";
 
     private static final String CREATE_PAYMENTS_TABLE = "CREATE TABLE payments(" +
@@ -146,6 +150,7 @@ public class DBHelper extends SQLiteOpenHelper {
             "finalPrice FLOAT" +
             ")";
 
+    // Remove this to simplify the model - rating in appointment 1-1  - avg rating in trainer
     private static final String CREATE_RATINGS_TABLE = "CREATE TABLE ratings(" +
             "_id TEXT PRIMARY KEY, " +
             "trainerID TEXT, " +
@@ -176,6 +181,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public static final String URL_FIRESTORE_TRAINERSERVICE_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/trainerService.csv";
     public static final String URL_FIRESTORE_TRAINER_OPEN_SCHEDULE_TABLE="gs://w23-g3-coachme.appspot.com/sqlite_datasets/schedule.csv";
+
+    public static final String URL_FIRESTORE_APPOINTMENTS_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/appointments.csv";
     public DBHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -226,7 +233,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS appointments");
         db.execSQL("DROP TABLE IF EXISTS payments");
         db.execSQL("DROP TABLE IF EXISTS trainers");
-        db.execSQL("DROP TABLE IF EXISTS ratings");
+        db.execSQL("DROP TABLE IF EXISTS ratings");   // Remove this one later
         db.execSQL("DROP TABLE IF EXISTS trainerservice");
         db.execSQL("DROP TABLE IF EXISTS schedule");
         onCreate(db);
@@ -454,6 +461,47 @@ public class DBHelper extends SQLiteOpenHelper {
                 trainerScheduleContents.put("time",nextLine[1]);
                 trainerScheduleContents.put("trainerID",nextLine[2]);
                 db.insert("schedule", null, trainerScheduleContents);
+
+            }
+
+            db.close();
+
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        } catch (CsvValidationException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public void uploadAppointments(byte[] bytes){
+
+        String content = null; // Convert byte array to string
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            content = new String(bytes, "UTF-8");
+            CSVReader reader = new CSVReader(new StringReader(content));
+            String[] nextLine;
+            while ((nextLine = reader.readNext()) != null) {
+
+                ContentValues appointmentscontents = new ContentValues();
+                appointmentscontents.put("_id",nextLine[0]);
+                appointmentscontents.put("bookedDate",nextLine[1]);
+                appointmentscontents.put("registeredDate",nextLine[2]);
+                appointmentscontents.put("serviceType",nextLine[3]);
+                appointmentscontents.put("status",nextLine[4]);
+                appointmentscontents.put("totalPrice",nextLine[5]);
+                appointmentscontents.put("location",nextLine[6]);
+                appointmentscontents.put("trainerId",nextLine[7]);
+                appointmentscontents.put("customerId",nextLine[8]);
+                appointmentscontents.put("paymentId",nextLine[9]);
+                appointmentscontents.put("paymentDate",nextLine[10]);
+                appointmentscontents.put("deviceToken",nextLine[11]);
+                appointmentscontents.put("rating",nextLine[12]);
+                appointmentscontents.put("comment",nextLine[13]);
+                db.insert("appointments", null, appointmentscontents);
 
             }
 
@@ -1629,7 +1677,7 @@ public class DBHelper extends SQLiteOpenHelper {
             } while(cursor.moveToNext());
         }
 
-        Log.d("Andrea", "Trainers from SQLLite " + count);
+//        Log.d("Andrea", "Trainers from SQLLite " + count);
 
         db.close();
         return tempTrainers;
@@ -1749,35 +1797,130 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+
+    // This one is not necessary
     @SuppressLint("Range")
-    public ArrayList<Appointment> getAllAppointmentsByStatusAndUsername(int status, String username) {
-        ArrayList<Appointment> appointments = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
+    public List<Appointment> getAppointmentsByCustomerIdAndStatus(String customerId, int status) {
+        List<Appointment> appointments = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
 
-        String query = "SELECT * FROM appointments WHERE status=? AND customerId=(SELECT _id FROM customers WHERE username=?)";
-        Cursor cursor = db.rawQuery(query, new String[] {String.valueOf(status), username});
+        String query = "SELECT * FROM appointments WHERE status=? AND customerId= ? "; // revomed '?'
+        Cursor cursor = db.rawQuery(query, new String[] {String.valueOf(status), customerId});
 
+        System.out.println("INSIDE getAppointmentsByCustomerIdAndStatus CustomerID " + customerId);
         if (cursor.moveToFirst()) {
             do {
-                Appointment appointment = new Appointment();
-                appointment.setId(cursor.getString(cursor.getColumnIndex("_id")));
-                appointment.setBookedDate(cursor.getLong(cursor.getColumnIndex("bookedDate")));
-                appointment.setRegisteredDate(cursor.getLong(cursor.getColumnIndex("registeredDate")));
-                appointment.setServiceType(cursor.getString(cursor.getColumnIndex("serviceType")));
-                appointment.setStatus(cursor.getInt(cursor.getColumnIndex("status")));
-                appointment.setTotalPrice(cursor.getFloat(cursor.getColumnIndex("totalPrice")));
-                appointment.setLocation(cursor.getString(cursor.getColumnIndex("location")));
-                appointment.setTrainerId(cursor.getString(cursor.getColumnIndex("trainerId")));
-                appointment.setCustomerId(cursor.getString(cursor.getColumnIndex("customerId")));
-                appointment.setPaymentId(cursor.getString(cursor.getColumnIndex("paymentId")));
-                appointment.setPaymentDate(cursor.getLong(cursor.getColumnIndex("paymentDate")));
-                appointment.setDeviceToken(UserSingleton.getInstance().getUserDeviceToken());
+                String appointmentId = cursor.getString(cursor.getColumnIndex("_id"));
+                long bookedDate = cursor.getLong(cursor.getColumnIndex("bookedDate"));
+                long registeredDate = cursor.getLong(cursor.getColumnIndex("registeredDate"));
+                String serviceType = cursor.getString(cursor.getColumnIndex("serviceType"));
+                int appointmentStatus = cursor.getInt(cursor.getColumnIndex("status"));
+                float totalPrice = cursor.getFloat(cursor.getColumnIndex("totalPrice"));
+                String location = cursor.getString(cursor.getColumnIndex("location"));
+                String appointmentTrainerId = cursor.getString(cursor.getColumnIndex("trainerId"));
+                String appointmentcustomerId = cursor.getString(cursor.getColumnIndex("customerId"));
+                String paymentId = cursor.getString(cursor.getColumnIndex("paymentId"));
+                long paymentDate = cursor.getLong(cursor.getColumnIndex("paymentDate"));
+                String deviceToken = cursor.getString(cursor.getColumnIndex("deviceToken"));
+                int rating = cursor.getInt(cursor.getColumnIndex("rating"));
+
+                Appointment appointment = new Appointment(appointmentId, bookedDate, registeredDate, serviceType, appointmentStatus, totalPrice, location, appointmentTrainerId, appointmentcustomerId, paymentId, paymentDate, deviceToken);
                 appointments.add(appointment);
             } while (cursor.moveToNext());
         }
         cursor.close();
-        db.close();
         return appointments;
+    }
+
+    // Update appointment rating
+    public void updateRatingByAppointmentId(int rating, String comment, String appointmentId) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("rating", rating);
+        values.put("comment", comment);
+        String selection = "_id = ?";
+        String[] selectionArgs = { appointmentId };
+        db.update("appointments", values, selection, selectionArgs);
+    }
+
+
+
+    // Call after rating any appointment
+    @SuppressLint("Range") // For update
+    public void updateTrainerRating(String trainerId) {
+        float avgRating = 0;
+        // query for completed appointments for the specified trainer
+        String query = "SELECT AVG(rating) as avgRating FROM appointments WHERE trainerId = ? AND status = 5 AND rating <> 0"; // zero means no rating
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, new String[]{trainerId});
+
+        // iterate over the cursor and calculate the rating sum and count
+        if(cursor.moveToFirst()){
+
+                avgRating = cursor.getFloat(cursor.getColumnIndex("avgRating"));
+        }
+
+        System.out.println("This is the average rating for trainer " + trainerId + " " + avgRating);
+
+        ContentValues values = new ContentValues();
+        values.put("rating", avgRating);
+        db.update("trainers", values, "_id = ?", new String[]{trainerId});
+
+        cursor.close();
+        db.close();
+    }
+
+     //get appoitnment by appointmentid -> this mifght not be necessary because the recycler has ll the appointmnest
+    // added just in case
+    @SuppressLint("Range")
+    public Appointment getAppointmentById(String appId){
+        Appointment appointment = new Appointment();
+        SQLiteDatabase db = getReadableDatabase();
+
+        String query = "SELECT * FROM appointments WHERE _id = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{appId});
+
+        if(cursor.moveToFirst()){
+
+            String appointmentId = cursor.getString(cursor.getColumnIndex("_id"));
+            long bookedDate = cursor.getLong(cursor.getColumnIndex("bookedDate"));
+            long registeredDate = cursor.getLong(cursor.getColumnIndex("registeredDate"));
+            String serviceType = cursor.getString(cursor.getColumnIndex("serviceType"));
+            int appointmentStatus = cursor.getInt(cursor.getColumnIndex("status"));
+            float totalPrice = cursor.getFloat(cursor.getColumnIndex("totalPrice"));
+            String location = cursor.getString(cursor.getColumnIndex("location"));
+            String appointmentTrainerId = cursor.getString(cursor.getColumnIndex("trainerId"));
+            String appointmentcustomerId = cursor.getString(cursor.getColumnIndex("customerId"));
+            String paymentId = cursor.getString(cursor.getColumnIndex("paymentId"));
+            long paymentDate = cursor.getLong(cursor.getColumnIndex("paymentDate"));
+            String deviceToken = cursor.getString(cursor.getColumnIndex("deviceToken"));
+            int rating = cursor.getInt(cursor.getColumnIndex("rating"));
+
+            appointment = new Appointment(appointmentId, bookedDate, registeredDate, serviceType, appointmentStatus, totalPrice, location, appointmentTrainerId, appointmentcustomerId, paymentId, paymentDate, deviceToken);
+            appointment.setRating(rating);
+        }
+
+        cursor.close();
+        db.close();
+
+        return appointment;
+    }
+
+    // Update rating -> initial zero for validation purposes valid values from 1 - 5
+    public int updateAppointmentRating(String appId, int rating){
+        SQLiteDatabase db = getReadableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("rating", rating);
+
+        int numRowsUpdated = db.update("appointments", values, "_id=?", new String[] {appId});
+
+        db.close();
+
+        return numRowsUpdated;
+
     }
 
     /* -------------------------------
