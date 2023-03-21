@@ -111,12 +111,7 @@ public class SelfworkoutExerciseDetailFragment extends Fragment {
                 //mark the exercise activity (log) into status completed (status 3)
                 int numRowsUpdated = dbHelper.updateSelfWorkoutSessionLogByStatus(exerciseDetail.getId(),3);
                 if (numRowsUpdated > 0){
-                    //We can proceed
-                    /*
-                        Intent moveToCompletedActivity = new Intent(getActivity(),SelfworkoutExerciseCompletedActivity.class);
-                        moveToCompletedActivity.putExtra("sessionId",sessionId);
-                        startActivity(moveToCompletedActivity);
-                    */
+
                     Bundle passDataToFragment = new Bundle();
                     passDataToFragment.putInt("sessionId",sessionId);
 

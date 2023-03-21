@@ -33,17 +33,19 @@ public class SelfWorkoutSession implements Serializable {
     private SelfWorkoutPlanByUser selfWorkoutPlanByUser;
     private SelfWorkoutSessionType selfworkoutSessionType;
     private long sessionDate;
+    private long sessionEndDate;
     private int sessionStatus;
 
     public SelfWorkoutSession(){
 
     }
 
-    public SelfWorkoutSession(int id, SelfWorkoutPlanByUser selfWorkoutPlanByUser, SelfWorkoutSessionType selfworkoutSessionType, long sessionDate, int sessionStatus) {
+    public SelfWorkoutSession(int id, SelfWorkoutPlanByUser selfWorkoutPlanByUser, SelfWorkoutSessionType selfworkoutSessionType, long sessionDate, long sessionEndDate, int sessionStatus) {
         this.id = id;
         this.selfWorkoutPlanByUser = selfWorkoutPlanByUser;
         this.selfworkoutSessionType = selfworkoutSessionType;
         this.sessionDate = sessionDate;
+        this.sessionEndDate = sessionEndDate;
         this.sessionStatus = sessionStatus;
     }
 
@@ -85,5 +87,13 @@ public class SelfWorkoutSession implements Serializable {
 
     public void setSessionStatus(int sessionStatus) {
         this.sessionStatus = sessionStatus;
+    }
+
+    public long getSessionEndDate() {
+        return sessionEndDate;
+    }
+
+    public void setSessionEndDate(long sessionEndDate) {
+        this.sessionEndDate = sessionEndDate;
     }
 }

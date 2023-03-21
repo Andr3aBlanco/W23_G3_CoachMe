@@ -82,7 +82,7 @@ public class SelfworkoutExerciseCompletedFragment extends Fragment {
                     SelfWorkoutSession session = dbHelper.getSessionById(sessionId);
 
                     //update the session as finished
-                    int numUpdatedRows = dbHelper.updateSelfWorkoutSessionStatus(sessionId,2);
+                    int numUpdatedRows = dbHelper.updateSelfWorkoutSessionCompleted(sessionId);
                     if (numUpdatedRows > 0){
                         int selfWorkoutPlanUser = session.getSelfWorkoutPlanByUser().getId();
                         Bundle dataToPass = new Bundle();
