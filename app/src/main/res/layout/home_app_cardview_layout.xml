@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:layout_marginBottom="10dp"
+    android:id="@+id/home_item_card_container"
+    app:cardCornerRadius="10dp"
+    app:strokeColor="#6B66C7"
+    app:strokeWidth="2dp"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:id="@+id/imgViewTrainerPhoto"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.2"
+            android:padding="10dp"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="0.6">
+
+            <TextView
+                android:id="@+id/txtViewProductTitle"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                android:text="TextView"
+                android:textSize="15dp"
+                android:textColor="#200E32"
+                android:fontFamily="@font/poppins_bold"
+                android:gravity = "center_vertical|left|start"
+                android:paddingLeft="10dp"
+                />
+
+            <TextView
+                android:id="@+id/txtViewProductDetail"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                android:text="TextView"
+                android:textSize="13dp"
+                android:textColor="#200E32"
+                android:fontFamily="@font/poppins_regular"
+                android:gravity = "top|left|start"
+                android:paddingLeft="10dp"
+                />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.2"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btnCheckAppointmentHome"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                app:tint="#6B66C7"
+                android:src="@drawable/baseline_remove_red_eye_36" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
+
+

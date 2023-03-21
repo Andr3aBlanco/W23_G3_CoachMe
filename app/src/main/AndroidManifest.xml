@@ -7,13 +7,15 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
+        android:largeHeap="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_coachme_logo"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.CoachMe"
+        android:enableOnBackInvokedCallback="true"
         tools:targetApi="31">
         <activity
             android:name=".Current_Location_Activity"
@@ -27,7 +29,23 @@
         <activity
             android:name=".GoogleSignInActivity"
             android:exported="false" />
+        <activity
+            android:name=".presentation.trainermap.TrainerMapActivity"
+            android:exported="false" />
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAkm-OeCK3xywaBvOeRGWOGxHF-4iyGfY8" />
+
+        <activity
+            android:name=".LoadingDBSplashActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <service
             android:name=".utils.CoachMeFirebaseMessagingService"
             android:exported="false">
@@ -69,6 +87,8 @@
         <meta-data
             android:name="com.facebook.sdk.ClientToken"
             android:value="@string/facebook_client_token" />
+            
     </application>
+
 
 </manifest>

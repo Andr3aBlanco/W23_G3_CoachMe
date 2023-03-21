@@ -27,10 +27,11 @@ import android.app.Service;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.io.Serializable;
 import java.util.List;
 
 @IgnoreExtraProperties
-public class User {
+public class User implements Serializable {
 
     private String firstName;
     private String lastName;

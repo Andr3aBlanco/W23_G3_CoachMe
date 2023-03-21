@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rlAppHistoryFeedback"
+    style="@style/appointmentCardView"
+    android:background="#E0F2F1">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/txtTrainerNameAppRV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="100dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:text="TextView" />
+
+
+        <RatingBar
+            android:id="@+id/appRatingStar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:foregroundGravity="center_vertical"
+            android:numStars="1"
+            android:stepSize="0.1"
+            android:isIndicator="true"
+            />
+
+
+
+
+    </RelativeLayout>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/ratingCard"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentTop="true"
+        android:visibility="gone">
+
+        <RatingBar
+            android:id="@+id/ratingBar"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_horizontal|top"
+            android:background="#E7F6F5"
+            android:backgroundTint="@color/white"
+            android:isIndicator="false"
+            android:numStars="5"
+            android:stepSize="1" />
+
+        <EditText
+            android:id="@+id/txtAppDateRV"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|left"
+            android:layout_marginBottom="1dp"
+            android:layout_marginLeft="5dp"
+            android:text=""
+            android:hint="My session was ..."/>
+
+
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/filledButtonCM"
+            android:layout_height="30dp"
+            android:layout_width="120dp"
+            android:layout_marginBottom="1dp"
+            android:layout_gravity="center_horizontal|bottom"
+            android:text="SUBMIT"/>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.cardview.widget.CardView>

@@ -25,6 +25,8 @@ import android.view.ViewGroup;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bawp.coachme.R;
+import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class OrderPaymentConfirmedFragment extends Fragment {
 
@@ -33,6 +35,14 @@ public class OrderPaymentConfirmedFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_order_payment_confirmed, container, false);
+
+        //Hiding the navbar
+        BottomAppBar btnNavigationAppBar =  getActivity().findViewById(R.id.bottomNavBarWrapper);
+        btnNavigationAppBar.setVisibility(View.GONE);
+
+        FloatingActionButton btnActionButton = getActivity().findViewById(R.id.floatingAdd);
+        btnActionButton.setVisibility(View.GONE);
+
         // Inflate the layout for this fragment
         LottieAnimationView animationView = view.findViewById(R.id.animation_view);
         animationView.setAnimation("check_mark_animation.json");
@@ -54,9 +64,6 @@ public class OrderPaymentConfirmedFragment extends Fragment {
 
                 // Replace the current fragment with the new one
                 fragmentTransaction.replace(R.id.barFrame, ordersFragment);
-
-                // Add the transaction to the back stack
-                fragmentTransaction.addToBackStack(null);
 
                 // Commit the transaction
                 fragmentTransaction.commit();

@@ -32,6 +32,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,8 +53,10 @@ import com.bawp.coachme.R;
 
 import com.bawp.coachme.model.Appointment;
 import com.bawp.coachme.model.OrderNotifcation;
+import com.bawp.coachme.model.Payment;
 import com.bawp.coachme.model.SelfWorkoutPlanByUser;
 import com.bawp.coachme.model.User;
+import com.bawp.coachme.utils.DBHelper;
 import com.bawp.coachme.utils.UserSingleton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -94,6 +97,7 @@ public class OrderPaymentOptionsFragment extends Fragment {
     DatabaseReference userRef;
     DatabaseReference triggerNotificationRef;
     User currentCustomer;
+    DBHelper dbHelper;
 
 
 
@@ -123,6 +127,8 @@ public class OrderPaymentOptionsFragment extends Fragment {
         CoachMeDatabaseRef = CoachMeDatabaseInstance.getReference();
         userRef = CoachMeDatabaseRef.child("users");
 
+        dbHelper = new DBHelper(getContext());
+
         pbPaymentOption = view.findViewById(R.id.pbPaymentOption);
         llOrderLayoutPaymentOption = view.findViewById(R.id.llOrderLayoutPaymentOption);
         pbPaymentOption.setVisibility(View.VISIBLE);
@@ -148,6 +154,8 @@ public class OrderPaymentOptionsFragment extends Fragment {
         });
 
         searchCustomerIdStripe();
+
+
 
         return view;
     }
@@ -345,64 +353,73 @@ public class OrderPaymentOptionsFragment extends Fragment {
         pbPaymentOption.setVisibility(View.VISIBLE);
         llOrderLayoutPaymentOption.setVisibility(View.GONE);
 
-        DatabaseReference appRef = CoachMeDatabaseRef.child("appointments");
-        DatabaseReference swpRef = CoachMeDatabaseRef.child("selfWorkoutPlansByUser");
+        //adding a new payment into the SQL Lite database
+        Date newDate = new Date();
+        Payment payment = new Payment(paymentIntentId,newDate.getTime(),totalAmount);
+        dbHelper.insertPayment(payment);
 
-        List<Task<DataSnapshot>> tasks = new ArrayList<>();
+        //Let's update the payment information for the selfworkout first
+        int numAppointmentsToPay = 0;
+        for(int i=0;i<orderIdArray.size();i++){
+            if (orderTypeArray.get(i) == 2){
+                int numRowsUpdated = dbHelper.updateSelfWorkoutAddPayment(
+                        orderIdArray.get(i),
+                        paymentIntentId,
+                        newDate
+                );
+            }else{
+                numAppointmentsToPay++;
+            }
+        }
 
-        tasks.add(appRef.get());
-        tasks.add(swpRef.get());
+        if (numAppointmentsToPay > 0){
+            DatabaseReference appRef = CoachMeDatabaseRef.child("appointments");
+            List<Task<DataSnapshot>> tasks = new ArrayList<>();
+            tasks.add(appRef.get());
+            // Create a new task that completes when all tasks in the list complete successfully
+            Task<List<DataSnapshot>> allTasks = Tasks.whenAllSuccess(tasks);
 
-        // Create a new task that completes when all tasks in the list complete successfully
-        Task<List<DataSnapshot>> allTasks = Tasks.whenAllSuccess(tasks);
+            allTasks.addOnCompleteListener(new OnCompleteListener<List<DataSnapshot>>() {
+                @Override
+                public void onComplete(@NonNull Task<List<DataSnapshot>> task) {
+                    if(task.isSuccessful()){
+                        DataSnapshot appDs = (DataSnapshot) task.getResult().get(0);
+                        for(int i=0;i<orderIdArray.size();i++){
 
-        allTasks.addOnCompleteListener(new OnCompleteListener<List<DataSnapshot>>() {
-            @Override
-            public void onComplete(@NonNull Task<List<DataSnapshot>> task) {
-                if(task.isSuccessful()){
-                    DataSnapshot appDs = (DataSnapshot) task.getResult().get(0);
-                    DataSnapshot swpDs = (DataSnapshot) task.getResult().get(1);
+                            if (orderTypeArray.get(i) == 1){
 
-                    for(int i=0;i<orderIdArray.size();i++){
+                                int numRowsUpdated = dbHelper.updateAppointmentAddPayment(orderIdArray.get(i),
+                                        paymentIntentId,
+                                        newDate);
 
-                        if (orderTypeArray.get(i) == 1 ){
-                            DataSnapshot ds = appDs.child(orderIdArray.get(i));
-                            Appointment app = ds.getValue(Appointment.class);
-                            app.setPaymentId(paymentIntentId);
-                            app.setPaymentDate(new Date().getTime());
-                            app.setStatus(3); //change to active;
-
-                            appRef.child(orderIdArray.get(i)).setValue(app);
-
-                        }else{
-
-                            for(DataSnapshot ds: swpDs.getChildren()){
-                                SelfWorkoutPlanByUser swp = ds.getValue(SelfWorkoutPlanByUser.class);
-                                String key = ds.getKey();
-                                if (swp.getSelfworkoutplanId().equals(orderIdArray.get(i))){
-                                    swp.setPaymentId(paymentIntentId);
-                                    swp.setPaymentDate(new Date());
-                                    swp.setStatus(3); //change to active;
-                                    swpRef.child(key).setValue(swp);
+                                if (numRowsUpdated > 0){
+                                    DataSnapshot ds = appDs.child(orderIdArray.get(i));
+                                    Appointment app = ds.getValue(Appointment.class);
+                                    app.setPaymentId(paymentIntentId);
+                                    app.setPaymentDate(newDate.getTime());
+                                    app.setStatus(3); //change to active;
+                                    appRef.child(orderIdArray.get(i)).setValue(app);
                                 }
 
                             }
 
                         }
 
+                        //Send the Notification to the Database
+                        sendNotificationTrigger();
+
+
+                    }else{
+                        // At least one task failed
+                        Exception error = task.getException();
+                        System.out.println("At least one task failed: " + error.getMessage());
                     }
-
-                    //Send the Notification to the Database
-                    sendNotificationTrigger();
-
-
-                }else{
-                    // At least one task failed
-                    Exception error = task.getException();
-                    System.out.println("At least one task failed: " + error.getMessage());
                 }
-            }
-        });
+            });
+        }else{
+            //Send the Notification to the Database
+            sendNotificationTrigger();
+        }
     }
 
     private void sendNotificationTrigger(){
@@ -432,4 +449,38 @@ public class OrderPaymentOptionsFragment extends Fragment {
 
 
     }
+
+    private void replaceFragment(Fragment fragment){
+
+        FragmentManager fragmentManager = getParentFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.barFrame, fragment);
+        fragmentTransaction.commit();
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(getView() == null){
+            return;
+        }
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+                    replaceFragment(new OrdersFragment());
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+
 }
