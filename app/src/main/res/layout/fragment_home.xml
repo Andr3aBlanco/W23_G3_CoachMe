@@ -65,12 +65,11 @@
 
             </LinearLayout>
 
-            <FrameLayout
+            <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
-                android:id="@+id/homeAppFragmentContainer"
-                />
+                android:id="@+id/homeAppRecyclerView"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -134,12 +133,11 @@
 
             </LinearLayout>
 
-            <FrameLayout
+            <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
-                android:id="@+id/homeSwpFragmentContainer"
-                />
+                android:id="@+id/homeSwpRecyclerView"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnGoToWorkoutMktp"

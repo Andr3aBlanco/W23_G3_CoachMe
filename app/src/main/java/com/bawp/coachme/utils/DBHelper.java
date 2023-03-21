@@ -94,6 +94,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CREATE_SELF_WORKOUT_SESSIONS_TABLE = "CREATE TABLE selfWorkoutSessions(" +
             "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
             "sessionDate BIGINT,"+
+            "sessionEndDate BIGINT,"+
             "status INT,"+
             "selfWorkoutPlansByUserId INT," +
             "selfWorkoutSessionTypeId TEXT," +
@@ -557,6 +558,47 @@ public class DBHelper extends SQLiteOpenHelper {
     ------------------------------- */
 
     @SuppressLint("Range")
+    public Appointment getAppointmentById(String appId){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM appointments WHERE _id = '" + appId+"'",null );
+
+        if (cursor.moveToFirst()){
+                String id = cursor.getString(cursor.getColumnIndex("_id"));
+                Long bookedDate = cursor.getLong(cursor.getColumnIndex("bookedDate"));
+                Long registeredDate = cursor.getLong(cursor.getColumnIndex("registeredDate"));
+                int status = cursor.getInt(cursor.getColumnIndex("status"));
+                String serviceType = cursor.getString(cursor.getColumnIndex("serviceType"));
+                Double totalPrice = cursor.getDouble(cursor.getColumnIndex("totalPrice"));
+                String location = cursor.getString(cursor.getColumnIndex("location"));
+                String trainerId = cursor.getString(cursor.getColumnIndex("trainerId"));
+                String paymentId = cursor.getString(cursor.getColumnIndex("paymentId"));
+                Long paymentDate = cursor.getLong(cursor.getColumnIndex("paymentDate"));
+//                String deviceToken = cursor.getString(cursor.getColumnIndex("deviceToken"));
+
+                Appointment appointment = new Appointment(id,bookedDate,registeredDate,serviceType,status,
+                        totalPrice,location,trainerId,UserSingleton.getInstance().getUserId(), paymentId, paymentDate, UserSingleton.getInstance().getUserDeviceToken());
+
+                if (paymentId == null){
+                    appointment.setPaymentId(null);
+                }else{
+                    appointment.setPaymentId(paymentId);
+                }
+
+                if (paymentDate == null){
+                    appointment.setPaymentDate(0);
+                }else{
+                    appointment.setPaymentDate(paymentDate);
+                }
+
+                db.close();
+                return appointment;
+        }
+        db.close();
+        return null;
+
+    }
+
+    @SuppressLint("Range")
     public List<Appointment> getAppointmentsByStatus(int status){
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM appointments WHERE status = " + Integer.toString(status),null );
@@ -681,6 +723,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public int updateAppointmentStatus(String appointmentId, int status){
+
         SQLiteDatabase db = getWritableDatabase();
         // Create a ContentValues object with the new value of the "status" field
         ContentValues values = new ContentValues();
@@ -691,6 +734,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
         // Close the database connection
         db.close();
+
+        if (status == 3){
+            Appointment appointment = getAppointmentById(appointmentId);
+            insertSchedule(appointment.getBookedDate(),appointment.getTrainerId());
+        }
 
         return numRowsUpdated;
 
@@ -997,10 +1045,11 @@ public class DBHelper extends SQLiteOpenHelper {
             Integer sessionId = cursor.getInt(cursor.getColumnIndex("_id"));
             int sessionStatus = cursor.getInt(cursor.getColumnIndex("status"));
             Long sessionDate = cursor.getLong(cursor.getColumnIndex("sessionDate"));
+            Long sessionEndDate = cursor.getLong(cursor.getColumnIndex("sessionEndDate"));
             selfWorkoutPlansByUserId = cursor.getInt(cursor.getColumnIndex("selfWorkoutPlansByUserId"));
             selfWorkoutSessionTypeId = cursor.getString(cursor.getColumnIndex("selfWorkoutSessionTypeId"));
             selfWorkoutSession = new SelfWorkoutSession(sessionId,null,null,
-                    sessionDate,sessionStatus);
+                    sessionDate,sessionEndDate,sessionStatus);
 
         }else{
             db.close();
@@ -1019,6 +1068,44 @@ public class DBHelper extends SQLiteOpenHelper {
         selfWorkoutSession.setSelfworkoutSessionType(ssType);
 
         return selfWorkoutSession;
+    }
+
+    @SuppressLint("Range")
+    public List<SelfWorkoutSession> getListSessionsByUser(int swpUserId){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT \n" +
+                "ss.*\n" +
+                "FROM selfWorkoutSessions ss\n" +
+                "JOIN selfWorkoutPlansByUser swu ON ss.selfWorkoutPlansByUserId = swu._id\n" +
+                "JOIN selfWorkoutSessionTypes swt ON ss.selfWorkoutSessionTypeId = swt._id\n" +
+                "WHERE swu._id = "+ swpUserId,null);
+
+        List<SelfWorkoutSession> selfWorkoutSessions = new ArrayList<>();
+        int selfWorkoutPlansByUserId;
+        String selfWorkoutSessionTypeId;
+
+        if(cursor.moveToFirst()){
+
+            Integer sessionId = cursor.getInt(cursor.getColumnIndex("_id"));
+            int sessionStatus = cursor.getInt(cursor.getColumnIndex("status"));
+            Long sessionDate = cursor.getLong(cursor.getColumnIndex("sessionDate"));
+            Long sessionEndDate = cursor.getLong(cursor.getColumnIndex("sessionEndDate"));
+            selfWorkoutPlansByUserId = cursor.getInt(cursor.getColumnIndex("selfWorkoutPlansByUserId"));
+            selfWorkoutSessionTypeId = cursor.getString(cursor.getColumnIndex("selfWorkoutSessionTypeId"));
+            SelfWorkoutSession selfWorkoutSession = new SelfWorkoutSession(sessionId,null,null,
+                    sessionDate,sessionEndDate,sessionStatus);
+
+            SelfWorkoutPlanByUser swpUser = getSelfWorkoutPlanByUserById(swpUserId);
+            SelfWorkoutSessionType ssType = getSelfWorkoutSessionTypeById(selfWorkoutSessionTypeId);
+            selfWorkoutSession.setSelfworkoutSessionType(ssType);
+            selfWorkoutSession.setSelfWorkoutPlanByUser(swpUser);
+            selfWorkoutSessions.add(selfWorkoutSession);
+
+        }
+
+        db.close();
+
+        return selfWorkoutSessions;
     }
 
     @SuppressLint("Range")
@@ -1056,10 +1143,11 @@ public class DBHelper extends SQLiteOpenHelper {
             Integer sessionId = cursor.getInt(cursor.getColumnIndex("_id"));
             int sessionStatus = cursor.getInt(cursor.getColumnIndex("status"));
             Long sessionDate = cursor.getLong(cursor.getColumnIndex("sessionDate"));
+            Long sessionEndDate = cursor.getLong(cursor.getColumnIndex("sessionEndDate"));
             selfWorkoutPlansByUserId = cursor.getInt(cursor.getColumnIndex("selfWorkoutPlansByUserId"));
             selfWorkoutSessionTypeId = cursor.getString(cursor.getColumnIndex("selfWorkoutSessionTypeId"));
             selfWorkoutSession = new SelfWorkoutSession(sessionId,null,null,
-                    sessionDate,sessionStatus);
+                    sessionDate,sessionEndDate,sessionStatus);
 
         }else{
             db.close();
@@ -1098,10 +1186,11 @@ public class DBHelper extends SQLiteOpenHelper {
             Integer sessionId = cursor.getInt(cursor.getColumnIndex("_id"));
             int sessionStatus = cursor.getInt(cursor.getColumnIndex("status"));
             Long sessionDate = cursor.getLong(cursor.getColumnIndex("sessionDate"));
+            Long sessionEndDate = cursor.getLong(cursor.getColumnIndex("sessionEndDate"));
             selfWorkoutPlansByUserId = cursor.getInt(cursor.getColumnIndex("selfWorkoutPlansByUserId"));
             selfWorkoutSessionTypeId = cursor.getString(cursor.getColumnIndex("selfWorkoutSessionTypeId"));
             selfWorkoutSession = new SelfWorkoutSession(sessionId,null,null,
-                    sessionDate,sessionStatus);
+                    sessionDate,sessionEndDate,sessionStatus);
 
         }else{
             db.close();
@@ -1264,6 +1353,25 @@ public class DBHelper extends SQLiteOpenHelper {
         // Create a ContentValues object with the new value of the "status" field
         ContentValues values = new ContentValues();
         values.put("status", status);
+        if (status == 1){
+            values.put("sessionEndDate", (String)null);
+        }
+
+        // Update the appointments table with the new value of the "status" field
+        int numRowsUpdated = db.update("selfWorkoutSessions", values, "_id=?", new String[] {Integer.toString(id)});
+
+        // Close the database connection
+        db.close();
+
+        return numRowsUpdated;
+    }
+
+    public int updateSelfWorkoutSessionCompleted(int id){
+        SQLiteDatabase db = getWritableDatabase();
+        // Create a ContentValues object with the new value of the "status" field
+        ContentValues values = new ContentValues();
+        values.put("status", 2);
+        values.put("sessionEndDate", new Date().getTime());
 
         // Update the appointments table with the new value of the "status" field
         int numRowsUpdated = db.update("selfWorkoutSessions", values, "_id=?", new String[] {Integer.toString(id)});
@@ -1301,8 +1409,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
         //Setting exercises Logs
         List<SelfWorkoutPlanExercise> exercisesList = getSelfWorkoutExerciseBySessionTypeId(ssT.getId());
-
-        Log.d("SIZE LIST",Integer.toString(exercisesList.size()));
 
         for(SelfWorkoutPlanExercise exercise : exercisesList){
 

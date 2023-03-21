@@ -13,15 +13,22 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bawp.coachme.R;
+import com.bawp.coachme.model.SelfWorkoutPlanExercise;
 import com.bawp.coachme.model.SelfWorkoutSession;
+import com.bawp.coachme.model.SelfWorkoutSessionLog;
 import com.bawp.coachme.model.SelfWorkoutSessionType;
 import com.bawp.coachme.presentation.order.OrderPaymentOptionsFragment;
 import com.bawp.coachme.presentation.order.OrdersFragment;
+import com.bawp.coachme.utils.DBHelper;
 import com.bawp.coachme.utils.UserSingleton;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class SelfworkoutSessionTypeFragment extends Fragment {
@@ -30,11 +37,11 @@ public class SelfworkoutSessionTypeFragment extends Fragment {
     SelfWorkoutSession currentSession;
     Boolean isNewSession;
     int selfworkoutUserId;
-    FragmentManager fm;
-    Fragment fragment;
     ProgressBar pbSelfworkoutSessionType;
     LinearLayout llSelfworkoutSessionType;
     Button btnBackToWorkoutMain;
+    RecyclerView sessionTypeRecyclerView;
+    DBHelper dbHelper;
 
     public SelfworkoutSessionTypeFragment() {
         // Required empty public constructor
@@ -57,9 +64,8 @@ public class SelfworkoutSessionTypeFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_selfworkout_session_type, container, false);
 
-        SelfworkoutSessionTypeFragment currentFragment = this;
-
         btnBackToWorkoutMain = view.findViewById(R.id.btnBackToWorkoutMain);
+        sessionTypeRecyclerView = view.findViewById(R.id.sessionTypeRecyclerView);
 
         pbSelfworkoutSessionType = view.findViewById(R.id.pbSelfworkoutSessionType);
         llSelfworkoutSessionType = view.findViewById(R.id.llSelfworkoutSessionType);
@@ -67,30 +73,38 @@ public class SelfworkoutSessionTypeFragment extends Fragment {
         pbSelfworkoutSessionType.setVisibility(View.VISIBLE);
         llSelfworkoutSessionType.setVisibility(View.GONE);
 
-        fm = getActivity().getSupportFragmentManager();
-        fragment = fm.findFragmentById(R.id.sessionTypeFragmentContainer);
-        if (fragment == null){
-            fragment = SelfworkoutSessionTypeRecyclerFragment.newInstance(selfWorkoutSessionTypes,currentSession,selfworkoutUserId,currentFragment );
+        dbHelper = new DBHelper(getContext());
 
-            fm.beginTransaction()
-                    .add(R.id.sessionTypeFragmentContainer,fragment)
-                    .commit();
+        sessionTypeRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        SelfworkoutSessionTypeRecyclerAdapter sessionTypeAdapter = new SelfworkoutSessionTypeRecyclerAdapter(selfWorkoutSessionTypes, currentSession, getContext(), new SelfworkoutSessionTypeRecyclerAdapter.SetOnItemClickListener() {
+            @Override
+            public void onClickItem(int i) {
+                if (currentSession == null){
+                    //This is a new session, we have to create it into the database
+                    List<SelfWorkoutPlanExercise> exercisesList = dbHelper.getSelfWorkoutExerciseBySessionTypeId(selfWorkoutSessionTypes.get(i).getId());
+                    if (exercisesList.size()>0){
+                        currentSession = dbHelper.createNewSession(selfworkoutUserId,selfWorkoutSessionTypes.get(i).getId(),new Date().getTime(),1);
+                        moveToExercisesList(currentSession.getId());
+                    }else{
+                        Toast.makeText(getContext(),"No exercises routine available for this session!",Toast.LENGTH_SHORT).show();
+                    }
 
-        }else{
-            fragment = SelfworkoutSessionTypeRecyclerFragment.newInstance(selfWorkoutSessionTypes,currentSession,selfworkoutUserId,currentFragment);
+                }else{
+                    if (currentSession.getSelfworkoutSessionType().getId().equals(selfWorkoutSessionTypes.get(i).getId())){
+                        //Keep enabled to move to the next screen
+                        moveToExercisesList(currentSession.getId());
+                    }
+                }
+            }
+        });
 
-            fm.beginTransaction()
-                    .replace(R.id.sessionTypeFragmentContainer,fragment)
-                    .commit();
-
-        }
+        sessionTypeRecyclerView.setAdapter(sessionTypeAdapter);
 
         btnBackToWorkoutMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int selfWorkoutPlanUser = currentSession.getSelfWorkoutPlanByUser().getId();
                 Bundle dataToPass = new Bundle();
-                dataToPass.putInt("workoutUserId",selfWorkoutPlanUser);
+                dataToPass.putInt("workoutUserId",selfworkoutUserId);
 
                 SelfworkoutFragment selfworkoutFragment = new SelfworkoutFragment();
                 selfworkoutFragment.setArguments(dataToPass);
@@ -110,6 +124,36 @@ public class SelfworkoutSessionTypeFragment extends Fragment {
 
         // Inflate the layout for this fragment
         return view;
+    }
+
+    public void moveToExercisesList(int sessionId){
+        List<SelfWorkoutSessionLog> exercisesLog = dbHelper.getSessionLogs(sessionId);
+
+        if (exercisesLog.size() > 0 ){
+            //Let's send the data into the next fragment
+            Bundle dataToPass = new Bundle();
+            dataToPass.putSerializable("exercisesLog",(Serializable) exercisesLog);
+            dataToPass.putInt("sessionId",sessionId);
+
+            SelfworkoutSessionExerciseFragment selfworkoutSessionExerciseFragment = new SelfworkoutSessionExerciseFragment();
+            selfworkoutSessionExerciseFragment.setArguments(dataToPass);
+
+            FragmentManager fm = getParentFragmentManager();
+            FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+            // Replace the current fragment with the new one
+            fragmentTransaction.replace(R.id.barFrame, selfworkoutSessionExerciseFragment);
+
+            // Add the transaction to the back stack
+            fragmentTransaction.addToBackStack("self-workout-session-exercises-options");
+
+            // Commit the transaction
+            fragmentTransaction.commit();
+        }else{
+            Toast.makeText(getContext(),"No exercises routine available for this session!",Toast.LENGTH_SHORT).show();
+        }
+
+
     }
 
 }
