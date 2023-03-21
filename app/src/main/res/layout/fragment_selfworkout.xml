@@ -166,7 +166,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="10dp"
+            android:layout_marginVertical="10dp"
         >
 
             <com.google.android.material.button.MaterialButton
@@ -195,6 +195,60 @@
                 android:text="Restart Workout"
                 android:textSize="12dp"
                 app:cornerRadius="10dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llTableSessionsDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginBottom="15dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_border_bottom">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.3"
+                    android:text="Session Type"
+                    android:textSize="13dp"
+                    android:textColor="#200E32"
+                    android:fontFamily="@font/poppins_bold"
+                    android:gravity = "center"
+                    android:paddingLeft="10dp"
+                    />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.3"
+                    android:text="Date"
+                    android:textSize="13dp"
+                    android:textColor="#200E32"
+                    android:fontFamily="@font/poppins_bold"
+                    android:gravity = "center"
+                    android:paddingLeft="10dp"
+                    />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.3"
+                    android:text="Duration"
+                    android:textSize="13dp"
+                    android:textColor="#200E32"
+                    android:fontFamily="@font/poppins_bold"
+                    android:gravity = "center"
+                    android:paddingLeft="10dp"
+                    />
+
+            </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

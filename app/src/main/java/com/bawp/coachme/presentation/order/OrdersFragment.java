@@ -30,6 +30,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bawp.coachme.R;
 import com.bawp.coachme.model.Appointment;
@@ -64,12 +66,9 @@ import java.util.concurrent.CountDownLatch;
 public class OrdersFragment extends Fragment {
 
     String customerId;
-    FragmentManager fm;
-    Fragment fragment;
     ProgressBar pbOrderList;
     LinearLayout llOrderLayout;
     LinearLayout llNoItemsInCart;
-    FrameLayout flOrderFragmentContainer;
     double subTotal;
     double tax;
     double totalPrice;
@@ -78,22 +77,14 @@ public class OrdersFragment extends Fragment {
     TextView txtViewTotal;
     List<Order> orderList;
     MaterialButton btnCheckout;
-
     MaterialButton btnOrderHistory;
     ArrayList<String> orderIdArray;
     ArrayList<Integer> orderTypeArray;
     DBHelper dbHelper;
+    RecyclerView orderListRecyclerView;
+    OrdersFragment parentFragment;
 
     static final float TAX_PERCENTAGE = 0.1f;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Create an instance of your database helper class
-        dbHelper = new DBHelper(getContext());
-
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -112,7 +103,7 @@ public class OrdersFragment extends Fragment {
             btnActionButton.setVisibility(View.VISIBLE);
         }
 
-        OrdersFragment currentFragment = this;
+        parentFragment = this;
         customerId = UserSingleton.getInstance().getUserId();
 
         txtViewSubTotal = view.findViewById(R.id.txtViewSubTotal);
@@ -120,16 +111,17 @@ public class OrdersFragment extends Fragment {
         txtViewTotal = view.findViewById(R.id.txtViewTotal);
         btnCheckout = view.findViewById(R.id.btnOrderCheckout);
         btnOrderHistory = view.findViewById(R.id.btnOrderHistory);
+        orderListRecyclerView = view.findViewById(R.id.orderListRecyclerView);
 
         llNoItemsInCart = view.findViewById(R.id.llNoItemsInCart);
-        flOrderFragmentContainer = view.findViewById(R.id.orderFragmentContainer);
         pbOrderList = view.findViewById(R.id.pbOrderList);
         llOrderLayout = view.findViewById(R.id.llOrderLayout);
         pbOrderList.setVisibility(View.VISIBLE);
         llOrderLayout.setVisibility(View.GONE);
 
         orderList = new ArrayList<>();
-        updateShoppingCart(currentFragment);
+        dbHelper = new DBHelper(getContext());
+        updateShoppingCart();
 
         btnOrderHistory.setOnClickListener(View -> {
             OrderHistoryFragment orderHistoryFragment = new OrderHistoryFragment();
@@ -182,7 +174,7 @@ public class OrdersFragment extends Fragment {
         return view;
     }
 
-    private void updateShoppingCart(OrdersFragment currentFragment){
+    private void updateShoppingCart(){
         //Getting appointments pending to purchase
         List<Appointment> appointments = dbHelper.getAppointmentsByStatus(1);
 
@@ -218,34 +210,19 @@ public class OrdersFragment extends Fragment {
         }
 
         if(orderList.size()>0){
-            flOrderFragmentContainer.setVisibility(View.VISIBLE);
             llNoItemsInCart.setVisibility(View.GONE);
         }else{
-            flOrderFragmentContainer.setVisibility(View.GONE);
             llNoItemsInCart.setVisibility(View.VISIBLE);
         }
 
         calculateTotalPrice();
 
-        fm = getActivity().getSupportFragmentManager();
-        fragment = fm.findFragmentById(R.id.orderFragmentContainer);
-        if (fragment == null){
-            fragment = OrderListRecyclerFragment.newInstance(orderList,currentFragment );
-
-            fm.beginTransaction()
-                    .add(R.id.orderFragmentContainer,fragment)
-                    .commit();
-        }else{
-            fragment = OrderListRecyclerFragment.newInstance(orderList,currentFragment);
-
-            fm.beginTransaction()
-                    .replace(R.id.orderFragmentContainer,fragment)
-                    .commit();
-        }
+        orderListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        OrderListRecyclerAdapter orderListRecyclerAdapter = new OrderListRecyclerAdapter(orderList, getContext(),parentFragment);
+        orderListRecyclerView.setAdapter(orderListRecyclerAdapter);
 
         pbOrderList.setVisibility(View.GONE);
         llOrderLayout.setVisibility(View.VISIBLE);
-
 
     }
 

@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,6 +43,7 @@ public class SelfworkoutSessionExerciseFragment extends Fragment {
     Fragment fragment;
     Button btnBackToSessionTypes;
     DBHelper dbHelper;
+    RecyclerView selfworkoutExercisesRecyclerView;
 
     public SelfworkoutSessionExerciseFragment() {
         // Required empty public constructor
@@ -74,8 +77,7 @@ public class SelfworkoutSessionExerciseFragment extends Fragment {
             btnActionButton.setVisibility(View.VISIBLE);
         }
 
-        SelfworkoutSessionExerciseFragment currentFragment = this;
-
+        selfworkoutExercisesRecyclerView = view.findViewById(R.id.selfworkoutExercisesRecyclerView);
         pbSelfworkoutSessionExercises = view.findViewById(R.id.pbSelfworkoutSessionExercises);
         llSelfworkoutSessionExercises = view.findViewById(R.id.llSelfworkoutSessionExercises);
         pbSessionProgress = view.findViewById(R.id.pbSessionProgress);
@@ -87,22 +89,34 @@ public class SelfworkoutSessionExerciseFragment extends Fragment {
 
         calculateProgressBar();
 
-        fm = getActivity().getSupportFragmentManager();
-        fragment = fm.findFragmentById(R.id.sessionExerciseFragmentContainer);
+        selfworkoutExercisesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        SelfworkoutSessionExRecyclerAdapter swpAdapter = new SelfworkoutSessionExRecyclerAdapter(exercisesLog, getContext(), new SelfworkoutSessionExRecyclerAdapter.SetOnItemClickListener() {
+            @Override
+            public void onClickItem(int i) {
+                SelfWorkoutSessionLog exerciseDetail = exercisesLog.get(i);
 
-        if (fragment == null){
-            fragment = SelfworkoutSessionExRecyclerFragment.newInstance(exercisesLog,sessionId,currentFragment );
+                Bundle dataToPass = new Bundle();
+                dataToPass.putSerializable("exerciseDetail",(Serializable) exerciseDetail);
+                dataToPass.putInt("sessionId",sessionId);
 
-            fm.beginTransaction()
-                    .add(R.id.sessionExerciseFragmentContainer,fragment)
-                    .commit();
-        }else{
-            fragment = SelfworkoutSessionExRecyclerFragment.newInstance(exercisesLog,sessionId,currentFragment);
+                SelfworkoutExerciseDetailFragment selfworkoutExerciseDetailFragment = new SelfworkoutExerciseDetailFragment();
+                selfworkoutExerciseDetailFragment.setArguments(dataToPass);
 
-            fm.beginTransaction()
-                    .replace(R.id.sessionExerciseFragmentContainer,fragment)
-                    .commit();
-        }
+                FragmentManager fm = getParentFragmentManager();
+                FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+                // Replace the current fragment with the new one
+                fragmentTransaction.replace(R.id.barFrame, selfworkoutExerciseDetailFragment);
+
+                // Add the transaction to the back stack
+                fragmentTransaction.addToBackStack("self-workout-session-exercise-detail");
+
+                // Commit the transaction
+                fragmentTransaction.commit();
+            }
+        });
+
+        selfworkoutExercisesRecyclerView.setAdapter(swpAdapter);
 
         btnBackToSessionTypes.setOnClickListener(new View.OnClickListener() {
             @Override

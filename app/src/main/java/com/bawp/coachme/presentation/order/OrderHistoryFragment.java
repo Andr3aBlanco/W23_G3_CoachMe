@@ -4,8 +4,12 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +28,6 @@ import java.util.List;
 public class OrderHistoryFragment extends Fragment {
 
     DBHelper dbHelper;
-    FragmentManager fm;
-    Fragment fragment;
-    OrderHistoryFragment parentFragment;
-    FrameLayout flOrderHistory;
     LinearLayout llNoOrderHistory;
 
     @Override
@@ -36,40 +36,59 @@ public class OrderHistoryFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_order_history, container, false);
 
-        flOrderHistory = view.findViewById(R.id.orderHistoryFragmentContainer);
         llNoOrderHistory = view.findViewById(R.id.llNoOrderHistory);
 
         dbHelper = new DBHelper(getContext());
 
-        parentFragment = this;
-
         List<Payment> orderHistory = dbHelper.getUserOrderHistory();
 
+        RecyclerView orderHistoryRecyclerView = view.findViewById(R.id.orderHistoryRecyclerView);
+
         if (orderHistory.size() > 0){
-            fm = getActivity().getSupportFragmentManager();
-            fragment = fm.findFragmentById(R.id.orderHistoryFragmentContainer);
-            if (fragment == null){
-                fragment = OrderHistoryRecyclerFragment.newInstance(orderHistory, parentFragment );
+            orderHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            OrderHistoryRecyclerAdapter orderHistoryRecyclerAdapter = new OrderHistoryRecyclerAdapter(orderHistory,getContext());
+            orderHistoryRecyclerView.setAdapter(orderHistoryRecyclerAdapter);
 
-                fm.beginTransaction()
-                        .add(R.id.orderHistoryFragmentContainer,fragment)
-                        .commit();
-            }else{
-                fragment = OrderHistoryRecyclerFragment.newInstance(orderHistory, parentFragment);
-
-                fm.beginTransaction()
-                        .replace(R.id.orderHistoryFragmentContainer,fragment)
-                        .commit();
-            }
-            flOrderHistory.setVisibility(View.VISIBLE);
             llNoOrderHistory.setVisibility(View.GONE);
         }else{
-            flOrderHistory.setVisibility(View.GONE);
+            orderHistoryRecyclerView.setVisibility(View.GONE);
             llNoOrderHistory.setVisibility(View.VISIBLE);
         }
 
 
 
         return view;
+    }
+
+    private void replaceFragment(Fragment fragment){
+
+        FragmentManager fragmentManager = getParentFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.barFrame, fragment);
+        fragmentTransaction.commit();
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(getView() == null){
+            return;
+        }
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+                    replaceFragment(new OrdersFragment());
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 }
