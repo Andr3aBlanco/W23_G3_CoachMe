@@ -60,6 +60,8 @@ public class TrainerListFragment extends Fragment {
 
     private double currentLatitude = 0;
     private double currentLongitude = 0;
+
+    TrainerCustomList trainerCustomListAdapter;
     public TrainerListFragment() {
         // Required empty public constructor
     }
@@ -323,21 +325,23 @@ public class TrainerListFragment extends Fragment {
 
 
                                 // Loop through the list using a traditional for loop
-                                for (int i = 0; i < hourList.size(); i++) {
-                                    // Get the element at index i and do something with it
-                                    Integer element = hourList.get(i);
-                                    if(element < 12){
-                                        hoursString.add(element + " a.m." );
-
-                                    } else{
-                                        hoursString.add(element + " p.m.");
-                                    }
-
-                                }
+//                                for (int i = 0; i < hourList.size(); i++) {
+//                                    // Get the element at index i and do something with it
+//                                    Integer element = hourList.get(i);
+//                                    if(element < 12){
+//                                        hoursString.add(element + " a.m." );
+//
+//                                    } else{
+//                                        hoursString.add(element + " p.m.");
+//                                    }
+//
+//                                }
                                 // Populate the ListView with the hourList values
-                                ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, hoursString);
-                                holder.listViewHours.setAdapter(adapter);
+//                                ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, hoursString);
+//                                holder.listViewHours.setAdapter(adapter);
 
+                                trainerCustomListAdapter = new TrainerCustomList(hourList);
+                                holder.listViewHours.setAdapter(trainerCustomListAdapter);
 
                             } else {
 
@@ -368,20 +372,22 @@ public class TrainerListFragment extends Fragment {
             });
 
             // Click listener for the ListView
-            holder.listViewHours.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    String selectedItem = (String) parent.getItemAtPosition(position); // Get the selected item as a string
-                    String[] parts = selectedItem.split(" "); // Split the string into parts using a space delimiter
-                    String timeString = parts[0]; // Get the first part, which should be the time string like "11" or "11pm"
-                    int timeInt = Integer.parseInt(timeString); // Parse the time string as an integer
-
-                    selectedHour = timeInt;
-                    System.out.println("For appointment " + selectedYear + "/" + selectedMonth + "/" + selectedDay + "/" + selectedHour);
-                }
-            });
+//            holder.listViewHours.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                @Override
+//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                    String selectedItem = (String) parent.getItemAtPosition(position); // Get the selected item as a string
+//                    String[] parts = selectedItem.split(" "); // Split the string into parts using a space delimiter
+//                    String timeString = parts[0]; // Get the first part, which should be the time string like "11" or "11pm"
+//                    int timeInt = Integer.parseInt(timeString); // Parse the time string as an integer
+//
+//                    selectedHour = timeInt;
+//                    System.out.println("For appointment " + selectedYear + "/" + selectedMonth + "/" + selectedDay + "/" + selectedHour);
+//                }
+//            });
 
             holder.addCart.setOnClickListener((View v) -> {
+
+                Log.d("Andrea", "Clicked from adapter on addcart");
 
                 if(selectedHour == 100 ){
 
@@ -416,6 +422,7 @@ public class TrainerListFragment extends Fragment {
                     dbHelper.removeFromSchedule(trainerId, bookedDate, endOfHour);
                     String deviceToken = UserSingleton.getInstance().getUserDeviceToken();
 
+                    Log.d("Andrea", "Booked date " + bookedDate);
                     // Create query to add appointment by time
                     dbHelper.addAppToCart(appId, bookedDate, registeredDate, serviceType, 1, totalPrice, location, trainerId, customerId, deviceToken);
                 }

@@ -18,36 +18,64 @@
             android:layout_marginTop="5dp"
             android:text="TextView" />
 
-        <TextView
-            android:id="@+id/txtAppDateRV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="100dp"
-            android:layout_below="@+id/txtTrainerNameAppRV"
-            android:layout_marginLeft="10dp"
-            android:text="TextView" />
 
         <RatingBar
             android:id="@+id/appRatingStar"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:layout_marginRight="20dp"
             android:foregroundGravity="center_vertical"
             android:numStars="1"
-            android:progressDrawable="@drawable/rating_star_cyan" />
+            android:stepSize="0.1"
+            android:isIndicator="true"
+            />
+
+
+
+
+    </RelativeLayout>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/ratingCard"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentTop="true"
+        android:visibility="gone">
 
         <RatingBar
             android:id="@+id/ratingBar"
-            android:layout_width="250dp"
-            android:layout_height="50dp"
-            android:layout_centerInParent="true"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_horizontal|top"
             android:background="#E7F6F5"
             android:backgroundTint="@color/white"
             android:isIndicator="false"
             android:numStars="5"
-            android:visibility="gone" />
+            android:stepSize="1" />
 
-    </RelativeLayout>
+        <EditText
+            android:id="@+id/txtAppDateRV"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|left"
+            android:layout_marginBottom="1dp"
+            android:layout_marginLeft="5dp"
+            android:text=""
+            android:hint="My session was ..."/>
+
+
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/filledButtonCM"
+            android:layout_height="30dp"
+            android:layout_width="120dp"
+            android:layout_marginBottom="1dp"
+            android:layout_gravity="center_horizontal|bottom"
+            android:text="SUBMIT"/>
+
+    </androidx.cardview.widget.CardView>
+
 </androidx.cardview.widget.CardView>

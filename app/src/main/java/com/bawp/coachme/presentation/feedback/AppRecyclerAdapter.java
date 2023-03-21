@@ -9,6 +9,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -45,6 +46,28 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
         this.pastAppointments = pastAppointments;
     }
 
+
+    // setters and getters
+
+
+    public List<Appointment> getPastAppointments() {
+        return pastAppointments;
+    }
+
+    public void setPastAppointments(List<Appointment> pastAppointments) {
+        this.pastAppointments = pastAppointments;
+        notifyDataSetChanged();
+    }
+
+    public int getClickedIndex() {
+        return clickedIndex;
+    }
+
+    public void setClickedIndex(int clickedIndex) {
+        this.clickedIndex = clickedIndex;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public AppointmentHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -61,7 +84,7 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
         holder.starRating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                holder.barRating.setVisibility(View.VISIBLE);
+                holder.ratingCard.setVisibility(View.VISIBLE);
                 System.out.println("CLICKED ONE STAR");
             }
         });
@@ -135,7 +158,7 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
                 dbHelper.updateTrainerRating(pastAppointments.get(positionH).getTrainerId());
 
                 holder.starRating.setRating(rating);
-                holder.barRating.setVisibility(View.GONE);
+                holder.ratingCard.setVisibility(View.GONE);
 
                 notifyDataSetChanged();
             }
@@ -155,6 +178,7 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
         TextView appDate;
         RatingBar starRating;
         RatingBar barRating;
+        CardView ratingCard;
 
         public AppointmentHolder(@NonNull View itemView) {
             super(itemView);
@@ -163,6 +187,7 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
             appDate = itemView.findViewById(R.id.txtAppDateRV);
             starRating = itemView.findViewById(R.id.appRatingStar);
             barRating = itemView.findViewById(R.id.ratingBar);
+            ratingCard = itemView.findViewById(R.id.ratingCard);
 
         }
     }

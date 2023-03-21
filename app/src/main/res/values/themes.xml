@@ -39,6 +39,10 @@
         <item name="android:elevation">4dp</item>
     </style>
 
-
+    <style name="customRatingBar" parent="@android:style/Widget.RatingBar">
+        <item name="android:progressDrawable">@drawable/customratingstars</item>
+        <item name="android:minHeight">40dip</item>
+        <item name="android:maxHeight">40dip</item>
+    </style>
 
 </resources>
