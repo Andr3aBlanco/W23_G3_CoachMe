@@ -81,7 +81,6 @@ public class TrainerDetailsFragment extends Fragment {
     Date[] trainerDates;
     String[] trainerDatesString;
 
-    List<String> hourList = new ArrayList<>();
     List<Long> availApp = new ArrayList<>();
     HashMap<String, List<Integer>> appointmentsMap = new HashMap<>();
 
@@ -109,6 +108,9 @@ public class TrainerDetailsFragment extends Fragment {
 
     DBHelper dbHelper;
 
+    List<Integer> hourList = new ArrayList<>();
+    // Adapter
+    ArrayAdapter<String> theAdapter;
     TrainerCustomList trainerCustomListAdapter;
     public TrainerDetailsFragment() {
         // Required empty public constructor
@@ -147,6 +149,8 @@ public class TrainerDetailsFragment extends Fragment {
         Button addCart = view.findViewById(R.id.btnAddCart);
 //        calendarView = view.findViewById(R.id.cvDates); //check this
 
+
+
         calendarView = view.findViewById(R.id.cvDates);
         List<Date> disabledDates = new ArrayList<>();
         Date newDate = new Date();
@@ -165,16 +169,14 @@ public class TrainerDetailsFragment extends Fragment {
 
         dbHelper = new DBHelper(getContext());
 //        calendarView.setTrainerScheduleHashMap(trainerScheduleHashMap);
-
-        //Set the info in card
-        tvName.setText(currentTrainer.getFirstName() + " " + currentTrainer.getLastName());
-        tvPrice.setText(Double.toString(currentTrainer.getFlatPrice()));
-
-
-//
-        // Fomrater for the price
         Locale locate = new Locale("en", "CA");
         NumberFormat formatter = NumberFormat.getCurrencyInstance(locate);
+        //Set the info in card
+        tvName.setText(currentTrainer.getFirstName() + " " + currentTrainer.getLastName());
+        tvPrice.setText(formatter.format(currentTrainer.getFlatPrice()));
+        tvRating.setText(String.format("%.2f", currentTrainer.getRating()));
+
+
         double rating = currentTrainer.getRating();
         availApp =   dbHelper.getTimesByTrainerID(currentTrainer.getId());
 
@@ -200,12 +202,12 @@ public class TrainerDetailsFragment extends Fragment {
             // Check if the key is already in the HashMap
             if (appointmentsMap.containsKey(key)) {
                 // Add the hour to the value List
-                List<Integer> hourList = appointmentsMap.get(key);
+               hourList = appointmentsMap.get(key);
                 hourList.add(hour);
                 appointmentsMap.put(key, hourList);
             } else {
                 // Create a new value List with the hour
-                List<Integer> hourList = new ArrayList<>();
+                 hourList = new ArrayList<>();
                 hourList.add(hour);
                 appointmentsMap.put(key, hourList);
             }
@@ -257,29 +259,22 @@ public class TrainerDetailsFragment extends Fragment {
                     hourList = appointmentsMap.get(key); // this is the one to pass
                     Collections.sort(hourList);
 
-                    // Loop through the list using a traditional for loop
-//                    for (int i = 0; i < hourList.size(); i++) {
-//                        // Get the element at index i and do something with it
-//                        Integer element = hourList.get(i);
-//                        if(element < 12){
-//                            hoursString.add(element + " a.m." );
-//
-//                        } else{
-//                            hoursString.add(element + " p.m.");
-//                        }
-//
-//                    }
+
                     // Populate the ListView with the hourList values
 //                    ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, hoursString);
                      trainerCustomListAdapter = new TrainerCustomList(hourList);
-                    listViewHours.setAdapter(trainerCustomListAdapter);
-
+                     listViewHours.setAdapter(trainerCustomListAdapter);
 
                 } else {
 
-                    hoursString = new ArrayList<>();
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, hoursString);
-                    listViewHours.setAdapter(adapter);
+//                    hoursString = new ArrayList<>();
+//                    theAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, hoursString);
+
+                    hourList = new ArrayList<>();
+                    trainerCustomListAdapter = new TrainerCustomList(hourList);
+                    listViewHours.setAdapter(trainerCustomListAdapter);
+
+
                     // Disable click on the date
                     Toast.makeText(getContext(), "This date is not available", Toast.LENGTH_SHORT).show();
 //                                holder.calendarView.setDate(holder.calendarView.getDate()); // Reset the selected date
@@ -292,20 +287,29 @@ public class TrainerDetailsFragment extends Fragment {
 
 
         // For list view
-        //move this to the adapter
-//        listViewHours.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//
-//                String selectedItem = (String) parent.getItemAtPosition(position); // Get the selected item as a string
-//                String[] parts = selectedItem.split(" "); // Split the string into parts using a space delimiter
-//                String timeString = parts[0]; // Get the first part, which should be the time string like "11" or "11pm"
-//                int timeInt = Integer.parseInt(timeString); // Parse the time string as an integer
-//
-//                selectedHour = timeInt;
-//                System.out.println("For appointment " + selectedYear + "/" + selectedMonth + "/" + selectedDay + "/" + selectedHour);
-//            }
-//        });
+        //Moved the color and am pm display to the custom adapter
+        listViewHours.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                if(trainerCustomListAdapter.getSelectedHour() == position ){
+                    // If clicked is the same
+                    System.out.println("Index == tp se;ected position ");
+                    trainerCustomListAdapter.setSelectedHour(-1);
+                    trainerCustomListAdapter.notifyDataSetChanged();
+                } else
+                {
+                    System.out.println("Index != tp selected position ");
+                    trainerCustomListAdapter.setSelectedHour(position);
+                    trainerCustomListAdapter.notifyDataSetChanged();
+                }
+
+
+
+                selectedHour = hourList.get(position); // printing date OK;
+                System.out.println("For appointment " + selectedYear + "/" + selectedMonth + "/" + selectedDay + "/" + selectedHour);
+            }
+        });
 
 
         // add to cart
@@ -314,6 +318,7 @@ public class TrainerDetailsFragment extends Fragment {
             public void onClick(View v) {
 
                 Log.d("Andrea", "Inside add Cart click");
+
 
                 if(selectedHour == 100){
                     Toast.makeText(getContext(), "Select an appointment to add to Cart", Toast.LENGTH_SHORT).show();
