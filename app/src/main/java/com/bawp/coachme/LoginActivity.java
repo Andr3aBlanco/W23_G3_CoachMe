@@ -56,11 +56,12 @@ public class LoginActivity extends AppCompatActivity {
         fbLoginBtn=findViewById(R.id.imageFacebookAuth);
         txtforgotpass=findViewById(R.id.txtForgotPassword);
 
-//sending user to create new account page
+        //sending user to create new account page
         goToRegister.setOnClickListener((View view)->{
             Intent regIntent=new Intent(LoginActivity.this, RegisterActivity.class);
             startActivity(regIntent);
         });
+
         //creating on click listener for googlesign In
         googleLoginBtn.setOnClickListener((View view)->{
             Intent regIntent=new Intent(LoginActivity.this, GoogleSignInActivity.class);
@@ -73,7 +74,8 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(regIntent);
 
         });
-  //creating on click listener for forgot password
+
+        //creating on click listener for forgot password
         txtforgotpass.setOnClickListener((View view)->{
             Intent regIntent=new Intent(LoginActivity.this, ResetPasswordActivity.class);
             startActivity(regIntent);
@@ -100,7 +102,8 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "Please Enter Password", Toast.LENGTH_SHORT).show();
                 return;
             }
-//sending request to the firebase to check the  existing user
+
+            //sending request to the firebase to check the  existing user
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener( new OnCompleteListener<AuthResult>() {
                         @Override

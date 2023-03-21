@@ -16,7 +16,6 @@
     <string name="txtCreateAccount">Create Account</string>
     <string name="btnNext_">Next</string>
     <string name="txtCreateCoachmeAccount">Create a Coachme account</string>
-
     <string name="facebook_app_id">1671473303313437</string>
     <string name="fb_login_protocol_scheme">fb1671473303313437</string>
     <string name="facebook_client_token">56789</string>
@@ -25,8 +24,6 @@
     <string name="txtBacktoLogIn">Back to Sign In</string>
     <string name="txtGetCurrentLoc">Get Current Location</string>
     <string name="txtForgetPass">Forgot Password?</string>
-
-
     <string name="NoSpeakableText">Some Speakable Text</string>
     <string name="tranerNameText">Trainer Name</string>
     <string name="trainerBioText">Trainer Bio</string>
