@@ -228,6 +228,14 @@ public class Appointment implements Parcelable {
         this.rating = rating;
     }
 
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
     @Override
     public String toString(){
         return this.customerId+" - "+this.trainerId+" - "+this.bookedDate;

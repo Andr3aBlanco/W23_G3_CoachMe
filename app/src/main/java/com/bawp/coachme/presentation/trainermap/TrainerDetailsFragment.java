@@ -343,6 +343,8 @@ public class TrainerDetailsFragment extends Fragment {
 
                     location = currentTrainer.getAddress();
                     trainerId = currentTrainer.getId();
+
+                    // modifying in layout
                     serviceType = "To be defined";
                     totalPrice = currentTrainer.getFlatPrice();
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rlAppHistoryFeedback"
     style="@style/appointmentCardView"
     android:background="#E0F2F1">
@@ -28,12 +29,20 @@
             android:layout_marginRight="20dp"
             android:foregroundGravity="center_vertical"
             android:numStars="1"
-            android:stepSize="0.1"
+            android:stepSize="1"
             android:isIndicator="true"
             />
 
+        <Button
+            android:id="@+id/btnCoverStar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="18dp"
+            android:background="@color/transparent"
 
-
+            />
 
     </RelativeLayout>
 
@@ -70,6 +79,7 @@
 
         <com.google.android.material.button.MaterialButton
             style="@style/filledButtonCM"
+            android:id="@+id/btnSubmitReview"
             android:layout_height="30dp"
             android:layout_width="120dp"
             android:layout_marginBottom="1dp"

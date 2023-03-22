@@ -2,11 +2,16 @@ package com.bawp.coachme.presentation.feedback;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -34,6 +39,8 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
     String TrainerFullName = "";
     DBHelper dbHelper;
     Trainer currentTrainer;
+
+    float newRating;
     OnItemClickListener onItemClickListener;
 
 
@@ -76,7 +83,7 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
         AppointmentHolder holder = new AppointmentHolder(itemView);
 
         // Get the current adapter position
-        int position = holder.getBindingAdapterPosition();
+        int position = holder.getAbsoluteAdapterPosition();
         System.out.println(position);
         dbHelper = new DBHelper(parent.getContext()); // Check this and change if necessary
 
@@ -109,6 +116,43 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
 //            }
 //        });
 
+        holder.starButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                holder.ratingCard.setVisibility(View.VISIBLE);
+            }
+        });
+
+        holder.btnSubmitReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Check if plaintxt is empty
+                if(TextUtils.isEmpty(holder.txtComment.getText())){
+
+                    Toast.makeText(parent.getContext(), "Please leave us a comment ", Toast.LENGTH_SHORT).show();
+
+                } else {
+
+                    if(newRating == 0){
+
+                        Toast.makeText(parent.getContext(), "Please choose a rating ", Toast.LENGTH_SHORT).show();
+
+                    } else{
+
+                        // get the current appointment and save the new rating and save to trainer
+                        pastAppointments.get(position).setRating((int)newRating);
+                        dbHelper.updateAppointmentRating(pastAppointments.get(position).getId(),(int)newRating);
+                        dbHelper.updateTrainerRating(pastAppointments.get(position).getTrainerId());
+
+                        holder.starRating.setRating(newRating/5);
+                    }
+
+                }
+            }
+        });
+
+
         return holder;
     }
 
@@ -122,6 +166,8 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
         String formattedDate = sdf.format(new Date(pastAppointments.get(position).getBookedDate()));
 
         System.out.println("Rating for " + pastAppointments.get(position).getRating());
+
+
         // rated or not yet
 
 
@@ -136,9 +182,9 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
         } else {
 
             String toDisplay = "Your " + pastAppointments.get(position).getServiceType() + "session with " +
-                    currentTrainer.getFirstName() + " on the " + formattedDate;
+                    currentTrainer.getFirstName() + " on the " + formattedDate + " was " + pastAppointments.get(position).getComment();
 
-
+            holder.trainerName.setText(toDisplay);
 
         }
 
@@ -149,18 +195,10 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
 
 
-                float newRating = ratingBar.getRating();
-                newRating = Math.round(newRating);
+                newRating = rating;
                 System.out.println("NEW RATING " + newRating);
-                // get the current appointment and save the new rating and save to trainer
-                pastAppointments.get(positionH).setRating((int)newRating);
-                dbHelper.updateAppointmentRating(pastAppointments.get(positionH).getId(),(int)newRating);
-                dbHelper.updateTrainerRating(pastAppointments.get(positionH).getTrainerId());
 
-                holder.starRating.setRating(rating);
-                holder.ratingCard.setVisibility(View.GONE);
 
-                notifyDataSetChanged();
             }
         });
 
@@ -180,14 +218,21 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
         RatingBar barRating;
         CardView ratingCard;
 
+        Button starButton;
+
+        TextView txtComment;
+        Button btnSubmitReview;
+
         public AppointmentHolder(@NonNull View itemView) {
             super(itemView);
 
             trainerName = itemView.findViewById(R.id.txtTrainerNameAppRV);
-            appDate = itemView.findViewById(R.id.txtAppDateRV);
             starRating = itemView.findViewById(R.id.appRatingStar);
             barRating = itemView.findViewById(R.id.ratingBar);
             ratingCard = itemView.findViewById(R.id.ratingCard);
+            starButton = itemView.findViewById(R.id.btnCoverStar);
+            txtComment = itemView.findViewById(R.id.txtAppDateRV); // comment
+            btnSubmitReview = itemView.findViewById(R.id.btnSubmitReview);
 
         }
     }
