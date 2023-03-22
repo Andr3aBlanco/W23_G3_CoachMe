@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case R.id.menu_profile:
-                    replaceFragment(new TrainerSearchFragment());
+                    replaceFragment(new ProfileFragment());
 
                     break;
 

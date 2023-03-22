@@ -57,13 +57,13 @@ public class NewUserForm extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    // //user exists
-                    //
-                    // //here i have to change to main activity when i create one
-                    // Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    // startActivity(intent);
-                    // Toast.makeText(NewUserForm.this, "Welcome Back ", Toast.LENGTH_SHORT).show();
-                    // finish();
+                     //user exists
+
+                     //here i have to change to main activity when i create one
+                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                     startActivity(intent);
+                     Toast.makeText(NewUserForm.this, "Welcome Back ", Toast.LENGTH_SHORT).show();
+                     finish();
                 }
             };
 
