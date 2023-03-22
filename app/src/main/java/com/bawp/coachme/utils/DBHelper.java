@@ -556,46 +556,41 @@ public class DBHelper extends SQLiteOpenHelper {
     /* -------------------------------
     -----------APPOINTMENTS----------
     ------------------------------- */
-
+    //get appoitnment by appointmentid -> this mifght not be necessary because the recycler has ll the appointmnest
+    // added just in case
     @SuppressLint("Range")
     public Appointment getAppointmentById(String appId){
+        Appointment appointment = new Appointment();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM appointments WHERE _id = '" + appId+"'",null );
 
-        if (cursor.moveToFirst()){
-                String id = cursor.getString(cursor.getColumnIndex("_id"));
-                Long bookedDate = cursor.getLong(cursor.getColumnIndex("bookedDate"));
-                Long registeredDate = cursor.getLong(cursor.getColumnIndex("registeredDate"));
-                int status = cursor.getInt(cursor.getColumnIndex("status"));
-                String serviceType = cursor.getString(cursor.getColumnIndex("serviceType"));
-                Double totalPrice = cursor.getDouble(cursor.getColumnIndex("totalPrice"));
-                String location = cursor.getString(cursor.getColumnIndex("location"));
-                String trainerId = cursor.getString(cursor.getColumnIndex("trainerId"));
-                String paymentId = cursor.getString(cursor.getColumnIndex("paymentId"));
-                Long paymentDate = cursor.getLong(cursor.getColumnIndex("paymentDate"));
-//                String deviceToken = cursor.getString(cursor.getColumnIndex("deviceToken"));
+        String query = "SELECT * FROM appointments WHERE _id = ?";
 
-                Appointment appointment = new Appointment(id,bookedDate,registeredDate,serviceType,status,
-                        totalPrice,location,trainerId,UserSingleton.getInstance().getUserId(), paymentId, paymentDate, UserSingleton.getInstance().getUserDeviceToken());
+        Cursor cursor = db.rawQuery(query, new String[]{appId});
 
-                if (paymentId == null){
-                    appointment.setPaymentId(null);
-                }else{
-                    appointment.setPaymentId(paymentId);
-                }
+        if(cursor.moveToFirst()){
 
-                if (paymentDate == null){
-                    appointment.setPaymentDate(0);
-                }else{
-                    appointment.setPaymentDate(paymentDate);
-                }
+            String appointmentId = cursor.getString(cursor.getColumnIndex("_id"));
+            long bookedDate = cursor.getLong(cursor.getColumnIndex("bookedDate"));
+            long registeredDate = cursor.getLong(cursor.getColumnIndex("registeredDate"));
+            String serviceType = cursor.getString(cursor.getColumnIndex("serviceType"));
+            int appointmentStatus = cursor.getInt(cursor.getColumnIndex("status"));
+            float totalPrice = cursor.getFloat(cursor.getColumnIndex("totalPrice"));
+            String location = cursor.getString(cursor.getColumnIndex("location"));
+            String appointmentTrainerId = cursor.getString(cursor.getColumnIndex("trainerId"));
+            String appointmentcustomerId = cursor.getString(cursor.getColumnIndex("customerId"));
+            String paymentId = cursor.getString(cursor.getColumnIndex("paymentId"));
+            long paymentDate = cursor.getLong(cursor.getColumnIndex("paymentDate"));
+            String deviceToken = cursor.getString(cursor.getColumnIndex("deviceToken"));
+            int rating = cursor.getInt(cursor.getColumnIndex("rating"));
 
-                db.close();
-                return appointment;
+            appointment = new Appointment(appointmentId, bookedDate, registeredDate, serviceType, appointmentStatus, totalPrice, location, appointmentTrainerId, appointmentcustomerId, paymentId, paymentDate, deviceToken);
+            appointment.setRating(rating);
         }
-        db.close();
-        return null;
 
+        cursor.close();
+        db.close();
+
+        return appointment;
     }
 
     @SuppressLint("Range")
@@ -1869,43 +1864,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
         cursor.close();
         db.close();
-    }
-
-     //get appoitnment by appointmentid -> this mifght not be necessary because the recycler has ll the appointmnest
-    // added just in case
-    @SuppressLint("Range")
-    public Appointment getAppointmentById(String appId){
-        Appointment appointment = new Appointment();
-        SQLiteDatabase db = getReadableDatabase();
-
-        String query = "SELECT * FROM appointments WHERE _id = ?";
-
-        Cursor cursor = db.rawQuery(query, new String[]{appId});
-
-        if(cursor.moveToFirst()){
-
-            String appointmentId = cursor.getString(cursor.getColumnIndex("_id"));
-            long bookedDate = cursor.getLong(cursor.getColumnIndex("bookedDate"));
-            long registeredDate = cursor.getLong(cursor.getColumnIndex("registeredDate"));
-            String serviceType = cursor.getString(cursor.getColumnIndex("serviceType"));
-            int appointmentStatus = cursor.getInt(cursor.getColumnIndex("status"));
-            float totalPrice = cursor.getFloat(cursor.getColumnIndex("totalPrice"));
-            String location = cursor.getString(cursor.getColumnIndex("location"));
-            String appointmentTrainerId = cursor.getString(cursor.getColumnIndex("trainerId"));
-            String appointmentcustomerId = cursor.getString(cursor.getColumnIndex("customerId"));
-            String paymentId = cursor.getString(cursor.getColumnIndex("paymentId"));
-            long paymentDate = cursor.getLong(cursor.getColumnIndex("paymentDate"));
-            String deviceToken = cursor.getString(cursor.getColumnIndex("deviceToken"));
-            int rating = cursor.getInt(cursor.getColumnIndex("rating"));
-
-            appointment = new Appointment(appointmentId, bookedDate, registeredDate, serviceType, appointmentStatus, totalPrice, location, appointmentTrainerId, appointmentcustomerId, paymentId, paymentDate, deviceToken);
-            appointment.setRating(rating);
-        }
-
-        cursor.close();
-        db.close();
-
-        return appointment;
     }
 
     // Update rating -> initial zero for validation purposes valid values from 1 - 5
