@@ -71,6 +71,25 @@ public class Appointment implements Parcelable {
         this.comment = "";
     }
 
+    // another constructor needed for the DBHelper when getting the appointments from DB
+
+
+    public Appointment(String id, long bookedDate, long registeredDate, String serviceType, int status, double totalPrice, String location, String trainerId, String customerId, String paymentId, long paymentDate, String deviceToken, int rating, String comment) {
+        this.id = id;
+        this.bookedDate = bookedDate;
+        this.registeredDate = registeredDate;
+        this.serviceType = serviceType;
+        this.status = status;
+        this.totalPrice = totalPrice;
+        this.location = location;
+        this.trainerId = trainerId;
+        this.customerId = customerId;
+        this.paymentId = paymentId;
+        this.paymentDate = paymentDate;
+        this.deviceToken = deviceToken;
+        this.rating = rating;
+        this.comment = comment;
+    }
 
     protected Appointment(Parcel in) {
         id = in.readString();

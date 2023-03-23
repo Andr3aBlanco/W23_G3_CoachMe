@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,9 +41,12 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
     DBHelper dbHelper;
     Trainer currentTrainer;
 
-    float newRating;
-    OnItemClickListener onItemClickListener;
+    float newRating = 0;
+    OnItemClickListener onItemClickListener; //this is the one to be manipulated
 
+
+    // position to be used in the onCreate
+    int currentPosition = -1;
 
     public AppRecyclerAdapter(List<Appointment> pastAppointments, OnItemClickListener onItemClickListener) {
         this.pastAppointments = pastAppointments;
@@ -75,6 +79,10 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
         notifyDataSetChanged();
     }
 
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
     @NonNull
     @Override
     public AppointmentHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -82,52 +90,41 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.app_history_item, parent, false);
         AppointmentHolder holder = new AppointmentHolder(itemView);
 
-        // Get the current adapter position
-        int position = holder.getAbsoluteAdapterPosition();
-        System.out.println(position);
         dbHelper = new DBHelper(parent.getContext()); // Check this and change if necessary
 
-        // click listener to update the selected index
-        holder.starRating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+        holder.ratingFive.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                holder.ratingCard.setVisibility(View.VISIBLE);
-                System.out.println("CLICKED ONE STAR");
+
+                newRating = ratingBar.getRating();
+                System.out.println("NEW RATING " + newRating);
             }
         });
-
-        // Set the click listener on the five-star RatingBar
-//        holder.barRating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-//            @Override
-//            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-//
-//
-//                float newRating = ratingBar.getRating();
-//                System.out.println("NEW RATING " + newRating);
-//                // get the current appointment and save the new rating and save to trainer
-//                pastAppointments.get(position).setRating((int)newRating);
-//
-//                dbHelper.updateTrainerRating(pastAppointments.get(position).getTrainerId());
-//
-//                holder.starRating.setRating(rating);
-//                holder.barRating.setVisibility(View.GONE);
-//
-//                notifyDataSetChanged();
-//            }
-//        });
 
         holder.starButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                holder.ratingCard.setVisibility(View.VISIBLE);
+                currentPosition = holder.getBindingAdapterPosition();
+                // If appointment has not been rated yet show the rating card
+                if(pastAppointments.get(currentPosition).getRating() == 0 ){
+
+                    holder.ratingCard.setVisibility(View.VISIBLE);
+                } else {
+
+                    Toast.makeText(parent.getContext(),"You have already rated this session. ", Toast.LENGTH_SHORT).show();
+                }
+
+
+                System.out.println("This is the current position " + currentPosition);
             }
         });
 
         holder.btnSubmitReview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Check if plaintxt is empty
+
+                System.out.print("NEW RATING ON SUBMIT " + newRating);
                 if(TextUtils.isEmpty(holder.txtComment.getText())){
 
                     Toast.makeText(parent.getContext(), "Please leave us a comment ", Toast.LENGTH_SHORT).show();
@@ -141,11 +138,17 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
                     } else{
 
                         // get the current appointment and save the new rating and save to trainer
-                        pastAppointments.get(position).setRating((int)newRating);
-                        dbHelper.updateAppointmentRating(pastAppointments.get(position).getId(),(int)newRating);
-                        dbHelper.updateTrainerRating(pastAppointments.get(position).getTrainerId());
+                        pastAppointments.get(currentPosition).setRating((int)newRating); // nor refreshing
+                        dbHelper.updateAppointmentRating(pastAppointments.get(currentPosition).getId(),(int)newRating);
+                        dbHelper.updateTrainerRating(pastAppointments.get(currentPosition).getTrainerId());
 
-                        holder.starRating.setRating(newRating/5);
+                        holder.ratingOne.setRating(newRating/5);
+
+                        // disappear on submit again
+                        holder.ratingCard.setVisibility(View.GONE);
+
+                        setPastAppointments(pastAppointments);
+
                     }
 
                 }
@@ -159,7 +162,6 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
     @Override
     public void onBindViewHolder(@NonNull AppointmentHolder holder, int position) {
 
-        int positionH = holder.getBindingAdapterPosition();
         currentTrainer = dbHelper.getTrainerById(pastAppointments.get(position).getTrainerId());
         //Date
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
@@ -167,10 +169,7 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
 
         System.out.println("Rating for " + pastAppointments.get(position).getRating());
 
-
         // rated or not yet
-
-
         if(pastAppointments.get(position).getRating() == 0) {
 
             String toDisplay = "Rate your " + pastAppointments.get(position).getServiceType() + " session with " +
@@ -178,29 +177,22 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
 
             holder.trainerName.setText(toDisplay);
 
+            System.out.println("rating for position " + position + " is " + pastAppointments.get(position).getRating());
+
+            holder.ratingOne.setRating((float)pastAppointments.get(position).getRating()/5);
+
 
         } else {
 
-            String toDisplay = "Your " + pastAppointments.get(position).getServiceType() + "session with " +
+            String toDisplay = "Your " + pastAppointments.get(position).getServiceType() + " session with " +
                     currentTrainer.getFirstName() + " on the " + formattedDate + " was " + pastAppointments.get(position).getComment();
 
             holder.trainerName.setText(toDisplay);
-
+            // fill the star depending on the value
+            holder.ratingOne.setRating((float)pastAppointments.get(position).getRating()/5);
+            Log.d("ANDREA", "This is the rating for appointment in " + position + " " +pastAppointments.get(position).getRating() );
         }
 
-
-        // no access to adapter position
-        holder.barRating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-            @Override
-            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-
-
-                newRating = rating;
-                System.out.println("NEW RATING " + newRating);
-
-
-            }
-        });
 
     }
 
@@ -214,8 +206,8 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
         // From the layout
         TextView trainerName;
         TextView appDate;
-        RatingBar starRating;
-        RatingBar barRating;
+        RatingBar ratingOne;
+        RatingBar ratingFive;
         CardView ratingCard;
 
         Button starButton;
@@ -227,8 +219,8 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
             super(itemView);
 
             trainerName = itemView.findViewById(R.id.txtTrainerNameAppRV);
-            starRating = itemView.findViewById(R.id.appRatingStar);
-            barRating = itemView.findViewById(R.id.ratingBar);
+            ratingOne = itemView.findViewById(R.id.ratingOne);
+            ratingFive = itemView.findViewById(R.id.ratingFive);
             ratingCard = itemView.findViewById(R.id.ratingCard);
             starButton = itemView.findViewById(R.id.btnCoverStar);
             txtComment = itemView.findViewById(R.id.txtAppDateRV); // comment
@@ -238,7 +230,7 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
     }
 
     public interface OnItemClickListener {
-        public void onItemClick(int i);
+        public void onItemClick(int i);  // where does this come from
 
     }
 }

@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rlAppHistoryFeedback"
     style="@style/appointmentCardView"
+    android:layout_height="wrap_content"
     android:background="#E0F2F1">
 
     <RelativeLayout
@@ -21,7 +22,7 @@
 
 
         <RatingBar
-            android:id="@+id/appRatingStar"
+            android:id="@+id/ratingOne"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -29,8 +30,12 @@
             android:layout_marginRight="20dp"
             android:foregroundGravity="center_vertical"
             android:numStars="1"
-            android:stepSize="1"
+            android:stepSize="0.2"
+            android:clickable="true"
+            android:focusable="true"
             android:isIndicator="true"
+            android:backgroundTint="@color/teal_200"
+            android:background="@color/transparent"
             />
 
         <Button
@@ -50,20 +55,21 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/ratingCard"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="120dp"
         android:layout_alignParentTop="true"
         android:visibility="gone">
 
         <RatingBar
-            android:id="@+id/ratingBar"
-            android:layout_width="100dp"
-            android:layout_height="30dp"
+            android:id="@+id/ratingFive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|top"
-            android:background="#E7F6F5"
-            android:backgroundTint="@color/white"
             android:isIndicator="false"
             android:numStars="5"
-            android:stepSize="1" />
+            android:rating="0"
+            android:stepSize="1"
+            android:backgroundTint="@color/teal_200"
+            android:background="@color/transparent" />
 
         <EditText
             android:id="@+id/txtAppDateRV"
