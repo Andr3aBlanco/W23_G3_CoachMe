@@ -172,6 +172,19 @@ public class DBHelper extends SQLiteOpenHelper {
             "trainerID TEXT, " +
             "FOREIGN KEY(trainerID) REFERENCES trainers(_id) " +
             ");";
+
+
+    // Table for the user
+    private static final String CREATE_PERSONAL_DETAILS_TABLE = "CREATE TABLE personal( " +
+            "_id INT PRIMARY KEY, " +
+            "firstName String,  " +
+            "lastName String, "  +
+            "address String, " +
+            "goals String, " +
+            "latitude FLOAT, " +
+            "longitude FLOAT " +
+            "weight FLOAT " +
+            ");";
     public static final String URL_FIRESTORE_SELF_WORKOUT_PLANS_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutPlans.csv";
     public static final String URL_FIRESTORE_SELF_WORKOUT_SESSION_TYPES_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutSessionTypes.csv";
     public static final String URL_FIRESTORE_SELF_PLAN_EXERCISES_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutPlanExercises.csv";
@@ -217,6 +230,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_RATINGS_TABLE);
         db.execSQL(CREATE_TRAINERSERVICE_TABLE);
         db.execSQL(CREATE_TRAINER_OPEN_SCHEDULE_TABLE);
+        db.execSQL(CREATE_PERSONAL_DETAILS_TABLE);
         databaseJustCreated=true;
         //uploadSelfWorkoutPlans();
 
@@ -236,6 +250,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS ratings");   // Remove this one later
         db.execSQL("DROP TABLE IF EXISTS trainerservice");
         db.execSQL("DROP TABLE IF EXISTS schedule");
+        db.execSQL("DROP TABLE IF EXISTS personal");
         onCreate(db);
     }
 
@@ -1933,6 +1948,13 @@ public class DBHelper extends SQLiteOpenHelper {
   /* METHODS FOR THE CHARTS
   *  */
 
+
+     // Method to load user details into current device
+    //
+    public void loadUserDetails(){
+
+
+    }
     // For pie chart
 
 }
