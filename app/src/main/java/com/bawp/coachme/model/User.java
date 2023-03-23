@@ -68,6 +68,16 @@ public class User implements Serializable {
         this.serviceTypes = serviceTypes;
     }
 
+    public User(String firstName, String lastName, String email, String address, String phoneNumber,Role role) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
+    }
+
+    //creating another constructor for required fields for the user
     public String getFirstName() {
         return firstName;
     }
