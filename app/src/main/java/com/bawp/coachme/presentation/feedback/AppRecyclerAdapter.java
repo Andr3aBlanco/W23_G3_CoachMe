@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -42,6 +43,7 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
     Trainer currentTrainer;
 
     float newRating = 0;
+    String newComment = "";
     OnItemClickListener onItemClickListener; //this is the one to be manipulated
 
 
@@ -131,6 +133,9 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
 
                 } else {
 
+                    newComment = holder.txtComment.getText().toString();
+
+
                     if(newRating == 0){
 
                         Toast.makeText(parent.getContext(), "Please choose a rating ", Toast.LENGTH_SHORT).show();
@@ -139,6 +144,7 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
 
                         // get the current appointment and save the new rating and save to trainer
                         pastAppointments.get(currentPosition).setRating((int)newRating); // nor refreshing
+                        pastAppointments.get(currentPosition).setComment(newComment);
                         dbHelper.updateAppointmentRating(pastAppointments.get(currentPosition).getId(),(int)newRating);
                         dbHelper.updateTrainerRating(pastAppointments.get(currentPosition).getTrainerId());
 
@@ -148,6 +154,8 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
                         holder.ratingCard.setVisibility(View.GONE);
 
                         setPastAppointments(pastAppointments);
+
+
 
                     }
 
@@ -212,7 +220,7 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
 
         Button starButton;
 
-        TextView txtComment;
+        EditText txtComment;
         Button btnSubmitReview;
 
         public AppointmentHolder(@NonNull View itemView) {

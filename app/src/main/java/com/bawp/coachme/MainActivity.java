@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        UserSingleton.getInstance().setUserId("-NOjpL1jiGcc80qBrFIl");
         replaceFragment(new HomeFragment());
         fragmentBinding();
     }

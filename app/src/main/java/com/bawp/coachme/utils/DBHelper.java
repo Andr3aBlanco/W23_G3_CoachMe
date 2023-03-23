@@ -1930,6 +1930,9 @@ public class DBHelper extends SQLiteOpenHelper {
         return orderHistory;
     }
 
+  /* METHODS FOR THE CHARTS
+  *  */
 
+    // For pie chart
 
 }
