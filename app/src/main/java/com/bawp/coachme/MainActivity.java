@@ -1,6 +1,7 @@
 package com.bawp.coachme;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -23,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fragmentBinding(){
+
         //bind
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case R.id.menu_stats:
-                    replaceFragment(new TrainerListFragment());
+                    replaceFragment(new StatsFragment());
 
                     break;
 
@@ -72,6 +73,13 @@ public class MainActivity extends AppCompatActivity {
             }
 
             return true;
+        });
+
+        binding.floatingAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                replaceFragment(new TrainerSearchFragment());
+            }
         });
     }
 

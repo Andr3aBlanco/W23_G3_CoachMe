@@ -1799,7 +1799,7 @@ public class DBHelper extends SQLiteOpenHelper {
         List<Appointment> appointments = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
 
-        String query = "SELECT * FROM appointments WHERE status=? AND customerId= ? "; // revomed '?'
+        String query = "SELECT * FROM appointments WHERE status=? AND customerId= ? ORDER BY bookedDate"; // revomed '?'
         Cursor cursor = db.rawQuery(query, new String[] {String.valueOf(status), customerId});
 
         System.out.println("INSIDE getAppointmentsByCustomerIdAndStatus CustomerID " + customerId);
@@ -1818,8 +1818,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 long paymentDate = cursor.getLong(cursor.getColumnIndex("paymentDate"));
                 String deviceToken = cursor.getString(cursor.getColumnIndex("deviceToken"));
                 int rating = cursor.getInt(cursor.getColumnIndex("rating"));
+                String comment = cursor.getString(cursor.getColumnIndex("comment"));
 
-                Appointment appointment = new Appointment(appointmentId, bookedDate, registeredDate, serviceType, appointmentStatus, totalPrice, location, appointmentTrainerId, appointmentcustomerId, paymentId, paymentDate, deviceToken);
+                Appointment appointment = new Appointment(appointmentId, bookedDate, registeredDate, serviceType, appointmentStatus, totalPrice, location, appointmentTrainerId, appointmentcustomerId, paymentId, paymentDate, deviceToken, rating, comment);
                 appointments.add(appointment);
             } while (cursor.moveToNext());
         }

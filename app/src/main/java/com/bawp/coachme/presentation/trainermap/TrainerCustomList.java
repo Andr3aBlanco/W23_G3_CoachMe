@@ -16,12 +16,14 @@ import java.util.List;
 public class TrainerCustomList extends BaseAdapter {
 
     List<Integer> timesInLong = new ArrayList<>();
-    int selectedIndex = -1;
+    int selectedHour = -1;
+
 
 
     public TrainerCustomList(List<Integer> timesInLong) {
         this.timesInLong = timesInLong;
-        this.selectedIndex = -1;
+        this.selectedHour = -1;
+
     }
 
     public List<Integer> getTimesInLong() {
@@ -33,12 +35,13 @@ public class TrainerCustomList extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    public int getSelectedIndex() {
-        return selectedIndex;
+
+    public int getSelectedHour() {
+        return selectedHour;
     }
 
-    public void setSelectedIndex(int selectedIndex) {
-        this.selectedIndex = selectedIndex;
+    public void setSelectedHour(int selectedHour) {
+        this.selectedHour = selectedHour;
         notifyDataSetChanged();
     }
 
@@ -81,15 +84,14 @@ public class TrainerCustomList extends BaseAdapter {
             textView.setText(timesInLong.get(position) + " p.m.");
         }
 
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("Andrea", "Clicked on the hour inside the adapter ");
+        if(selectedHour == position) {
 
-                    textView.setBackgroundColor(Color.GRAY);
+            textView.setBackgroundColor(Color.GRAY);
 
-            }
-        });
+        } else{
+
+            textView.setBackgroundColor(Color.WHITE);
+        }
 
 
         return convertView;
