@@ -79,9 +79,6 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
     }
 
     private void loadDB(){
-        //After loging, we have set the User Id
-        UserSingleton.getInstance().setUserId("-NOjpL1jiGcc80qBrFIl");
-
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(task -> {
                     if(!task.isSuccessful()){
