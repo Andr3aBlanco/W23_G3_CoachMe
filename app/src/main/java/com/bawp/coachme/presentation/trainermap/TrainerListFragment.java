@@ -1,5 +1,6 @@
 package com.bawp.coachme.presentation.trainermap;
 
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -185,6 +186,7 @@ public class TrainerListFragment extends Fragment {
         String trainerId;
         String customerId;
 
+        List<Integer> hourList = new ArrayList<>();
 
         List<Long> availApp = new ArrayList<>();
         HashMap<String, List<Integer>> appointmentsMap = new HashMap<>();
@@ -295,65 +297,7 @@ public class TrainerListFragment extends Fragment {
                     }
 
                      // Disable dates
-                    holder.calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-                        @Override
-                        public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
 
-                            // Set current and print
-                            selectedDay = dayOfMonth;
-                            selectedMonth = month;
-                            selectedYear = year;
-                            selectedHour = 100;
-
-                            List<String> hoursString = new ArrayList<>();
-                            List<Integer> hourList = new ArrayList<>();
-
-                            Calendar clickedDate = Calendar.getInstance();
-                            clickedDate.set(year, month, dayOfMonth, 0, 0, 0);
-                            clickedDate.set(Calendar.MILLISECOND, 0);
-
-                            // Create the key for the HashMap
-                            String key = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth); // Add 1 to get the month in range 1-12
-
-
-                            // Check if the clicked date is in the available appointment list
-                            if (appointmentsMap.containsKey(key)) {
-                                // Do nothing: the date is available
-                                // Get the List of hours for the key
-                                hourList = appointmentsMap.get(key);
-                                Collections.sort(hourList);
-
-
-                                // Loop through the list using a traditional for loop
-//                                for (int i = 0; i < hourList.size(); i++) {
-//                                    // Get the element at index i and do something with it
-//                                    Integer element = hourList.get(i);
-//                                    if(element < 12){
-//                                        hoursString.add(element + " a.m." );
-//
-//                                    } else{
-//                                        hoursString.add(element + " p.m.");
-//                                    }
-//
-//                                }
-                                // Populate the ListView with the hourList values
-//                                ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, hoursString);
-//                                holder.listViewHours.setAdapter(adapter);
-
-                                trainerCustomListAdapter = new TrainerCustomList(hourList);
-                                holder.listViewHours.setAdapter(trainerCustomListAdapter);
-
-                            } else {
-
-                                hoursString = new ArrayList<>();
-                                ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, hoursString);
-                                holder.listViewHours.setAdapter(adapter);
-                                // Disable click on the date
-                                Toast.makeText(getContext(), "This date is not available", Toast.LENGTH_SHORT).show();
-//                                holder.calendarView.setDate(holder.calendarView.getDate()); // Reset the selected date
-                            }
-                        }
-                    });
 
                     // Disable click on all dates that are not in the available appointment list
                     for (long appTime : availApp) {
@@ -371,19 +315,75 @@ public class TrainerListFragment extends Fragment {
                 }
             });
 
+
+
+
+            holder.calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+                @Override
+                public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+
+                    // Set current
+                    selectedDay = dayOfMonth;
+                    selectedMonth = month;
+                    selectedYear = year;
+                    selectedHour = 100;
+
+                    List<String> hoursString = new ArrayList<>();
+
+
+                    Calendar clickedDate = Calendar.getInstance();
+                    clickedDate.set(year, month, dayOfMonth, 0, 0, 0);
+                    clickedDate.set(Calendar.MILLISECOND, 0);
+
+                    // Create the key for the HashMap
+                    String key = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth); // Add 1 to get the month in range 1-12
+
+                    // Check if the clicked date is in the available appointment list
+                    if (appointmentsMap.containsKey(key)) {
+                        // Get the List of hours for the key
+                        hourList = appointmentsMap.get(key);
+                        Collections.sort(hourList);
+
+                        trainerCustomListAdapter = new TrainerCustomList(hourList);
+                        holder.listViewHours.setAdapter(trainerCustomListAdapter);
+
+
+                    } else {
+
+                        hourList = new ArrayList<>();
+                        trainerCustomListAdapter = new TrainerCustomList(hourList);
+                        holder.listViewHours.setAdapter(trainerCustomListAdapter);
+
+
+                        Toast.makeText(getContext(), "This date is not available", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
             // Click listener for the ListView
-//            holder.listViewHours.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                @Override
-//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                    String selectedItem = (String) parent.getItemAtPosition(position); // Get the selected item as a string
-//                    String[] parts = selectedItem.split(" "); // Split the string into parts using a space delimiter
-//                    String timeString = parts[0]; // Get the first part, which should be the time string like "11" or "11pm"
-//                    int timeInt = Integer.parseInt(timeString); // Parse the time string as an integer
-//
-//                    selectedHour = timeInt;
-//                    System.out.println("For appointment " + selectedYear + "/" + selectedMonth + "/" + selectedDay + "/" + selectedHour);
-//                }
-//            });
+            holder.listViewHours.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    if(trainerCustomListAdapter.getSelectedHour() == position ){
+                        // If clicked is the same
+                        System.out.println("Index == tp se;ected position ");
+                        trainerCustomListAdapter.setSelectedHour(-1);
+                        trainerCustomListAdapter.notifyDataSetChanged();
+                    } else
+                    {
+                        System.out.println("Index != tp selected position ");
+                        trainerCustomListAdapter.setSelectedHour(position);
+                        trainerCustomListAdapter.notifyDataSetChanged();
+                    }
+
+
+                    int timeInt = hourList.get(position); // printing date OK
+
+                    selectedHour = timeInt;
+                    System.out.println("For appointment " + selectedYear + "/" + selectedMonth + "/" + selectedDay + "/" + selectedHour);
+                }
+            });
 
             holder.addCart.setOnClickListener((View v) -> {
 

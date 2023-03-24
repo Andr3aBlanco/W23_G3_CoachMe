@@ -74,7 +74,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tvTrainerRatingR"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <com.bawp.coachme.model.CustomCalendarView
             android:id="@+id/cvDatesR"

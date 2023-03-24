@@ -96,7 +96,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/tvTrainerRating"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <com.bawp.coachme.model.CustomCalendarView
                 android:id="@+id/cvDates"
@@ -107,22 +107,34 @@
             <ListView
                 android:id="@+id/lvTimes"
                 android:layout_width="90dp"
-                android:layout_height="250dp"
+                android:layout_height="240dp"
+                android:layout_marginLeft="2dp"
                 android:layout_toRightOf="@id/cvDates"
                 >
 
             </ListView>
 
+            <Spinner
+                android:id="@+id/spinService"
+                android:layout_width="90dp"
+                android:layout_height="35dp"
+                android:layout_below="@id/lvTimes"
+                android:layout_marginLeft="2dp"
+                android:layout_marginTop="4dp"
+                android:layout_toRightOf="@id/cvDates"/>
+
             <Button
                 android:id="@+id/btnAddCart"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_below="@id/lvTimes"
+                android:layout_below="@id/spinService"
                 android:layout_toRightOf="@id/cvDates"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="15dp"
                 android:layout_marginLeft="20dp"
                 app:icon="@drawable/baseline_add_shopping_cart_24"
                 style = "@style/Widget.MaterialComponents.Button.TextButton"/>
+
+
         </RelativeLayout>
     </RelativeLayout>
 
