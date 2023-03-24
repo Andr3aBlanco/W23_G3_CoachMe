@@ -18,7 +18,7 @@
     <string name="txtCreateCoachmeAccount">Create a Coachme account</string>
     <string name="facebook_app_id">1671473303313437</string>
     <string name="fb_login_protocol_scheme">fb1671473303313437</string>
-    <string name="facebook_client_token">56789</string>
+    <string name="facebook_client_token">d730eee4eb3ebaafaa5ce69cab6af814</string>
     <string name="txtresettitle">Reset Your password</string>
     <string name="btnReset">Reset</string>
     <string name="btnRegister">Register</string>
@@ -38,6 +38,8 @@
     <string name="pilates">Pilates</string>
     <string name="txtEditProfile">Edit Profile</string>
     <string name="txtSignOut">Sign Out </string>
+    <string name="btnSave">Save</string>
+    <string name="btnCancle">cancle</string>
     <string-array name="dummytimes">
         <item>8am</item>
         <item>10am</item>

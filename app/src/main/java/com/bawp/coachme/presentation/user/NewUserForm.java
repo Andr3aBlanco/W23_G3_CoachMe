@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -89,24 +91,14 @@ public class NewUserForm extends AppCompatActivity {
         confirmDataBtn = findViewById(R.id.btnConfirm);
         firstNameTxt = findViewById(R.id.txtFirstName);
         lastNameTxt = findViewById(R.id.txtLastName);
+
         addressTxt = findViewById(R.id.txtAddress);
         phoneNumberTxt = findViewById(R.id.txtPhoneNumber);
+//        emailTxt=findViewById(R.id.txt_email_new_UF);
 
-        // btn=findViewById(R.id.btngotosn);
 
         addressTxt.setAdapter(new PlaceAutoSuggestionAdapter(NewUserForm.this, android.R.layout.simple_list_item_1));
-        // btn.setOnClickListener((View view)->{
-        //
-        //// Intent intent = new Intent (NewUserForm.this, LoginActivity.class);
-        //// startActivity (intent);
-        //// finish();
-        // //SignOut from FireBase **this function i have to add where we select logout
-        // account
-        // FirebaseAuth.getInstance().signOut();
-        // Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-        // startActivity (intent);
-        // finish();
-        // });
+
         // if user is not logged in we will open login activity
         if (user == null) {
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
@@ -124,6 +116,8 @@ public class NewUserForm extends AppCompatActivity {
         // whem exsiting user gets log in it will redirect them to main activity
 
         confirmDataBtn.setOnClickListener((View v) -> {
+
+
             String Fname, Lname, address, phoneNumber;
 
             // creating role as a customer ID=1 and role customer
@@ -132,6 +126,23 @@ public class NewUserForm extends AppCompatActivity {
             Lname = String.valueOf(lastNameTxt.getText());
             phoneNumber = String.valueOf(phoneNumberTxt.getText());
             address = String.valueOf(addressTxt.getText());
+
+
+            if (TextUtils.isEmpty(Fname)) {
+                Toast.makeText(NewUserForm.this, "Please Enter first name", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (TextUtils.isEmpty(Lname)) {
+                Toast.makeText(NewUserForm.this, "Please Enter last name", Toast.LENGTH_SHORT).show();
+                return;
+            }if (TextUtils.isEmpty(address)) {
+                Toast.makeText(NewUserForm.this, "Please Enter address", Toast.LENGTH_SHORT).show();
+                return;
+            }if (TextUtils.isEmpty(phoneNumber)) {
+                Toast.makeText(NewUserForm.this, "Please Enter phone number", Toast.LENGTH_SHORT).show();
+                return;
+            }
             User newUser = new User(Fname, Lname, emailTxt, address, phoneNumber, newRole);
 
             //Because the user is a new user, let's add it into firebase
@@ -152,12 +163,7 @@ public class NewUserForm extends AppCompatActivity {
             });
         });
 
-        // SignOut from FireBase **this function i have to add where we select logout
-        // account
-        // FirebaseAuth.getInstance().signOut();
-        // Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-        // startActivity (intent);
-        // finish();
+
 
     }
 }

@@ -70,6 +70,7 @@ LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_
                             // Sign in success, update UI with the signed-in user's information
 
                             FirebaseUser user = mAuth.getCurrentUser();
+
                             updateUI(user);
                             finish();
                         } else {

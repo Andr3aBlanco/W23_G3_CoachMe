@@ -1,5 +1,6 @@
 package com.bawp.coachme;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,14 +9,16 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.bawp.coachme.presentation.order.OrderHistoryFragment;
+import com.bawp.coachme.presentation.order.OrdersFragment;
+import com.bawp.coachme.presentation.user.EditUserProfileFragment;
+import com.bawp.coachme.presentation.user.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,13 +30,9 @@ import com.google.firebase.database.ValueEventListener;
 
 public class ProfileFragment extends Fragment {
 
-    private TextView textViewLastName, textViewfirstName, textViewEmail,  textViewAddress,textViewMobile;
+    private TextView textViewLastName, textViewfirstName, textViewEmail,  textViewAddress,textViewMobile,textViewfullname;
     private ProgressBar progressBar;
-    private String firstName="";
-    private String lastName="jar";
-    private String email="";
-    private String address="";
-    private String mobile="";
+
     private ImageView imageView;
     Button signOutBtn;
     Button editProfileBtn;
@@ -42,47 +41,104 @@ public class ProfileFragment extends Fragment {
     String current_User;
     DatabaseReference databaseRef;
 
-
+    private String  firstName;
+    private String   lastName ;
+    private String   email ;
+    private String    address;
+    private String    mobile ;
+//    private void replaceFragment(Fragment fragment){
+//
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//        fragmentTransaction.replace(R.id.barFrame, fragment);
+//        fragmentTransaction.commit();
+//
+//    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view= inflater.inflate(R.layout.fragment_profile, container, false);
         textViewfirstName =view.findViewById(R.id.textView_show_first_name);
         textViewLastName =view.findViewById(R.id.textView_show_last_name);
+        textViewfullname=view.findViewById(R.id.textView_show_name);
         textViewEmail = view.findViewById(R.id.textView_show_email);
         textViewAddress = view.findViewById(R.id.textView_show_address);
-        editProfileBtn=view.findViewById(R.id.btnEditProfile);
+        textViewMobile = view.findViewById(R.id.textView_show_phone_number);
+        editProfileBtn=view.findViewById(R.id.btnEditProfileSave);
         signOutBtn=view.findViewById(R.id.btnSignOut);
 
 // Retrieve user data from Firebase Realtime Database and update TextViews
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         current_User = user.getUid();
-        databaseRef = FirebaseDatabase.getInstance().getReference().child("users");
+
+        databaseRef = FirebaseDatabase.getInstance().getReference().child("users").child(current_User);
 
 
-//        progressBar.setVisibility(View.VISIBLE);
-            //Extracting data from Database user table and setting
-        databaseRef.child(current_User).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+
+        databaseRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-
-                        if (task.isSuccessful()) {
-                            if (task.getResult().exists()) {
-//                                Toast.makeText( context: ReadData.this, text: "Successfully Read", Toast.LENGTH_SHORT).show();
-                                DataSnapshot dataSnapshot = task.getResult();
-                               firstName = String.valueOf(dataSnapshot.child("firstName").getValue());
-                            }else {
-//                                Toast.makeText( context: ReadData.this, text: "User Doesn't Exist", Toast.LENGTH_SHORT).show();
-                            }}}});
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
 
-                 textViewfirstName.setText(firstName);
+                    firstName = snapshot.child("firstName").getValue(String.class);
+                    lastName = snapshot.child("lastName").getValue(String.class);
+                    email = snapshot.child("email").getValue(String.class);
+                    address = snapshot.child("address").getValue(String.class);
+                    mobile = snapshot.child("phoneNumber").getValue(String.class);
+                // Update TextViews with user data
+                textViewfirstName.setText(firstName);
+                textViewLastName.setText(lastName);
+                textViewEmail.setText(email);
+                textViewMobile.setText(mobile);
+                textViewAddress.setText(address);
+                textViewfullname.setText(firstName+" "+lastName);
+            }
 
-                    textViewEmail.setText(email);
-//                  textViewMobile.setText(mobile);
-                    textViewAddress.setText(address);
-        textViewLastName.setText(lastName);
+
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        editProfileBtn.setOnClickListener((View v)->{
+
+            Bundle bundle=new Bundle();
+            bundle.putString("FNAME",firstName);
+            bundle.putString("LNAME",lastName);
+            bundle.putString("EMAIL",email);
+            bundle.putString("ADDRESS",address);
+            bundle.putString("MOBILE",mobile);
+
+            EditUserProfileFragment editUserProfileFragment = new EditUserProfileFragment();
+            editUserProfileFragment.setArguments(bundle);
+
+            FragmentManager fm = getParentFragmentManager();
+            FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+            // Replace the current fragment with the new one
+            fragmentTransaction.replace(R.id.barFrame, editUserProfileFragment);
+
+            // Add the transaction to the back stack
+            fragmentTransaction.addToBackStack(null);
+
+            // Commit the transaction
+            fragmentTransaction.commit();
+
+
+        });
+
+
+        signOutBtn.setOnClickListener((View v)->{
+             FirebaseAuth.getInstance().signOut();
+             Intent intent = new Intent(getActivity(), LoginActivity.class);
+             startActivity (intent);
+
+        });
+
 return view;
 
 
