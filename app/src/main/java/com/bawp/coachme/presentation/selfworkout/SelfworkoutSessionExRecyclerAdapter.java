@@ -1,3 +1,15 @@
+/**
+ * Class: SelfworkoutSessionExRecyclerAdapter.java
+ *
+ * Recycler Adapter that handles the display of each EXERCISE based on
+ * session already selected by the user
+ *
+ * Each element is going to be represented as a card element, and if the user
+ * select one it will go to the next fragment related to the exercise's detail fragment.
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
 package com.bawp.coachme.presentation.selfworkout;
 
 import android.content.Context;

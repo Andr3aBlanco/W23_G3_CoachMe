@@ -1,5 +1,15 @@
 package com.bawp.coachme.presentation.home;
 
+/**
+ * Class: HomeSelfWorkoutMktpRecyclerAdapter.java
+ *
+ * Recycler View Adapter that will handle all the generation of each selfworkout plan
+ * that must be in the marketplace
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.util.Log;

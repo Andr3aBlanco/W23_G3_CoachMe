@@ -1,5 +1,15 @@
 package com.bawp.coachme.presentation.order;
 
+/**
+ * Class: OrderHistoryRecyclerAdapter.java
+ *
+ * Recycler View Adapter that will handle all the generation of each past order element
+ * a user did in the past
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
+
 import android.content.Context;
 import android.graphics.Color;
 import android.view.Gravity;

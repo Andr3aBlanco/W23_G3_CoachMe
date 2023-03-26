@@ -1,22 +1,20 @@
+package com.bawp.coachme.presentation.order;
+
 /**
  * Class: OrdersFragment.java
  *
  * Class that display the order fragment where it holds the list of appointments
  * and self-workout plans a user wants to purchase.
  *
- * The information is going to be retrieved from the Firebase Database by looking for
- * the appointments and sel-workout plans that have status 1 (pending).
- *
  * @author Luis Miguel Miranda
  * @version 1.0
  */
-
-package com.bawp.coachme.presentation.order;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +38,7 @@ import com.bawp.coachme.model.SelfWorkoutPlan;
 import com.bawp.coachme.model.SelfWorkoutPlanByUser;
 import com.bawp.coachme.model.Trainer;
 import com.bawp.coachme.model.User;
+import com.bawp.coachme.presentation.home.HomeFragment;
 import com.bawp.coachme.utils.DBHelper;
 import com.bawp.coachme.utils.UserSingleton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -103,7 +102,6 @@ public class OrdersFragment extends Fragment {
             btnActionButton.setVisibility(View.VISIBLE);
         }
 
-        parentFragment = this;
         customerId = UserSingleton.getInstance().getUserId();
 
         txtViewSubTotal = view.findViewById(R.id.txtViewSubTotal);
@@ -121,31 +119,37 @@ public class OrdersFragment extends Fragment {
 
         orderList = new ArrayList<>();
         dbHelper = new DBHelper(getContext());
+
+        /*
+        Get the information of the current appointnments and selfworkout plans
+        from the user (pending to be paid)
+         */
         updateShoppingCart();
 
+        //Button to display the Order History
         btnOrderHistory.setOnClickListener(View -> {
+
             OrderHistoryFragment orderHistoryFragment = new OrderHistoryFragment();
 
             FragmentManager fm = getParentFragmentManager();
             FragmentTransaction fragmentTransaction = fm.beginTransaction();
-
-            // Replace the current fragment with the new one
             fragmentTransaction.replace(R.id.barFrame, orderHistoryFragment);
-
-            // Add the transaction to the back stack
             fragmentTransaction.addToBackStack(null);
-
-            // Commit the transaction
             fragmentTransaction.commit();
+
         });
 
+        //Based on the elements selected, this Button will move to the Checkout Fragment
         btnCheckout.setOnClickListener(View -> {
 
             if (totalPrice >= 1){
-                //Preparing data into Bundle object
+
                 Bundle paymentData = new Bundle();
                 paymentData.putDouble("totalAmount",totalPrice);
+
+                //Update the final List of Orders to be sent to the checkout
                 updateArrayListOrder();
+
                 paymentData.putStringArrayList("orderIdArray",orderIdArray);
                 paymentData.putIntegerArrayList("orderTypeArray",orderTypeArray);
 
@@ -154,28 +158,25 @@ public class OrdersFragment extends Fragment {
 
                 FragmentManager fm = getParentFragmentManager();
                 FragmentTransaction fragmentTransaction = fm.beginTransaction();
-
-                // Replace the current fragment with the new one
                 fragmentTransaction.replace(R.id.barFrame, orderPayOpt);
-
-                // Add the transaction to the back stack
                 fragmentTransaction.addToBackStack(null);
-
-                // Commit the transaction
                 fragmentTransaction.commit();
+
             }else{
+
                 Toast.makeText(getContext(),"Select at least 1 item",Toast.LENGTH_SHORT).show();
+
             }
 
 
         });
 
-        // Inflate the layout for this fragment
         return view;
     }
 
     private void updateShoppingCart(){
-        //Getting appointments pending to purchase
+
+        //1. Getting appointments pending to purchase
         List<Appointment> appointments = dbHelper.getAppointmentsByStatus(1);
 
         for (Appointment appObj : appointments){
@@ -194,7 +195,7 @@ public class OrdersFragment extends Fragment {
             subTotal += appObj.getTotalPrice();
         }
 
-        //Getting selfworkouts pending to purchase
+        //2. Getting selfworkouts pending to purchase
         List<SelfWorkoutPlanByUser> selfWorkoutPlanByUsers = dbHelper.getSelfWorkoutPlanByUserByStatus(1);
 
         for (SelfWorkoutPlanByUser swpByUser: selfWorkoutPlanByUsers){
@@ -215,8 +216,10 @@ public class OrdersFragment extends Fragment {
             llNoItemsInCart.setVisibility(View.VISIBLE);
         }
 
+        //updating the final price value
         calculateTotalPrice();
 
+        //create the recycler view and add the adapter
         orderListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         OrderListRecyclerAdapter orderListRecyclerAdapter = new OrderListRecyclerAdapter(orderList, getContext(),parentFragment);
         orderListRecyclerView.setAdapter(orderListRecyclerAdapter);
@@ -258,6 +261,32 @@ public class OrdersFragment extends Fragment {
                 orderTypeArray.add(order.getProductType());
             }
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(getView() == null){
+            return;
+        }
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                //In case we are tapping the back button, replace the fragment
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+                    FragmentManager fragmentManager = getParentFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.barFrame, new HomeFragment());
+                    fragmentTransaction.commit();
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
 }

@@ -1,3 +1,5 @@
+package com.bawp.coachme.utils;
+
 /**
  * Class: UserSingleton.java
  *
@@ -12,8 +14,6 @@
  * @author Luis Miguel Miranda
  * @version 1.0
  */
-
-package com.bawp.coachme.utils;
 
 public class UserSingleton {
 

@@ -18,6 +18,7 @@ import java.io.Serializable;
  * That means that a user must only complete one type per day.
  *
  * - sessionDate: date when the session has been started
+ * - sessionEndDate: date when the session has been ended
  * - sessionStatus: current status of the session
  *      -> 1: started
  *      -> 2: cancelled

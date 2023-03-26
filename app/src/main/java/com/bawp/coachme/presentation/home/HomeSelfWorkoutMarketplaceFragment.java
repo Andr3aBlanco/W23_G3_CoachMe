@@ -1,5 +1,15 @@
 package com.bawp.coachme.presentation.home;
 
+/**
+ * Class: HomeSelfWorkoutMarketplaceFragment.java
+ *
+ * Fragment with the list of self-workout plans available for the user.
+ *
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
+
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;

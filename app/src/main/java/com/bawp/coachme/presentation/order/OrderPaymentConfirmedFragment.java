@@ -1,3 +1,5 @@
+package com.bawp.coachme.presentation.order;
+
 /**
  * Class: OrderPaymentConfirmedFragment.java
  *
@@ -8,7 +10,6 @@
  * @author Luis Miguel Miranda
  * @version 1.0
  */
-package com.bawp.coachme.presentation.order;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

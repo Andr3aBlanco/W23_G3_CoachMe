@@ -1,3 +1,5 @@
+package com.bawp.coachme.presentation.order;
+
 /**
  * Class: OrderPaymentOptionsFragment.java
  *
@@ -11,16 +13,10 @@
  * using the Stripe SDK, then the PaymentSheet object is going to be constructed
  * (including the PaymentIntent object).
  *
- * Note:
- * -----
- * The customer id that comes from Stripe is going to be stored in the Users table in
- * Firebase Database (stripeCustomerId)
- *
  *
  * @author Luis Miguel Miranda
  * @version 1.0
  */
-package com.bawp.coachme.presentation.order;
 
 import android.os.Bundle;
 
@@ -149,13 +145,12 @@ public class OrderPaymentOptionsFragment extends Fragment {
         cvStripePaymentOption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Starting the payment intent from stripe
                 PaymentFlow();
             }
         });
 
         searchCustomerIdStripe();
-
-
 
         return view;
     }
@@ -169,9 +164,10 @@ public class OrderPaymentOptionsFragment extends Fragment {
                 currentCustomer = ds.child(UserSingleton.getInstance().getUserId()).getValue(User.class);
 
                 if (currentCustomer.getStripeCustomerId() == null){
-                    Log.d("STRIPE","HELLO");
+                    //get a new current customer ID from stripe
                     getStripeCustomerID();
                 }else{
+                    //if we have it, just get the Epherical Key directly
                     customerIDStripe = currentCustomer.getStripeCustomerId();
                     getEpherical(customerIDStripe);
                 }
@@ -190,8 +186,12 @@ public class OrderPaymentOptionsFragment extends Fragment {
                         try {
                             JSONObject object = new JSONObject(response);
                             customerIDStripe = object.getString("id");
+
+                            //storing the customerIDStripe into Users table in Firebase Database
                             currentCustomer.setStripeCustomerId(customerIDStripe);
                             userRef.child(UserSingleton.getInstance().getUserId()).setValue(currentCustomer);
+
+                            //now we can get the epherical Key
                             getEpherical(customerIDStripe);
 
                         } catch (JSONException e) {
@@ -238,6 +238,8 @@ public class OrderPaymentOptionsFragment extends Fragment {
                         try {
                             JSONObject object = new JSONObject(response);
                             EphericalKey = object.getString("id");
+
+                            //after getting the epherical key, we need to get the client secret key
                             getClientSecret(customerID,EphericalKey);
 
                         } catch (JSONException e) {
@@ -284,6 +286,8 @@ public class OrderPaymentOptionsFragment extends Fragment {
                         try {
                             JSONObject object = new JSONObject(response);
                             ClientSecret = object.getString("client_secret");
+
+                            //Now that we have all the keys, we can display the options (we only have Stripe, for now)
                             pbPaymentOption.setVisibility(View.GONE);
                             llOrderLayoutPaymentOption.setVisibility(View.VISIBLE);
 
@@ -372,10 +376,12 @@ public class OrderPaymentOptionsFragment extends Fragment {
             }
         }
 
+        //Let's update the appointments that we've paid
         if (numAppointmentsToPay > 0){
             DatabaseReference appRef = CoachMeDatabaseRef.child("appointments");
             List<Task<DataSnapshot>> tasks = new ArrayList<>();
             tasks.add(appRef.get());
+
             // Create a new task that completes when all tasks in the list complete successfully
             Task<List<DataSnapshot>> allTasks = Tasks.whenAllSuccess(tasks);
 
@@ -405,9 +411,8 @@ public class OrderPaymentOptionsFragment extends Fragment {
 
                         }
 
-                        //Send the Notification to the Database
+                        //Send the Notification to the Database (OrderNotification)
                         sendNotificationTrigger();
-
 
                     }else{
                         // At least one task failed
@@ -422,6 +427,16 @@ public class OrderPaymentOptionsFragment extends Fragment {
         }
     }
 
+    /*
+    This method will send a new row in the OrderNotification table in
+    Firebase Database. When a new row is created, there is a Google Cloud Function
+    created that will capture that message and send the message to the device
+    via FCM (Firebase Cloud Messaging)
+
+    In the CoachMe App there is a service called CoachMeFirebaseMessagingService.
+    This is our "manager" that will handle all the messages coming from the server (FCM in
+    this case).
+     */
     private void sendNotificationTrigger(){
 
         triggerNotificationRef = CoachMeDatabaseRef.child("orderNotifications");
@@ -432,19 +447,12 @@ public class OrderPaymentOptionsFragment extends Fragment {
                 UserSingleton.getInstance().getUserDeviceToken());
         triggerNotificationRef.push().setValue(newNotification);
 
-        //Move to Cart Detail
         OrderPaymentConfirmedFragment orderConfirmedFragment = new OrderPaymentConfirmedFragment();
 
         FragmentManager fm = getParentFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
-
-        // Replace the current fragment with the new one
         fragmentTransaction.replace(R.id.barFrame, orderConfirmedFragment);
-
-        // Add the transaction to the back stack
         fragmentTransaction.addToBackStack(null);
-
-        // Commit the transaction
         fragmentTransaction.commit();
 
 

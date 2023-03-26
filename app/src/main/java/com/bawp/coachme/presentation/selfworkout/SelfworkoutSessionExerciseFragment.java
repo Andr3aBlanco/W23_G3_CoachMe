@@ -1,3 +1,14 @@
+/**
+ * Class: SelfworkoutSessionExerciseFragment.java
+ *
+ * Fragment that will display the list of exercises available for the user
+ * based on the session he/she selected before
+ *
+ * It contains a progress bar to see the current progress of the session.
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
 package com.bawp.coachme.presentation.selfworkout;
 
 import android.os.Bundle;
@@ -10,12 +21,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.bawp.coachme.MainActivity;
 import com.bawp.coachme.R;
@@ -155,6 +168,8 @@ public class SelfworkoutSessionExerciseFragment extends Fragment {
         pbSelfworkoutSessionExercises.setVisibility(View.GONE);
         llSelfworkoutSessionExercises.setVisibility(View.VISIBLE);
 
+        validateIfSessionIsCompleted();
+
         return view;
     }
 
@@ -172,5 +187,96 @@ public class SelfworkoutSessionExerciseFragment extends Fragment {
         pbSessionProgress.setProgress(currentProgress);
         pbSessionProgress.setMax(totalExercises);
 
+    }
+
+    private void validateIfSessionIsCompleted(){
+
+        boolean allExercisesCompleted = true;
+        for (SelfWorkoutSessionLog log: exercisesLog){
+            if (log.getSessionExerciseStatus() != 3){
+                allExercisesCompleted = false;
+                break;
+            }
+        }
+
+        if (allExercisesCompleted){
+
+            //Moving to the Session Completed Fragment
+            SelfWorkoutSession session = dbHelper.getSessionById(sessionId);
+
+            //update the session as finished
+            int numUpdatedRows = dbHelper.updateSelfWorkoutSessionCompleted(sessionId);
+            if (numUpdatedRows > 0){
+                int selfWorkoutPlanUser = session.getSelfWorkoutPlanByUser().getId();
+                Bundle dataToPass = new Bundle();
+                dataToPass.putInt("selfWorkoutPlanUser",selfWorkoutPlanUser);
+
+                SelfworkoutSessionCompletedFragment selfworkoutSessionCompletedFragment = new SelfworkoutSessionCompletedFragment();
+                selfworkoutSessionCompletedFragment.setArguments(dataToPass);
+
+                FragmentManager fm = getParentFragmentManager();
+                FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+                // Replace the current fragment with the new one
+                fragmentTransaction.replace(R.id.barFrame, selfworkoutSessionCompletedFragment);
+
+                fragmentTransaction.commit();
+
+            }else{
+                Toast.makeText(getContext(),"ERROR in DATABASE",Toast.LENGTH_SHORT).show();
+            }
+
+        }
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(getView() == null){
+            return;
+        }
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+                    SelfWorkoutSession currentSession = dbHelper.getSessionById(sessionId);
+
+                    SelfWorkoutSessionType sessionType = currentSession.getSelfworkoutSessionType();
+                    SelfWorkoutPlan selfWorkoutPlan = sessionType.getSelfWorkoutPlan();
+                    List<SelfWorkoutSessionType> selfWorkoutSessionTypes = dbHelper.getSessionTypesByPlanId(selfWorkoutPlan.getId());
+                    boolean isNewSession = false;
+                    int selfworkoutUserId = currentSession.getSelfWorkoutPlanByUser().getId();
+
+                    Bundle passDataToFragment = new Bundle();
+                    passDataToFragment.putSerializable("sessionTypesList",(Serializable) selfWorkoutSessionTypes);
+                    passDataToFragment.putSerializable("sessionObj",(Serializable) currentSession ) ;
+                    passDataToFragment.putSerializable("workoutUserId",selfworkoutUserId ) ;
+                    passDataToFragment.putBoolean("isNewSession",isNewSession);
+
+                    SelfworkoutSessionTypeFragment selfworkoutSessionTypeFragment = new SelfworkoutSessionTypeFragment();
+                    selfworkoutSessionTypeFragment.setArguments(passDataToFragment);
+
+                    FragmentManager fm = getParentFragmentManager();
+                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+                    // Replace the current fragment with the new one
+                    fragmentTransaction.replace(R.id.barFrame, selfworkoutSessionTypeFragment);
+
+                    // Add the transaction to the back stack
+                    fragmentTransaction.addToBackStack("self-workout-session-types-options");
+
+                    // Commit the transaction
+                    fragmentTransaction.commit();
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 }

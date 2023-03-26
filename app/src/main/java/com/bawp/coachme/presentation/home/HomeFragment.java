@@ -3,6 +3,7 @@ package com.bawp.coachme.presentation.home;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,18 @@ import com.google.firebase.storage.FirebaseStorage;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class: HomeFragment.java
+ *
+ * Main fragment after the loading splash screen finished. It has the list
+ * of current appointments and self-workout plans purchased.
+ *
+ * A user can book new appointments, see previous appointments, buy new
+ * self-workout plans and see the detail of each item (appointments & self-workout plans)
+ *
+ * @author Luis Miguel Miranda / Andrea Blanco
+ * @version 1.0
+ */
 
 public class HomeFragment extends Fragment {
 
@@ -186,6 +199,29 @@ public class HomeFragment extends Fragment {
 
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(getView() == null){
+            return;
+        }
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
 }

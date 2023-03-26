@@ -1,5 +1,15 @@
 package com.bawp.coachme.presentation.order;
 
+/**
+ * Class: OrderListRecyclerAdapter.java
+ *
+ * Recycler View Adapter that will handle all the operations related to each
+ * order item (including the visualization in the fragment)
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;

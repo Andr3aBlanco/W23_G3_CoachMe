@@ -1,5 +1,15 @@
 package com.bawp.coachme.utils;
 
+/**
+ * Class: DBHelper.java
+ *
+ * Class that will hold all the database operations for the app
+ *
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
+
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
