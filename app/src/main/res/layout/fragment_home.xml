@@ -28,17 +28,68 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:id="@+id/llHomeFragmentLayout"
+            android:paddingBottom="100dp"
             >
 
-            <TextView
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="200dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/home_topbar_image"/>
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="20dp"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/poppins_bold"
+                    android:text="WELCOME TO COACHME!"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginBottom="10dp"
+                    />
+
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="18dp"
-                android:textColor="#200E32"
-                android:text="CURRENT APPOINTMENTS"
+                android:layout_height="150dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginHorizontal="20dp"
-                android:fontFamily="@font/poppins_semibold"/>
+                >
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/appointments_lists_image"
+                        android:scaleType="fitXY"
+                        android:background="@drawable/rounded_corner_background">
+
+                    </ImageView>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="18dp"
+                        android:textColor="@color/white"
+                        android:layout_marginRight="10dp"
+                        android:text="CURRENT APPOINTMENTS"
+                        android:textAlignment="textEnd"
+                        android:fontFamily="@font/poppins_semibold"/>
+
+                </androidx.cardview.widget.CardView>
+
+            </RelativeLayout>
 
             <!--
                 LinearLayout to display no appointments coming
@@ -98,15 +149,43 @@
 
             </LinearLayout>
 
-            <TextView
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="18dp"
-                android:text="WORKOUT PLANS"
-                android:textColor="#200E32"
+                android:layout_height="150dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginHorizontal="20dp"
-                android:fontFamily="@font/poppins_semibold"/>
+                >
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/selfworkout_lists_image"
+                        android:scaleType="fitXY"
+                        android:background="@drawable/rounded_corner_background">
+
+                    </ImageView>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="18dp"
+                        android:textColor="@color/white"
+                        android:layout_marginRight="10dp"
+                        android:text="SELF-WORKOUT PLANS"
+                        android:textAlignment="textEnd"
+                        android:fontFamily="@font/poppins_semibold"/>
+
+                </androidx.cardview.widget.CardView>
+
+            </RelativeLayout>
+
+
+
 
             <!--
                 LinearLayout to display no appointments coming

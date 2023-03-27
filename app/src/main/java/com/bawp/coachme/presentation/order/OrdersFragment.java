@@ -102,6 +102,8 @@ public class OrdersFragment extends Fragment {
             btnActionButton.setVisibility(View.VISIBLE);
         }
 
+        parentFragment = this;
+
         customerId = UserSingleton.getInstance().getUserId();
 
         txtViewSubTotal = view.findViewById(R.id.txtViewSubTotal);
