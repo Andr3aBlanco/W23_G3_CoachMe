@@ -9,7 +9,8 @@
         android:icon="@drawable/baseline_insert_chart_outlined_24"/>
     <item android:title=""
         android:id="@+id/menu_add"
-        android:icon="@drawable/baseline_add_24"/>
+        android:icon="@drawable/baseline_add_24"
+        android:iconTint="#6B66C7"/>
     <item android:title="@string/ordersTitle"
         android:id="@+id/menu_orders"
         android:icon="@drawable/baseline_receipt_24"/>

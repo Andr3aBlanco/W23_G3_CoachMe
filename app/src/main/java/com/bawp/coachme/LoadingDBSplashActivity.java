@@ -1,5 +1,18 @@
 package com.bawp.coachme;
 
+/**
+ * Class: LoadingDBSplashActivity.java
+ *
+ * This activity will be displayed after a successful log-in. When we start this activity
+ * the app is doing the following:
+ * 1. Get the Device Token and store it into the UserSingleton class
+ * 2. Populate the database. If the database is empty (or doesn't exist) it will get the files
+ * from Firebase Storage and get the information.
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -154,8 +167,6 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
 
                     } else {
                         // The database was already created, so onCreate has already finished
-                        Log.d("HELLO","MOVE");
-
                         moveToMainActivity();
                     }
                 });

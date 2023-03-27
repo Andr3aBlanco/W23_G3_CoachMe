@@ -1,5 +1,15 @@
 package com.bawp.coachme.presentation.home;
 
+/**
+ * Class: HomeAppRecyclerAdapter.java
+ *
+ * Recycler View Adapter that will handle all the generation of each current
+ * appointment a user has purchased and didn't occur yet.
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;

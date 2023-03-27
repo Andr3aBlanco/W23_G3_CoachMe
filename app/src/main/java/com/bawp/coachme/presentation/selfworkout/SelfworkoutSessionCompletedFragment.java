@@ -1,3 +1,11 @@
+/**
+ * Class: SelfworkoutSessionCompletedFragment.java
+ *
+ * Fragment that will display an animation when the entire session has been completed
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
 package com.bawp.coachme.presentation.selfworkout;
 
 import android.animation.Animator;
@@ -9,6 +17,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +27,7 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.bawp.coachme.R;
 import com.bawp.coachme.model.SelfWorkoutSession;
 import com.bawp.coachme.model.SelfWorkoutSessionLog;
+import com.bawp.coachme.presentation.order.OrdersFragment;
 import com.bawp.coachme.utils.DBHelper;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -42,6 +52,13 @@ public class SelfworkoutSessionCompletedFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_selfworkout_session_completed, container, false);
+
+        //Hiding the nav bar
+        BottomAppBar btnNavigationAppBar =  getActivity().findViewById(R.id.bottomNavBarWrapper);
+        btnNavigationAppBar.setVisibility(View.GONE);
+
+        FloatingActionButton btnActionButton = getActivity().findViewById(R.id.floatingAdd);
+        btnActionButton.setVisibility(View.GONE);
 
         // Inflate the layout for this fragment
         LottieAnimationView animationView = view.findViewById(R.id.animation_view);
@@ -87,5 +104,27 @@ public class SelfworkoutSessionCompletedFragment extends Fragment {
         animationView.playAnimation();
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(getView() == null){
+            return;
+        }
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 }

@@ -1,3 +1,15 @@
+/**
+ * Class: Payment.java
+ *
+ * Class that will store the payment information based on an order
+ *
+ * Fields:
+ * - paymentId: id associated to the payment intent id from stripe
+ * - paymentDate: payment date
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
 package com.bawp.coachme.model;
 
 import java.io.Serializable;

@@ -1,5 +1,15 @@
 package com.bawp.coachme.presentation.order;
 
+/**
+ * Class: OrderHistoryFragment.java
+ *
+ * Fragment that will show the entire list of Orders. Each
+ * order element is going to be displayed thanks to the OrderHistoryRecyclerAdapter class
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
+
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;

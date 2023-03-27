@@ -1,5 +1,15 @@
 package com.bawp.coachme.presentation.home;
 
+/**
+ * Class: HomeSwpRecyclerAdapter.java
+ *
+ * Recycler View Adapter that will handle all the generation of each current
+ * self-workout plan a user has purchased.
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
+
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;

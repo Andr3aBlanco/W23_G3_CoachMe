@@ -19,8 +19,9 @@
  * - customerId: id of the customer (comes from the Users table)
  * - paymentDate: date when the user paid for the self-workout plan
  * - paymentId: payment id (payment intent id from Stripe)
+ * - deviceToken: device token to send a notification when the status changes
  *
- * @author Luis Miguel Miranda
+ * @author Luis Miguel Miranda / Andrea Blanco
  * @version 1.0
  */
 package com.bawp.coachme.model;

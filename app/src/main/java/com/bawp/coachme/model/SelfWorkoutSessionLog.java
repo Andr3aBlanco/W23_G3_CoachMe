@@ -9,7 +9,7 @@ import java.io.Serializable;
  *
  * Fields:
  * - selfWorkoutSessionId
- * - exerciseId
+ * - selfworkoutExercise
  * - sessionExerciseStatus: current status of the session's exercise
  *      -> 1: started
  *      -> 2: cancelled

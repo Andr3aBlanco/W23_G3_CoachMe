@@ -26,7 +26,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
-            android:background="@android:color/transparent"
+            app:itemIconTint="@drawable/bottom_nav_item_color"
+            app:itemTextColor="@drawable/bottom_nav_item_color"
             app:labelVisibilityMode="labeled"
             app:menu="@menu/bottom_nav_menu" />
 
@@ -38,9 +39,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="2dp"
-        android:backgroundTint="@color/purple_700"
+        android:backgroundTint="#6B66C7"
         android:contentDescription="@string/navBarAddButton"
-        android:foregroundTint="@color/barColor"
+        android:foregroundTint="@color/white"
         android:scaleType="center"
         app:layout_anchor="@+id/bottomNavBarWrapper"
         app:layout_anchorGravity="bottom"

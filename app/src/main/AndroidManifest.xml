@@ -17,6 +17,10 @@
         android:theme="@style/Theme.CoachMe"
         android:enableOnBackInvokedCallback="true"
         tools:targetApi="31">
+
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/baseline_fitness_center_24" />
+
         <activity
             android:name=".presentation.user.Current_Location_Activity"
             android:exported="false" />
