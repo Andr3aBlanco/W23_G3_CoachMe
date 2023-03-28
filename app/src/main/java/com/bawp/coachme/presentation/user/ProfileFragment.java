@@ -1,14 +1,17 @@
-package com.bawp.coachme;
+package com.bawp.coachme.presentation.user;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
 
+import com.bawp.coachme.R;
 
-public class StatsFragment extends Fragment {
+
+public class ProfileFragment extends Fragment {
 
 //    // TODO: Rename parameter arguments, choose names that match
 //    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -19,7 +22,7 @@ public class StatsFragment extends Fragment {
 //    private String mParam1;
 //    private String mParam2;
 //
-//    public StatsFragment() {
+//    public ProfileFragment() {
 //        // Required empty public constructor
 //    }
 //
@@ -29,11 +32,11 @@ public class StatsFragment extends Fragment {
 //     *
 //     * @param param1 Parameter 1.
 //     * @param param2 Parameter 2.
-//     * @return A new instance of fragment StatsFragment.
+//     * @return A new instance of fragment ProfileFragment.
 //     */
 //    // TODO: Rename and change types and number of parameters
-//    public static StatsFragment newInstance(String param1, String param2) {
-//        StatsFragment fragment = new StatsFragment();
+//    public static ProfileFragment newInstance(String param1, String param2) {
+//        ProfileFragment fragment = new ProfileFragment();
 //        Bundle args = new Bundle();
 //        args.putString(ARG_PARAM1, param1);
 //        args.putString(ARG_PARAM2, param2);
@@ -49,11 +52,15 @@ public class StatsFragment extends Fragment {
 //            mParam2 = getArguments().getString(ARG_PARAM2);
 //        }
 //    }
-
+Button signOutBtn;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_stats, container, false);
+//        signOutBtn= container.findViewById(R.id.);
+
+        return inflater.inflate(R.layout.fragment_profile, container, false);
+
+
     }
 }

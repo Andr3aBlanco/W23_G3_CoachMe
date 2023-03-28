@@ -15,6 +15,8 @@ EditText txtAddress;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        // this is not needed  - I have it in the trainer search
+        // get current location or from address and store in databse
         super.onCreate(savedInstanceState);
         btn_location=findViewById(R.id.txtGetCurrentLocation);
         txtAddress=findViewById(R.id.txtAddress);

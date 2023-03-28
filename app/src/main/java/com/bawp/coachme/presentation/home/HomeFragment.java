@@ -198,7 +198,7 @@ public class HomeFragment extends Fragment {
         });
 
 
-        return view;
+        return view; // chnage this back to view
     }
 
     @Override

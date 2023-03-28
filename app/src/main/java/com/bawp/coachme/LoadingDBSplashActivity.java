@@ -26,6 +26,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.bawp.coachme.model.User;
 import com.bawp.coachme.presentation.order.OrdersFragment;
 import com.bawp.coachme.utils.DBHelper;
 import com.bawp.coachme.utils.UserSingleton;
@@ -103,6 +104,9 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                     DatabaseReference usersRef = database.child("users");
                     txtViewLoadingText.setText("Setting up user account...");
                     UserSingleton.getInstance().setUserDeviceToken(token);
+
+                    // Set id
+                    UserSingleton.getInstance().setUserId("-NOjpL1jiGcc80qBrFIl"); // modificar despu[es
                     usersRef.child(UserSingleton.getInstance().getUserId()).child("deviceToken").setValue(token);
 
                     DBHelper dbHelper = new DBHelper(this);
