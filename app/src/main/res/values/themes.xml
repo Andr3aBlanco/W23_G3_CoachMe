@@ -21,11 +21,10 @@
     <style name="CalendarDateGrayedOut">
         <item name="android:textColor">@color/black</item>
     </style>
-    <style name="appointmentCardView" parent="Widget.MaterialComponents.CardView">
+    <style name="appointmentCardView">
         <item name="cardBackgroundColor">#FFF9f9f9</item>
         <item name="cardCornerRadius">10dp</item>
-        <item name="cardElevation">5dp</item>
-        <item name="cardMaxElevation">5dp</item>
+        <item name="cardElevation">8dp</item>
         <item name="cardUseCompatPadding">false</item>
         <item name="contentPadding">4dp</item>
         <item name="android:layout_marginTop">6dp</item>
@@ -36,7 +35,6 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:background">#2C0066</item>
         <item name="android:strokeColor">#6B66C7</item>
-        <item name="strokeWidth">2dp</item>
     </style>
     <style name="filledButtonCM" parent="Widget.Material3.Button.ElevatedButton.Icon">
       <item name="android:backgroundTint">#6B66C7</item>

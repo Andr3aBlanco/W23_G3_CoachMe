@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rlAppHistoryFeedback"
-    style="@style/appointmentCardView"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#E0F2F1">
+    android:minHeight="100dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="8dp"
+    app:strokeColor="#6B66C7"
+    app:strokeWidth="2dp"
+    android:layout_margin="10dp"
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -15,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="100dp"
-            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="5dp"
             android:text="TextView" />
@@ -23,8 +29,8 @@
 
         <RatingBar
             android:id="@+id/ratingOne"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="20dp"
@@ -36,6 +42,7 @@
             android:isIndicator="true"
             android:backgroundTint="@color/teal_200"
             android:background="@color/transparent"
+            android:progressDrawable="@drawable/baseline_offline_bolt_24"
             />
 
         <Button
@@ -55,15 +62,22 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/ratingCard"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        app:cardElevation="8dp"
+        app:strokeColor="#6B66C7"
+        app:strokeWidth="2dp"
         android:visibility="gone">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
         <RatingBar
             android:id="@+id/ratingFive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|top"
+            android:layout_centerHorizontal="true"
             android:isIndicator="false"
             android:numStars="5"
             android:rating="0"
@@ -73,12 +87,13 @@
 
         <EditText
             android:id="@+id/txtAppDateRV"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="10dp"
+            android:layout_below="@id/ratingFive"
             android:layout_gravity="center_vertical|left"
-            android:layout_marginBottom="1dp"
-            android:layout_marginLeft="5dp"
             android:text=""
+            android:background="@color/white"
             android:hint="My session was ..."/>
 
 
@@ -86,12 +101,17 @@
         <com.google.android.material.button.MaterialButton
             style="@style/filledButtonCM"
             android:id="@+id/btnSubmitReview"
-            android:layout_height="30dp"
+            android:layout_height="40dp"
             android:layout_width="120dp"
-            android:layout_marginBottom="1dp"
-            android:layout_gravity="center_horizontal|bottom"
-            android:text="SUBMIT"/>
+            android:layout_below="@id/txtAppDateRV"
+            android:layout_margin="4dp"
+            android:layout_centerHorizontal="true"
+            app:cornerRadius="4dp"
+            android:textSize="12dp"
+            android:text="SUBMIT"
+            />
+        </RelativeLayout>
 
     </androidx.cardview.widget.CardView>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>
