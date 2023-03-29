@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        replaceFragment(new StatsFragment()); // chnage back to home
+        replaceFragment(new HomeFragment()); // chnage back to home
         fragmentBinding();
     }
 
