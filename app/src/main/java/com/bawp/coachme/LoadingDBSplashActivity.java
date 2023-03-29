@@ -106,7 +106,7 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                     UserSingleton.getInstance().setUserDeviceToken(token);
 
                     // Set id
-                    UserSingleton.getInstance().setUserId("-NOjpL1jiGcc80qBrFIl"); // modificar despu[es
+                    //UserSingleton.getInstance().setUserId("-NOjpL1jiGcc80qBrFIl");
                     usersRef.child(UserSingleton.getInstance().getUserId()).child("deviceToken").setValue(token);
 
                     DBHelper dbHelper = new DBHelper(this);
