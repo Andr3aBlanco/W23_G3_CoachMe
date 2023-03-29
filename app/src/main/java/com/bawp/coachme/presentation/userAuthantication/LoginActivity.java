@@ -1,10 +1,14 @@
-package com.bawp.coachme.presentation.user;
+package com.bawp.coachme.presentation.userAuthantication;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.compose.ui.text.font.FontVariation;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
@@ -24,11 +28,16 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
-
+    String myDeviceId;
     Button logInBtn;
-
+    CountDownTimer countDownTimer;
     FirebaseAuth mAuth;
     ImageView googleLoginBtn;
     ImageView fbLoginBtn;
@@ -37,6 +46,10 @@ public class LoginActivity extends AppCompatActivity {
     EditText passwordtxt;
     TextView goToRegister, txtforgotpass;
     ProgressBar porgBar;
+    private String myDeviceToken;
+    FirebaseUser user;
+    String current_User=null;
+    DatabaseReference databaseRef;
 
     @Override
     public void onStart() {
@@ -56,6 +69,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_in);
         mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
         googleLoginBtn = findViewById(R.id.imageGoogleAuth);
         usernametxt = findViewById(R.id.txtusername);
         passwordtxt = findViewById(R.id.txtpassword);
@@ -64,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         logInBtn = findViewById(R.id.btnLogin);
         fbLoginBtn = findViewById(R.id.imageFacebookAuth);
         txtforgotpass = findViewById(R.id.txtForgotPassword);
-
+        myDeviceToken= Settings.Secure.getString(this.getContentResolver(),Settings.Secure.ANDROID_ID);
         // sending user to create new account page
         goToRegister.setOnClickListener((View view) -> {
             Intent regIntent = new Intent(LoginActivity.this, RegisterActivity.class);
@@ -119,18 +133,19 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
+
                                 // Sign in success, update UI with the signed-in user's information
                                 Toast.makeText(LoginActivity.this, "Loged in",
                                         Toast.LENGTH_SHORT).show();
                                 // starting new Activity when user id password is correct send them to main
                                 // activity
-                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                Intent intent = new Intent(getApplicationContext(), NewUserForm.class);
                                 startActivity(intent);
                                 finish();
                             } else {
                                 // If sign in fails, display a message to the user.
 
-                                Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                Toast.makeText(LoginActivity.this, "Please check your Id and password",
                                         Toast.LENGTH_SHORT).show();
 
                             }
@@ -138,5 +153,7 @@ public class LoginActivity extends AppCompatActivity {
                     });
 
         });
+
     }
+
 }

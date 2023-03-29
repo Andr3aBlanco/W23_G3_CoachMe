@@ -1,4 +1,4 @@
-package com.bawp.coachme.presentation.user;
+package com.bawp.coachme.presentation.userAuthantication;
 
 import android.os.Bundle;
 

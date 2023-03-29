@@ -1,4 +1,4 @@
-package com.bawp.coachme.presentation.user;
+package com.bawp.coachme.presentation.userAuthantication;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,15 +14,13 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.provider.Settings;
 import android.text.TextUtils;
-import android.util.Patterns;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -45,7 +42,6 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -59,39 +55,36 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import adapter.PlaceAutoSuggestionAdapter;
-
 public class NewUserForm extends AppCompatActivity {
     EditText firstNameTxt;
     EditText lastNameTxt;
     EditText addressTxt;
+    EditText emailTxt;
     EditText phoneNumberTxt;
-    FusedLocationProviderClient fusedLocationProviderClient;
-    private final static int REQUEST_CODE = 100;
-    String emailTxt;
-
     Button confirmDataBtn;
     FirebaseAuth auth;
 Button btnCurrent_location;
     FirebaseUser user;
     String current_User;
-    String fname;
-    String lname;
-    String phonenum;
-private String city;
-    Button btn;
+
+    String mDeviceToken;
+    String myDeviceToken;
+
     DatabaseReference databaseRef;
     private LocationRequest locationRequest;
     private Geocoder geocoder;
     List<Address> addresses=null;
     public void onStart() {
         super.onStart();
+        mDeviceToken= Settings.Secure.getString(this.getContentResolver(),Settings.Secure.ANDROID_ID);
+        current_User=user.getUid();
         databaseRef = FirebaseDatabase.getInstance().getReference().child("users").child(current_User);
+        databaseRef.child("userDeviceToken").setValue(mDeviceToken);
         databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
+                if (snapshot.child("firseName").exists()) {
                      //user exists
 
                      //here i have to change to main activity when i create one
@@ -101,6 +94,7 @@ private String city;
                      finish();
                 }
             };
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -118,17 +112,16 @@ private String city;
         user = auth.getCurrentUser();
         // saving current user ID
         current_User = user.getUid();
-
+        myDeviceToken= Settings.Secure.getString(this.getContentResolver(),Settings.Secure.ANDROID_ID);
         // creating database reference
         databaseRef = FirebaseDatabase.getInstance().getReference().child("users").child(current_User);
         confirmDataBtn = findViewById(R.id.btnConfirm);
         firstNameTxt = findViewById(R.id.txtFirstName);
         lastNameTxt = findViewById(R.id.txtLastName);
+        emailTxt=findViewById(R.id.txt_email_new_UF);
         btnCurrent_location=findViewById(R.id.txtGetCurrentLocation);
-
         addressTxt = findViewById(R.id.txtAddress);
         phoneNumberTxt = findViewById(R.id.txtPhoneNumber);
-
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(5000);
@@ -140,46 +133,45 @@ private String city;
             finish();
 
         } else {
-            emailTxt = user.getEmail();
-            fname = user.getDisplayName();
-            phonenum = user.getPhoneNumber();
-            firstNameTxt.setText(fname);
-            phoneNumberTxt.setText(phonenum);
-
+//          String tempemail= user.getEmail().toString();
+//          if(!tempemail.equals(null))
+//            emailTxt.setText(tempemail);
         }
        //getting current location
-btnCurrent_location.setOnClickListener((View v)-> {
-getCurrentLocation();
-});
+        btnCurrent_location.setOnClickListener((View v)-> {
+        getCurrentLocation();
+        });
         confirmDataBtn.setOnClickListener((View v) -> {
 
 
-            String Fname, Lname, address, phoneNumber;
+            String dbFirstname, dbLastname, dbAddress, dbPhoneNumber,dbEmail;
 
             // creating role as a customer ID=1 and role customer
             Role newRole = new Role(1, "Customer");
-            Fname = String.valueOf(firstNameTxt.getText());
-            Lname = String.valueOf(lastNameTxt.getText());
-            phoneNumber = String.valueOf(phoneNumberTxt.getText());
-            address = String.valueOf(addressTxt.getText());
+            dbFirstname = String.valueOf(firstNameTxt.getText());
+            dbLastname = String.valueOf(lastNameTxt.getText());
+            dbPhoneNumber = String.valueOf(phoneNumberTxt.getText());
+            dbAddress = String.valueOf(addressTxt.getText());
+            dbEmail= String.valueOf(emailTxt.getText());
 
-
-            if (TextUtils.isEmpty(Fname)) {
+            if (TextUtils.isEmpty(dbFirstname)) {
                 Toast.makeText(NewUserForm.this, "Please Enter first name", Toast.LENGTH_SHORT).show();
                 return;
+            }if (TextUtils.isEmpty(dbEmail)) {
+                Toast.makeText(NewUserForm.this, "Please Enter Email", Toast.LENGTH_SHORT).show();
+                return;
             }
-
-            if (TextUtils.isEmpty(Lname)) {
+            if (TextUtils.isEmpty(dbLastname)) {
                 Toast.makeText(NewUserForm.this, "Please Enter last name", Toast.LENGTH_SHORT).show();
                 return;
-            }if (TextUtils.isEmpty(address)) {
+            }if (TextUtils.isEmpty(dbAddress)) {
                 Toast.makeText(NewUserForm.this, "Please Enter address", Toast.LENGTH_SHORT).show();
                 return;
-            }if (TextUtils.isEmpty(phoneNumber)) {
+            }if (TextUtils.isEmpty(dbPhoneNumber)) {
                 Toast.makeText(NewUserForm.this, "Please Enter phone number", Toast.LENGTH_SHORT).show();
                 return;
             }
-            User newUser = new User(Fname, Lname, emailTxt, address, phoneNumber, newRole);
+         UserSingleton newUser= new UserSingleton(current_User,myDeviceToken,dbFirstname,dbLastname,dbEmail,dbPhoneNumber,dbAddress);
 
             //Because the user is a new user, let's add it into firebase
             databaseRef.setValue(newUser).addOnCompleteListener(new OnCompleteListener<Void>() {

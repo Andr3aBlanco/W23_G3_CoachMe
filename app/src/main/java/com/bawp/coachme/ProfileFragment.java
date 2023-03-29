@@ -15,10 +15,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.bawp.coachme.presentation.order.OrderHistoryFragment;
-import com.bawp.coachme.presentation.order.OrdersFragment;
-import com.bawp.coachme.presentation.user.EditUserProfileFragment;
-import com.bawp.coachme.presentation.user.LoginActivity;
+import com.bawp.coachme.presentation.userAuthantication.EditUserProfileFragment;
+import com.bawp.coachme.presentation.userAuthantication.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -80,7 +78,6 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-
                     firstName = snapshot.child("firstName").getValue(String.class);
                     lastName = snapshot.child("lastName").getValue(String.class);
                     email = snapshot.child("email").getValue(String.class);
@@ -136,6 +133,8 @@ public class ProfileFragment extends Fragment {
              FirebaseAuth.getInstance().signOut();
              Intent intent = new Intent(getActivity(), LoginActivity.class);
              startActivity (intent);
+            getActivity().finish();
+
 
         });
 
