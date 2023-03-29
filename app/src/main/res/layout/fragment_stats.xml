@@ -3,9 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/purple_200"
-    tools:context=".StatsFragment">
+    android:background="@color/cm_colorOnSecondary"
+    tools:context=".presentation.stats.StatsFragment">
 
+    <WebView
+        android:id="@+id/chartWebView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_margin="4dp"/>
+
+    <WebView
+        android:id="@+id/barChart"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginTop="300dp"/>
 
 
 </FrameLayout>
