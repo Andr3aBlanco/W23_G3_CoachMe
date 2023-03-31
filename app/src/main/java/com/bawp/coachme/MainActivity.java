@@ -54,9 +54,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fragmentBinding(){
-//when user log in to other device we will update device token and sign out from the last device
-
-
 
         //bind
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -119,9 +116,9 @@ public class MainActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
         current_User = user.getUid();
         databaseRef = FirebaseDatabase.getInstance().getReference().child("users").child(current_User);
-        myDeviceId= Settings.Secure.getString(this.getContentResolver(),Settings.Secure.ANDROID_ID);
 
-        countDownTimer = new CountDownTimer(3000, 1000) {
+
+        countDownTimer = new CountDownTimer(30000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
             }
@@ -132,11 +129,11 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                        String deviceToken = snapshot.child("userDeviceToken").getValue(String.class);
+                        String deviceToken = snapshot.child("deviceToken").getValue(String.class);
                         FirebaseUser currentUser = mAuth.getCurrentUser();
-                        if (!deviceToken.equals(myDeviceId)){
+                        if (!deviceToken.equals(UserSingleton.getInstance().getUserDeviceToken())){
                             FirebaseAuth.getInstance().signOut();
-//                            showAlert("Logging out");
+
 
                             Intent intent=new Intent(MainActivity.this, LoginActivity.class);
                             startActivity(intent);
@@ -155,12 +152,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }.start();
     };
-//    private void showAlert(String logging_out) {
-//        AlertDialog. Builder builder = new AlertDialog. Builder( this);
-//        builder.setTitle("Logout")
-//                .setMessage(logging_out)
-//                .setCancelable(false)
-//                .show();
-//        AlertDialog alertDialog = builder.create();
-//        alertDialog.show();}
+
 }

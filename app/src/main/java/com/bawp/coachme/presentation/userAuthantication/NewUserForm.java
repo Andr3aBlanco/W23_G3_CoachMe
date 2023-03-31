@@ -67,7 +67,7 @@ Button btnCurrent_location;
     FirebaseUser user;
     String current_User;
 
-    String mDeviceToken;
+
     String myDeviceToken;
 
     DatabaseReference databaseRef;
@@ -76,19 +76,19 @@ Button btnCurrent_location;
     List<Address> addresses=null;
     public void onStart() {
         super.onStart();
-        mDeviceToken= Settings.Secure.getString(this.getContentResolver(),Settings.Secure.ANDROID_ID);
+
         current_User=user.getUid();
         databaseRef = FirebaseDatabase.getInstance().getReference().child("users").child(current_User);
-        databaseRef.child("userDeviceToken").setValue(mDeviceToken);
+
         databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.child("firseName").exists()) {
+                if (snapshot.child("firstName").exists()) {
                      //user exists
-
+                    UserSingleton.getInstance().setUserId(current_User);
                      //here i have to change to main activity when i create one
-                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                     Intent intent = new Intent(getApplicationContext(), LoadingDBSplashActivity.class);
                      startActivity(intent);
                      Toast.makeText(NewUserForm.this, "Welcome Back ", Toast.LENGTH_SHORT).show();
                      finish();
@@ -112,7 +112,6 @@ Button btnCurrent_location;
         user = auth.getCurrentUser();
         // saving current user ID
         current_User = user.getUid();
-        myDeviceToken= Settings.Secure.getString(this.getContentResolver(),Settings.Secure.ANDROID_ID);
         // creating database reference
         databaseRef = FirebaseDatabase.getInstance().getReference().child("users").child(current_User);
         confirmDataBtn = findViewById(R.id.btnConfirm);
@@ -132,18 +131,12 @@ Button btnCurrent_location;
             startActivity(intent);
             finish();
 
-        } else {
-//          String tempemail= user.getEmail().toString();
-//          if(!tempemail.equals(null))
-//            emailTxt.setText(tempemail);
         }
        //getting current location
         btnCurrent_location.setOnClickListener((View v)-> {
         getCurrentLocation();
         });
         confirmDataBtn.setOnClickListener((View v) -> {
-
-
             String dbFirstname, dbLastname, dbAddress, dbPhoneNumber,dbEmail;
 
             // creating role as a customer ID=1 and role customer
@@ -171,15 +164,16 @@ Button btnCurrent_location;
                 Toast.makeText(NewUserForm.this, "Please Enter phone number", Toast.LENGTH_SHORT).show();
                 return;
             }
-         UserSingleton newUser= new UserSingleton(current_User,myDeviceToken,dbFirstname,dbLastname,dbEmail,dbPhoneNumber,dbAddress);
 
-            //Because the user is a new user, let's add it into firebase
+           //creating user object to store in firebase
+         User newUser= new User(dbFirstname,dbLastname,dbEmail,dbAddress,dbPhoneNumber);
+
+
             databaseRef.setValue(newUser).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
-                        UserSingleton.getInstance().setUserId(current_User);
-                        Toast.makeText(NewUserForm.this, "Welcome to CoachMe ", Toast.LENGTH_SHORT).show();
+
                         Intent intent = new Intent(getApplicationContext(), LoadingDBSplashActivity.class);
                         startActivity(intent);
                         finish();

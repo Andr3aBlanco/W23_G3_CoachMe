@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.bawp.coachme.MainActivity;
 import com.bawp.coachme.R;
+import com.bawp.coachme.utils.UserSingleton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -84,11 +85,8 @@ public class GoogleSignInActivity extends LoginActivity {
                             // Sign in success, update UI with the signed-in user's information
                             progressDialog.dismiss();
 
+                            changingPath ();
 
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            Intent intent=new Intent(getApplicationContext(),NewUserForm.class);
-                            startActivity(intent);
-                            finish();
                         } else {
                             // If sign in fails, display a message to the user.
                             progressDialog.dismiss();
@@ -100,7 +98,38 @@ public class GoogleSignInActivity extends LoginActivity {
                 });
     }
 
+    public void changingPath () {
 
+
+        FirebaseUser user = mAuth.getCurrentUser();
+        databaseRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
+
+        databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.child("firstName").exists()) {
+                    //user exists
+                    //here i have to change to main activity when i create one
+                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(GoogleSignInActivity.this, "Welcome Back ", Toast.LENGTH_SHORT).show();
+                    finish();
+                }else{
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    Intent intent=new Intent(getApplicationContext(),NewUserForm.class);
+                    startActivity(intent);
+                    finish();
+                }
+            };
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 
 }
 

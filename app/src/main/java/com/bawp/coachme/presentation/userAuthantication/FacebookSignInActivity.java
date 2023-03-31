@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.Toast;
 
+import com.bawp.coachme.LoadingDBSplashActivity;
 import com.bawp.coachme.MainActivity;
+import com.bawp.coachme.utils.UserSingleton;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -35,7 +37,7 @@ import java.util.Arrays;
 
 public class FacebookSignInActivity extends LoginActivity {
 CallbackManager callbackManager;
-    String myDeviceToken;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,9 +83,9 @@ LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_
                 .addOnCompleteListener(this,new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        if (task.isSuccessful()) {
 
+                        if (task.isSuccessful()) {
+                            changingPath();
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(FacebookSignInActivity.this, ""+task.getException(),
@@ -93,7 +95,36 @@ LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_
                     }
                 });
     }
+    public void changingPath () {
+        FirebaseUser user = mAuth.getCurrentUser();
+        databaseRef = FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid());
 
+        databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.child("firstName").exists()) {
+                    //user exists
+                    //here i have to change to main activity when i create one
+                    Intent intent = new Intent(getApplicationContext(), LoadingDBSplashActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(FacebookSignInActivity.this, "Welcome Back ", Toast.LENGTH_SHORT).show();
+                    finish();
+                }else{
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    Intent intent=new Intent(getApplicationContext(),NewUserForm.class);
+                    startActivity(intent);
+                    finish();
+                }
+            };
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 
 
 }
