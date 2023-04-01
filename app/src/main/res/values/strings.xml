@@ -36,6 +36,8 @@
     <string name="martial">Martial</string>
     <string name="yoga">Yoga</string>
     <string name="pilates">Pilates</string>
+    <string name="statsTitleOverImage">Your Stats</string>
+    <string name="noHistoryText">Today is the perfect day to start training!</string>
     <string-array name="dummytimes">
         <item>8am</item>
         <item>10am</item>

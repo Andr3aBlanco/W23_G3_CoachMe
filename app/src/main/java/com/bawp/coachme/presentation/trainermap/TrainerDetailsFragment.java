@@ -294,7 +294,7 @@ public class TrainerDetailsFragment extends Fragment {
 
                 if(trainerCustomListAdapter.getSelectedHour() == position ){
                     // If clicked is the same
-                    System.out.println("Index == tp se;ected position ");
+                    System.out.println("Index == tp selected position ");
                     trainerCustomListAdapter.setSelectedHour(-1);
                     trainerCustomListAdapter.notifyDataSetChanged();
                 } else

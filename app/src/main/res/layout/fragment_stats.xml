@@ -1,22 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="#fcfffd"
     android:background="@color/cm_colorOnSecondary"
     tools:context=".presentation.stats.StatsFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/imageViewStats"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:cropToPadding="false"
+            android:scaleType="centerCrop"
+            android:src="@drawable/statsimagetwo" />
+
+        <TextView
+            android:id="@+id/txtStatsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:textSize="22dp"
+            android:textColor="@color/white"
+            android:drawableTint="@color/white"
+            android:fontFamily="@font/poppins_bold"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_alignBottom="@+id/imageViewStats"
+            android:text="@string/statsTitleOverImage" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/txtNoHistoryText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/noHistoryText"
+        android:layout_marginTop="150dp"
+        android:textSize="20sp"
+        android:visibility="gone"/>
 
     <WebView
         android:id="@+id/chartWebView"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:layout_margin="4dp"/>
+        android:layout_marginTop="150dp"
+        android:background="#fcfffd"/>
 
     <WebView
         android:id="@+id/barChart"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_marginTop="300dp"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="450dp"
+        android:background="#fcfffd"
+        />
+
+    <TextView
+        android:id="@+id/txtTotalHours"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="730dp"
+        android:gravity="center_horizontal"
+        android:fontFamily="@font/poppins_regular"
+        android:text=""
+        android:textColor="#6247aa"
+        android:textSize="20sp" />
 
 
 </FrameLayout>

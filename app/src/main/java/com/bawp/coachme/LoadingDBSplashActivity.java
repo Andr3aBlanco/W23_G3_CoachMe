@@ -51,6 +51,8 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loading_dbsplash);
 
@@ -58,7 +60,8 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
         LottieAnimationView animationView = findViewById(R.id.animation_view_loading);
         txtViewLoadingText = findViewById(R.id.txtViewLoadingText);
         animationView.setAnimation("loading_db_animated.json");
-
+        // set the user for the singleton
+        UserSingleton.getInstance().setUserId("-NOjpL1jiGcc80qBrFIl");
 
         animationView.addAnimatorListener(new Animator.AnimatorListener() {
             @Override
@@ -87,6 +90,7 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
 
         animationView.playAnimation();
 
+
         loadDB();
 
 
@@ -104,6 +108,7 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                     DatabaseReference usersRef = database.child("users");
                     txtViewLoadingText.setText("Setting up user account...");
                     UserSingleton.getInstance().setUserDeviceToken(token);
+                    UserSingleton.getInstance().setUserId("-NOjpL1jiGcc80qBrFIl");
 
                     // Set id
                     //UserSingleton.getInstance().setUserId("-NOjpL1jiGcc80qBrFIl");

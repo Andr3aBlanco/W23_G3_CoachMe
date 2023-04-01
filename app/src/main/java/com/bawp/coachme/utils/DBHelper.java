@@ -1693,6 +1693,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public List<Trainer> getTrainersByServicesAndDate(List<String> services, long dateFrom, long dateTo) {
         SQLiteDatabase db = getReadableDatabase();
+        System.out.println("Date FROM : " + dateFrom + " dateTo: " + dateTo);
 
         String selectQuery = "SELECT trainers._id, trainers.firstName, trainers.lastName, trainers.email, " +
                 "trainers.latitudeCoord, trainers.longitudeCoord, trainers.radius, trainers.flatPrice, trainers.phoneNumber," +
@@ -1945,13 +1946,28 @@ public class DBHelper extends SQLiteOpenHelper {
     // Appointment history by month
     @SuppressLint("Range")
     public ArrayList<String[]> getAppointmentsCountByMonth(String customerId) {
-        ArrayList<String[]> result = new ArrayList<String[]>();
+        ArrayList<String[]> result = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
 
-        String query = "SELECT COUNT(_id), strftime('%m', bookedDate/1000, 'unixepoch') as month FROM appointments WHERE customerId = ? AND status = 5 GROUP BY month ORDER BY month ASC";
+        // Get the current month number
+        Calendar calendar = Calendar.getInstance();
+        int currentMonth = calendar.get(Calendar.MONTH) + 1;
 
-        Cursor cursor = db.rawQuery(query, new String[] { customerId });
+        // Construct the query to get the count of occurrences for each month
+        String query = "SELECT COUNT(_id), strftime('%m', bookedDate/1000, 'unixepoch') as month " +
+                "FROM appointments " +
+                "WHERE customerId = ? AND status = 5 " +
+                "AND bookedDate BETWEEN ? AND ? " +
+                "GROUP BY month " +
+                "ORDER BY month ASC";
 
+        // Get the timestamp of 12 months ago
+        calendar.add(Calendar.MONTH, -12);
+        long timestamp12MonthsAgo = calendar.getTimeInMillis();
+        System.out.println("12 months ago " + timestamp12MonthsAgo);
+
+        // Execute the query and retrieve the data
+        Cursor cursor = db.rawQuery(query, new String[] {customerId, String.valueOf(timestamp12MonthsAgo), String.valueOf(System.currentTimeMillis())});
         if (cursor.moveToFirst()) {
             do {
                 String[] data = new String[2];
@@ -1987,44 +2003,68 @@ public class DBHelper extends SQLiteOpenHelper {
                 "GROUP BY serviceType";
 
         // Execute the query to get the total count for each service type
-        Cursor totalCountCursor = db.rawQuery(totalCountQuery, new String[]{customerId, String.valueOf(oneYearAgo)});
-        HashMap<String, Integer> totalCounts = new HashMap<>();
-        int totalCount = 0;
-        if (totalCountCursor.moveToFirst()) {
-            do {
-                String serviceType = totalCountCursor.getString(0);
-                int count = totalCountCursor.getInt(1);
-                totalCounts.put(serviceType, count);
-                totalCount += count;
-            } while (totalCountCursor.moveToNext());
-        }
-        totalCountCursor.close();
+        Cursor totalCountCursor = null;
+        try {
+            totalCountCursor = db.rawQuery(totalCountQuery, new String[]{customerId, String.valueOf(oneYearAgo)});
+            HashMap<String, Integer> totalCounts = new HashMap<>();
+            int totalCount = 0;
+            if (totalCountCursor.moveToFirst()) {
+                do {
+                    String serviceType = totalCountCursor.getString(0);
+                    int count = totalCountCursor.getInt(1);
+                    totalCounts.put(serviceType, count);
+                    totalCount += count;
+                } while (totalCountCursor.moveToNext());
+            }
 
-        // Define the query to get the count and percentage for each service type
-        String countPercentageQuery = "SELECT serviceType, COUNT(*) " +
-                "FROM appointments " +
-                "WHERE customerId = ? AND status = 5 AND bookedDate >= ? " +
-                "GROUP BY serviceType";
+            // Define the query to get the count and percentage for each service type
+            String countPercentageQuery = "SELECT serviceType, COUNT(*) " +
+                    "FROM appointments " +
+                    "WHERE customerId = ? AND status = 5 AND bookedDate >= ? " +
+                    "GROUP BY serviceType";
 
-        // Execute the query to get the count and percentage for each service type
-        Cursor countPercentageCursor = db.rawQuery(countPercentageQuery, new String[]{customerId, String.valueOf(oneYearAgo)});
-        if (countPercentageCursor.moveToFirst()) {
-            do {
-                String serviceType = countPercentageCursor.getString(0);
-                int count = countPercentageCursor.getInt(1);
-                double percentage = ((double) count / totalCount) * 100;
-                pieData.add(new String[]{serviceType, String.format("%.2f", percentage)});
-                System.out.println("From inside method in helper " +serviceType + " " + percentage);
-            } while (countPercentageCursor.moveToNext());
+            // Execute the query to get the count and percentage for each service type
+            Cursor countPercentageCursor = null;
+            try {
+                countPercentageCursor = db.rawQuery(countPercentageQuery, new String[]{customerId, String.valueOf(oneYearAgo)});
+                if (countPercentageCursor.moveToFirst()) {
+                    do {
+                        String serviceType = countPercentageCursor.getString(0);
+                        int count = countPercentageCursor.getInt(1);
+                        double percentage = ((double) count / totalCount) * 100;
+                        pieData.add(new String[]{serviceType, String.format("%.2f", percentage)});
+                        System.out.println("From inside method in helper " +serviceType + " " + percentage);
+                    } while (countPercentageCursor.moveToNext());
+                }
+            } finally {
+                if (countPercentageCursor != null) {
+                    countPercentageCursor.close();
+                }
+            }
+        } finally {
+            if (totalCountCursor != null) {
+                totalCountCursor.close();
+            }
         }
-        countPercentageCursor.close();
 
         db.close();
 
         return pieData;
     }
 
-
+    @SuppressLint("Range")
+    public int getTotalWorkoutHours(String customerId){
+        int count = 0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT COUNT(*) FROM appointments WHERE customerId=? AND status=5";
+        Cursor cursor = db.rawQuery(query, new String[]{customerId});
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        cursor.close();
+        db.close();
+        return count;
+    }
 
 
 
