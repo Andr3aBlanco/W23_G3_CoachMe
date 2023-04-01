@@ -15,8 +15,6 @@ package com.bawp.coachme.utils;
  * @version 1.0
  */
 
-package com.bawp.coachme.utils;
-
 import com.bawp.coachme.model.User;
 
 public class UserSingleton {
