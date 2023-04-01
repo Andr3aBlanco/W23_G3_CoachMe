@@ -1,3 +1,11 @@
+/**
+ * Class: SelfworkoutExerciseCompletedFragment.java
+ *
+ * Fragment that will display an animation when one exercise has been completed
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
 package com.bawp.coachme.presentation.selfworkout;
 
 import android.animation.Animator;
@@ -9,6 +17,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +27,7 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.bawp.coachme.R;
 import com.bawp.coachme.model.SelfWorkoutSession;
 import com.bawp.coachme.model.SelfWorkoutSessionLog;
+import com.bawp.coachme.presentation.order.OrdersFragment;
 import com.bawp.coachme.utils.DBHelper;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -68,60 +78,21 @@ public class SelfworkoutExerciseCompletedFragment extends Fragment {
             public void onAnimationEnd(@NonNull Animator animation) {
                 //Let's validate if all exercises have been completed
                 List<SelfWorkoutSessionLog> exercisesLog =dbHelper.getSessionLogs(sessionId);
-                boolean allExercisesCompleted = true;
-                for (SelfWorkoutSessionLog log: exercisesLog){
-                    if (log.getSessionExerciseStatus() != 3){
-                        allExercisesCompleted = false;
-                        break;
-                    }
-                }
+                //Moving to the Exercises List Fragment
+                Bundle dataToPass = new Bundle();
+                dataToPass.putSerializable("exercisesLog",(Serializable) exercisesLog);
+                dataToPass.putInt("sessionId",sessionId);
 
-                if (allExercisesCompleted){
+                SelfworkoutSessionExerciseFragment selfworkoutSessionExerciseFragment = new SelfworkoutSessionExerciseFragment();
+                selfworkoutSessionExerciseFragment.setArguments(dataToPass);
 
-                    //Moving to the Session Completed Fragment
-                    SelfWorkoutSession session = dbHelper.getSessionById(sessionId);
+                FragmentManager fm = getParentFragmentManager();
+                FragmentTransaction fragmentTransaction = fm.beginTransaction();
 
-                    //update the session as finished
-                    int numUpdatedRows = dbHelper.updateSelfWorkoutSessionCompleted(sessionId);
-                    if (numUpdatedRows > 0){
-                        int selfWorkoutPlanUser = session.getSelfWorkoutPlanByUser().getId();
-                        Bundle dataToPass = new Bundle();
-                        dataToPass.putInt("selfWorkoutPlanUser",selfWorkoutPlanUser);
+                // Replace the current fragment with the new one
+                fragmentTransaction.replace(R.id.barFrame, selfworkoutSessionExerciseFragment);
 
-                        SelfworkoutSessionCompletedFragment selfworkoutSessionCompletedFragment = new SelfworkoutSessionCompletedFragment();
-                        selfworkoutSessionCompletedFragment.setArguments(dataToPass);
-
-                        FragmentManager fm = getParentFragmentManager();
-                        FragmentTransaction fragmentTransaction = fm.beginTransaction();
-
-                        // Replace the current fragment with the new one
-                        fragmentTransaction.replace(R.id.barFrame, selfworkoutSessionCompletedFragment);
-
-                        fragmentTransaction.commit();
-
-                    }else{
-                        Toast.makeText(getContext(),"ERROR in DATABASE",Toast.LENGTH_SHORT).show();
-                    }
-
-                }else{
-
-                    //Moving to the Exercises List Fragment
-                    Bundle dataToPass = new Bundle();
-                    dataToPass.putSerializable("exercisesLog",(Serializable) exercisesLog);
-                    dataToPass.putInt("sessionId",sessionId);
-
-                    SelfworkoutSessionExerciseFragment selfworkoutSessionExerciseFragment = new SelfworkoutSessionExerciseFragment();
-                    selfworkoutSessionExerciseFragment.setArguments(dataToPass);
-
-                    FragmentManager fm = getParentFragmentManager();
-                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
-
-                    // Replace the current fragment with the new one
-                    fragmentTransaction.replace(R.id.barFrame, selfworkoutSessionExerciseFragment);
-
-                    fragmentTransaction.commit();
-
-                }
+                fragmentTransaction.commit();
 
             }
 
@@ -139,5 +110,27 @@ public class SelfworkoutExerciseCompletedFragment extends Fragment {
         animationView.playAnimation();
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(getView() == null){
+            return;
+        }
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 }

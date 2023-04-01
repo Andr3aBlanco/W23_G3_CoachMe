@@ -1,5 +1,16 @@
 package com.bawp.coachme.utils;
 
+/**
+ * Class: CoachMeGlideModule.java
+ *
+ * Class the will register the Firebase Storage location into the Glide
+ * to allow the download of images from the cloud
+ *
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
+
 import android.content.Context;
 
 import com.bumptech.glide.Glide;

@@ -1,3 +1,12 @@
+/**
+ * Class: SelfworkoutExerciseDetailFragment.java
+ *
+ * Fragment that will display the detail of the exercises including the image/gif
+ * associated to the exercise.
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
 package com.bawp.coachme.presentation.selfworkout;
 
 import android.content.Intent;
@@ -8,6 +17,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bawp.coachme.R;
+import com.bawp.coachme.model.SelfWorkoutPlan;
 import com.bawp.coachme.model.SelfWorkoutPlanExercise;
 import com.bawp.coachme.model.SelfWorkoutSession;
 import com.bawp.coachme.model.SelfWorkoutSessionLog;
@@ -172,6 +183,53 @@ public class SelfworkoutExerciseDetailFragment extends Fragment {
         llExerciseDetailLayout.setVisibility(View.VISIBLE);
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(getView() == null){
+            return;
+        }
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+                    List<SelfWorkoutSessionLog> exercisesLog = dbHelper.getSessionLogs(sessionId);
+
+                    if (exercisesLog.size() > 0 ){
+                        //Let's send the data into the next fragment
+                        Bundle dataToPass = new Bundle();
+                        dataToPass.putSerializable("exercisesLog",(Serializable) exercisesLog);
+                        dataToPass.putInt("sessionId",sessionId);
+
+                        SelfworkoutSessionExerciseFragment selfworkoutSessionExerciseFragment = new SelfworkoutSessionExerciseFragment();
+                        selfworkoutSessionExerciseFragment.setArguments(dataToPass);
+
+                        FragmentManager fm = getParentFragmentManager();
+                        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+                        // Replace the current fragment with the new one
+                        fragmentTransaction.replace(R.id.barFrame, selfworkoutSessionExerciseFragment);
+
+                        // Add the transaction to the back stack
+                        fragmentTransaction.addToBackStack("self-workout-session-exercises-options");
+
+                        // Commit the transaction
+                        fragmentTransaction.commit();
+                    }else{
+                        Toast.makeText(getContext(),"No exercises routine available for this session!",Toast.LENGTH_SHORT).show();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
 

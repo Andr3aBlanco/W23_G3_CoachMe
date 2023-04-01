@@ -8,6 +8,10 @@
  * - description
  * - planPrice
  * - posterUrlFirestore (this is the file location from Firebase Firestore storage)
+ * - mainGoals
+ * - duration
+ * - daysPerWeek
+ * - level
  *
  * @author Luis Miguel Miranda
  * @version 1.0.1

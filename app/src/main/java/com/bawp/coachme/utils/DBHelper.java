@@ -1,5 +1,15 @@
 package com.bawp.coachme.utils;
 
+/**
+ * Class: DBHelper.java
+ *
+ * Class that will hold all the database operations for the app
+ *
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
+
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
@@ -35,6 +45,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -1929,6 +1940,91 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return orderHistory;
     }
+
+
+    // Appointment history by month
+    @SuppressLint("Range")
+    public ArrayList<String[]> getAppointmentsCountByMonth(String customerId) {
+        ArrayList<String[]> result = new ArrayList<String[]>();
+        SQLiteDatabase db = getReadableDatabase();
+
+        String query = "SELECT COUNT(_id), strftime('%m', bookedDate/1000, 'unixepoch') as month FROM appointments WHERE customerId = ? AND status = 5 GROUP BY month ORDER BY month ASC";
+
+        Cursor cursor = db.rawQuery(query, new String[] { customerId });
+
+        if (cursor.moveToFirst()) {
+            do {
+                String[] data = new String[2];
+                data[0] = cursor.getString(cursor.getColumnIndex("month"));
+                data[1] = cursor.getString(0);
+                result.add(data);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return result;
+    }
+
+
+
+
+    // For pie chart total per category - service type percentages for last year
+    @SuppressLint("Range")
+    public ArrayList<String[]> getServiceTypePercentagesLastYear(String customerId) {
+        ArrayList<String[]> pieData = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Calculate the timestamp for one year ago
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.YEAR, -1);
+        long oneYearAgo = calendar.getTimeInMillis();
+
+        // Define the query to get the total count for each service type
+        String totalCountQuery = "SELECT serviceType, COUNT(*) " +
+                "FROM appointments " +
+                "WHERE customerId = ? AND status = 5 AND bookedDate >= ? " +
+                "GROUP BY serviceType";
+
+        // Execute the query to get the total count for each service type
+        Cursor totalCountCursor = db.rawQuery(totalCountQuery, new String[]{customerId, String.valueOf(oneYearAgo)});
+        HashMap<String, Integer> totalCounts = new HashMap<>();
+        int totalCount = 0;
+        if (totalCountCursor.moveToFirst()) {
+            do {
+                String serviceType = totalCountCursor.getString(0);
+                int count = totalCountCursor.getInt(1);
+                totalCounts.put(serviceType, count);
+                totalCount += count;
+            } while (totalCountCursor.moveToNext());
+        }
+        totalCountCursor.close();
+
+        // Define the query to get the count and percentage for each service type
+        String countPercentageQuery = "SELECT serviceType, COUNT(*) " +
+                "FROM appointments " +
+                "WHERE customerId = ? AND status = 5 AND bookedDate >= ? " +
+                "GROUP BY serviceType";
+
+        // Execute the query to get the count and percentage for each service type
+        Cursor countPercentageCursor = db.rawQuery(countPercentageQuery, new String[]{customerId, String.valueOf(oneYearAgo)});
+        if (countPercentageCursor.moveToFirst()) {
+            do {
+                String serviceType = countPercentageCursor.getString(0);
+                int count = countPercentageCursor.getInt(1);
+                double percentage = ((double) count / totalCount) * 100;
+                pieData.add(new String[]{serviceType, String.format("%.2f", percentage)});
+                System.out.println("From inside method in helper " +serviceType + " " + percentage);
+            } while (countPercentageCursor.moveToNext());
+        }
+        countPercentageCursor.close();
+
+        db.close();
+
+        return pieData;
+    }
+
+
 
 
 

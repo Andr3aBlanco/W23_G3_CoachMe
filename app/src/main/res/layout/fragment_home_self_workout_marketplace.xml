@@ -29,18 +29,29 @@ tools:context=".presentation.home.HomeSelfWorkoutMarketplaceFragment">
         android:orientation="vertical"
         android:id="@+id/llSelfworkoutMarketplace">
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="20dp"
-            android:textSize="25dp"
-            android:textColor="#200E32"
-            android:drawableLeft="@drawable/baseline_shopping_cart_24"
-            android:drawableTint="#200E32"
-            android:fontFamily="@font/poppins_bold"
-            android:text="Workout Marketplace"/>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="200dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="fitXY"
+                android:src="@drawable/home_topbar_image"/>
+
+            <TextView
+                android:layout_width="380dp"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/poppins_bold"
+                android:text="SELF-WORKOUT PLANS MARKETPLACE"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="5dp"
+                android:layout_marginBottom="10dp"
+                />
+
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/llNoMktpItemsAvailable"

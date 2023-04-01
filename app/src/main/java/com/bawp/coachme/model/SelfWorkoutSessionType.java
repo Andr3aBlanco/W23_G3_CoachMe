@@ -2,6 +2,22 @@ package com.bawp.coachme.model;
 
 import java.io.Serializable;
 
+/**
+ * Class: SelfWorkoutSessionType.java
+ *
+ * This class will contain the information of 1 session from selfworkout plan
+ * adquired by a user.
+ *
+ * Fields:
+ * - id
+ * - sessionType -> type of session of the workout
+ * - selfworkoutPlan
+ * - sessionTypeIconURLFirestore
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0.0
+ */
+
 public class SelfWorkoutSessionType implements Serializable {
 
     private String id;

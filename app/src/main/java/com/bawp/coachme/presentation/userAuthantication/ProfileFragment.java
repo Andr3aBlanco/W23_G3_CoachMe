@@ -1,4 +1,4 @@
-package com.bawp.coachme;
+package com.bawp.coachme.presentation.user;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,6 +24,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import com.bawp.coachme.R;
 
 
 public class ProfileFragment extends Fragment {

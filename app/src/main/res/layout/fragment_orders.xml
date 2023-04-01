@@ -32,18 +32,32 @@
             android:orientation="vertical"
             android:id="@+id/llOrderLayout">
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="20dp"
-                android:textSize="22dp"
-                android:textColor="#200E32"
-                android:drawableLeft="@drawable/baseline_shopping_cart_24"
-                android:drawableTint="#200E32"
-                android:fontFamily="@font/poppins_bold"
-                android:text="Shopping Cart"/>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="200dp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/orders_topbar_image"/>
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="22dp"
+                        android:textColor="@color/white"
+                        android:drawableLeft="@drawable/baseline_shopping_cart_24"
+                        android:drawableTint="@color/white"
+                        android:fontFamily="@font/poppins_bold"
+                        android:text="SHOPPING CART"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginBottom="10dp"
+                        />
+
+            </RelativeLayout>
 
             <!--
                 LinearLayout to display empty cart
@@ -226,7 +240,7 @@
                     android:text="Review Order History"
                     android:backgroundTint="#6B66C7"
                     android:fontFamily="@font/poppins_bold"
-                    android:drawableLeft="@drawable/ic_payment_white_18dp"
+                    android:drawableLeft="@drawable/baseline_view_list_18"
                     app:cornerRadius="10dp"
                     />
 

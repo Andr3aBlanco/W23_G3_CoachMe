@@ -6,18 +6,21 @@ import android.os.CountDownTimer;
 import android.provider.Settings;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import android.util.Log;
+import android.view.View;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bawp.coachme.databinding.ActivityMainBinding;
-import com.bawp.coachme.model.Appointment;
+import com.bawp.coachme.model.User;
 import com.bawp.coachme.presentation.home.HomeFragment;
 import com.bawp.coachme.presentation.order.OrdersFragment;
-import com.bawp.coachme.presentation.trainermap.TrainerListFragment;
+import com.bawp.coachme.presentation.stats.StatsFragment;
 import com.bawp.coachme.presentation.trainermap.TrainerSearchFragment;
 import com.bawp.coachme.presentation.userAuthantication.LoginActivity;
 import com.bawp.coachme.presentation.userAuthantication.RegisterActivity;
@@ -25,6 +28,7 @@ import com.bawp.coachme.utils.DBHelper;
 import com.bawp.coachme.utils.UserSingleton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.bawp.coachme.presentation.user.ProfileFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,8 +52,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        replaceFragment(new HomeFragment());
+        replaceFragment(new HomeFragment()); // chnage back to home
         fragmentBinding();
     }
 
@@ -151,6 +154,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }.start();
-    };
+    }
 
 }

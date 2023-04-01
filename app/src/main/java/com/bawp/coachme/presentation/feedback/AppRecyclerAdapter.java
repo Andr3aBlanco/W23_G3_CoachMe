@@ -3,12 +3,14 @@ package com.bawp.coachme.presentation.feedback;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -17,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bawp.coachme.R;
@@ -42,6 +45,7 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
     Trainer currentTrainer;
 
     float newRating = 0;
+    String newComment = "";
     OnItemClickListener onItemClickListener; //this is the one to be manipulated
 
 
@@ -131,6 +135,9 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
 
                 } else {
 
+                    newComment = holder.txtComment.getText().toString();
+
+
                     if(newRating == 0){
 
                         Toast.makeText(parent.getContext(), "Please choose a rating ", Toast.LENGTH_SHORT).show();
@@ -139,6 +146,7 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
 
                         // get the current appointment and save the new rating and save to trainer
                         pastAppointments.get(currentPosition).setRating((int)newRating); // nor refreshing
+                        pastAppointments.get(currentPosition).setComment(newComment);
                         dbHelper.updateAppointmentRating(pastAppointments.get(currentPosition).getId(),(int)newRating);
                         dbHelper.updateTrainerRating(pastAppointments.get(currentPosition).getTrainerId());
 
@@ -148,6 +156,8 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
                         holder.ratingCard.setVisibility(View.GONE);
 
                         setPastAppointments(pastAppointments);
+
+
 
                     }
 
@@ -172,25 +182,27 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
         // rated or not yet
         if(pastAppointments.get(position).getRating() == 0) {
 
-            String toDisplay = "Rate your " + pastAppointments.get(position).getServiceType() + " session with " +
-                    currentTrainer.getFirstName() + " on the " + formattedDate;
+            String toDisplay = "Rate your session: <b>" + pastAppointments.get(position).getServiceType() + "</b> with <b>" +
+                    currentTrainer.getFirstName() + "</b> on the <b>" + formattedDate + "</b>";
 
-            holder.trainerName.setText(toDisplay);
+            holder.message.setText(HtmlCompat.fromHtml(toDisplay,  HtmlCompat.FROM_HTML_MODE_LEGACY));
 
-            System.out.println("rating for position " + position + " is " + pastAppointments.get(position).getRating());
+
+//            System.out.println("rating for position " + position + " is " + pastAppointments.get(position).getRating());
 
             holder.ratingOne.setRating((float)pastAppointments.get(position).getRating()/5);
 
 
         } else {
 
-            String toDisplay = "Your " + pastAppointments.get(position).getServiceType() + " session with " +
-                    currentTrainer.getFirstName() + " on the " + formattedDate + " was " + pastAppointments.get(position).getComment();
+            String toDisplay = "Your <b>" + pastAppointments.get(position).getServiceType() + "</b> session with <b>" +
+                    currentTrainer.getFirstName() + "</b> on the " + formattedDate + " was <b>" + pastAppointments.get(position).getComment() + "</b>";
 
-            holder.trainerName.setText(toDisplay);
+
+            holder.message.setText(HtmlCompat.fromHtml(toDisplay,  HtmlCompat.FROM_HTML_MODE_LEGACY));
             // fill the star depending on the value
             holder.ratingOne.setRating((float)pastAppointments.get(position).getRating()/5);
-            Log.d("ANDREA", "This is the rating for appointment in " + position + " " +pastAppointments.get(position).getRating() );
+//            Log.d("ANDREA", "This is the rating for appointment in " + position + " " +pastAppointments.get(position).getRating() );
         }
 
 
@@ -204,21 +216,24 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
     public class AppointmentHolder extends RecyclerView.ViewHolder {
 
         // From the layout
-        TextView trainerName;
-        TextView appDate;
+        TextView message;
+        TextView trainerDate;
+        TextView comment;
         RatingBar ratingOne;
         RatingBar ratingFive;
         CardView ratingCard;
 
         Button starButton;
 
-        TextView txtComment;
+        EditText txtComment;
         Button btnSubmitReview;
 
         public AppointmentHolder(@NonNull View itemView) {
             super(itemView);
 
-            trainerName = itemView.findViewById(R.id.txtTrainerNameAppRV);
+            message = itemView.findViewById(R.id.txtTrainerNameAppRV);
+//            trainerDate = itemView.findViewById(R.id.txtTrainerNameDate);
+//            comment = itemView.findViewById(R.id.txtRatingComment);
             ratingOne = itemView.findViewById(R.id.ratingOne);
             ratingFive = itemView.findViewById(R.id.ratingFive);
             ratingCard = itemView.findViewById(R.id.ratingCard);

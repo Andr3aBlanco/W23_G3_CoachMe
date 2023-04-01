@@ -1,3 +1,5 @@
+package com.bawp.coachme.utils;
+
 /**
  * Class: UserSingleton.java
  *

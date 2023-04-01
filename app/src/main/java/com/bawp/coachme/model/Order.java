@@ -10,6 +10,7 @@
  * - productType: type of product (1 -> appointment, 2 -> self-workout)
  * - productDescription: description that will be displayed on the screen
  * - totalPrice: totalPrice of that item (appointment / self-workout)
+ * - isSelected: to control the element selected in the order fragment
  *
  * @author Luis Miguel Miranda
  * @version 1.0

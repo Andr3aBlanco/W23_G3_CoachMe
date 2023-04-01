@@ -1,3 +1,24 @@
+/**
+ * Class: SelfWorkoutPlanExercise.java
+ *
+ * Class associated with the information of one exercise contained in one
+ * Selfworkout Session.
+ *
+ * Keep in mind the following relationship:
+ * SelfWorkout -> SelfworkoutSessionType(s) -> SelfworkoutPlanExercise
+ *
+ * Fields:
+ * - id
+ * - selfWorkoutSessionTypeId
+ * - exerciseName
+ * - numSets
+ * - repetitions
+ * - restTime
+ * - exerciseImageURLFirestore
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0.1
+ */
 package com.bawp.coachme.model;
 
 import java.io.Serializable;

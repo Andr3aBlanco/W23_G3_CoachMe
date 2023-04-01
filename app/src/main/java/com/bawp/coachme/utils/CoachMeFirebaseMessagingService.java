@@ -1,9 +1,21 @@
 package com.bawp.coachme.utils;
 
+/**
+ * Class: CoachMeFirebaseMessagingService.java
+ *
+ * Class that will hold the messages that come from FCM (Firebase Cloud Messaging) and
+ * will help us to display the push notifications into the app
+ *
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
+
 import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
@@ -26,13 +38,10 @@ public class CoachMeFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onNewToken(String token) {
         super.onNewToken(token);
-        Log.d("FIREBASE MSG", "New FCM registration token: " + token);
     }
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        Log.d("FCM","Hello world");
-
         // Extract the appointment details from the message
         String title = remoteMessage.getNotification().getTitle();
         String message = remoteMessage.getNotification().getBody();
@@ -40,7 +49,7 @@ public class CoachMeFirebaseMessagingService extends FirebaseMessagingService {
 
         // Create a notification builder with the appointment details
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setSmallIcon(R.drawable.baseline_fitness_center_24)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setStyle(new NotificationCompat.BigTextStyle()

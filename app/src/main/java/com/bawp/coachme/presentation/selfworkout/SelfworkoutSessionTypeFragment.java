@@ -1,7 +1,17 @@
+/**
+ * Class: SelfworkoutSessionTypeFragment.java
+ *
+ * Fragment that shows the list of SESSION TYPES for a selfworkout plan.
+ *
+ * @author Luis Miguel Miranda
+ * @version 1.0
+ */
+
 package com.bawp.coachme.presentation.selfworkout;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +31,7 @@ import com.bawp.coachme.model.SelfWorkoutPlanExercise;
 import com.bawp.coachme.model.SelfWorkoutSession;
 import com.bawp.coachme.model.SelfWorkoutSessionLog;
 import com.bawp.coachme.model.SelfWorkoutSessionType;
+import com.bawp.coachme.presentation.home.HomeFragment;
 import com.bawp.coachme.presentation.order.OrderPaymentOptionsFragment;
 import com.bawp.coachme.presentation.order.OrdersFragment;
 import com.bawp.coachme.utils.DBHelper;
@@ -154,6 +165,41 @@ public class SelfworkoutSessionTypeFragment extends Fragment {
         }
 
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(getView() == null){
+            return;
+        }
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+                    Bundle dataToPass = new Bundle();
+                    dataToPass.putInt("workoutUserId",selfworkoutUserId);
+
+                    SelfworkoutFragment selfworkoutFragment = new SelfworkoutFragment();
+                    selfworkoutFragment.setArguments(dataToPass);
+
+                    FragmentManager fm = getParentFragmentManager();
+                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+                    // Replace the current fragment with the new one
+                    fragmentTransaction.replace(R.id.barFrame, selfworkoutFragment);
+
+                    fragmentTransaction.commit();
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
 }
