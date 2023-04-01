@@ -1,10 +1,11 @@
-package com.bawp.coachme.presentation.user;
+package com.bawp.coachme.presentation.userAuthantication;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
@@ -32,13 +33,13 @@ TextView alreadyHaveAccount;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-mAuth=FirebaseAuth.getInstance();
+        mAuth=FirebaseAuth.getInstance();
         userNameRegtxt=findViewById(R.id.txtRegUsername);
         passwordRegTxt=findViewById(R.id.txtRegPassword);
-alreadyHaveAccount=findViewById(R.id.txtGoToLogin);
+        alreadyHaveAccount=findViewById(R.id.txtGoToLogin);
         progressBar=findViewById(R.id.progressBar);
         btnRegister=findViewById(R.id.btnregisterConf);
-
+        String DeviceId= Settings.Secure.getString(this.getContentResolver(),Settings.Secure.ANDROID_ID);
         alreadyHaveAccount.setOnClickListener((View view)->{
 
             Intent regIntent=new Intent(getApplicationContext(), LoginActivity.class);
@@ -80,7 +81,6 @@ alreadyHaveAccount=findViewById(R.id.txtGoToLogin);
                                     return;
                                 } else {
                                     // If sign in fails, display a message to the user.
-
 
                                     Toast.makeText(RegisterActivity.this, "User Already Exist",
                                             Toast.LENGTH_SHORT).show();

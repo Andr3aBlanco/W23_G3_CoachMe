@@ -1,6 +1,12 @@
 package com.bawp.coachme;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.provider.Settings;
+import android.view.View;
+
+import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 
@@ -16,6 +22,12 @@ import com.bawp.coachme.presentation.home.HomeFragment;
 import com.bawp.coachme.presentation.order.OrdersFragment;
 import com.bawp.coachme.presentation.stats.StatsFragment;
 import com.bawp.coachme.presentation.trainermap.TrainerSearchFragment;
+import com.bawp.coachme.presentation.userAuthantication.LoginActivity;
+import com.bawp.coachme.presentation.userAuthantication.RegisterActivity;
+import com.bawp.coachme.utils.DBHelper;
+import com.bawp.coachme.utils.UserSingleton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.bawp.coachme.presentation.user.ProfileFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,10 +35,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
-
+    CountDownTimer countDownTimer;
+    FirebaseAuth mAuth;
+    FirebaseUser user;
+    String current_User;
+    DatabaseReference databaseRef;
+    private String myDeviceId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         binding.bottomNavigationView.setBackground(null);
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
-
+            getLoginStatus();
             switch (item.getItemId()){
 
                 case R.id.menu_home:
@@ -93,6 +113,47 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
 
     }
+//    checking every 30 second that user device id is still same
+    private void getLoginStatus() {
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+        current_User = user.getUid();
+        databaseRef = FirebaseDatabase.getInstance().getReference().child("users").child(current_User);
 
+
+        countDownTimer = new CountDownTimer(30000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+            }
+            @Override
+            public void onFinish() {
+                countDownTimer.start();
+                databaseRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        String deviceToken = snapshot.child("deviceToken").getValue(String.class);
+                        FirebaseUser currentUser = mAuth.getCurrentUser();
+                        if (!deviceToken.equals(UserSingleton.getInstance().getUserDeviceToken())){
+                            FirebaseAuth.getInstance().signOut();
+
+
+                            Intent intent=new Intent(MainActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                            countDownTimer.cancel();
+                            finish();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+
+            }
+        }.start();
+    }
 
 }

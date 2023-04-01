@@ -1,4 +1,4 @@
-package com.bawp.coachme.presentation.user;
+package com.bawp.coachme.presentation.userAuthantication;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
