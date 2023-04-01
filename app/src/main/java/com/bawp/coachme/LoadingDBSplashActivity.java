@@ -33,8 +33,13 @@ import com.bawp.coachme.utils.UserSingleton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -48,7 +53,10 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
 
     private boolean isExecutionFinished;
     TextView txtViewLoadingText;
-
+    FirebaseUser user;
+    FirebaseAuth auth;
+    String current_User;
+    DatabaseReference databaseRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +64,10 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
 
         isExecutionFinished = false;
         LottieAnimationView animationView = findViewById(R.id.animation_view_loading);
+
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        current_User = user.getUid();
         txtViewLoadingText = findViewById(R.id.txtViewLoadingText);
         animationView.setAnimation("loading_db_animated.json");
 
@@ -100,14 +112,35 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                     }
                     String token = task.getResult();
                     // Store the FCM registration token in your database
-                    DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-                    DatabaseReference usersRef = database.child("users");
+                    databaseRef = FirebaseDatabase.getInstance().getReference().child("users").child(current_User);
                     txtViewLoadingText.setText("Setting up user account...");
-                    UserSingleton.getInstance().setUserDeviceToken(token);
+                    databaseRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                    // Set id
-                    //UserSingleton.getInstance().setUserId("-NOjpL1jiGcc80qBrFIl");
-                    usersRef.child(UserSingleton.getInstance().getUserId()).child("deviceToken").setValue(token);
+                         String  firstName = snapshot.child("firstName").getValue(String.class);
+                            String  lastName = snapshot.child("lastName").getValue(String.class);
+                            String  email = snapshot.child("email").getValue(String.class);
+                            String address = snapshot.child("address").getValue(String.class);
+                            String mobile = snapshot.child("phoneNumber").getValue(String.class);
+                            // Update TextViews with user data
+                            UserSingleton.getInstance().setUserId(current_User);
+                            UserSingleton.getInstance().setFirstName(firstName);
+                            UserSingleton.getInstance().setLastName(lastName);
+                            UserSingleton.getInstance().setAddress(address);
+                            UserSingleton.getInstance().setEmail(email);
+                            UserSingleton.getInstance().setPhoneNumber(mobile);
+                            UserSingleton.getInstance().setUserDeviceToken(token);
+
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                    databaseRef.child("deviceToken").setValue(token);
+                    //setting up user singleton
+
 
                     DBHelper dbHelper = new DBHelper(this);
                     SQLiteDatabase db = dbHelper.getWritableDatabase();
