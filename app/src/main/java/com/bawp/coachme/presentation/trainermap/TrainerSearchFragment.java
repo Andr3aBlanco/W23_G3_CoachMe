@@ -170,7 +170,7 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
         int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
 
         dateFrom.setText(dayOfMonth + "/" + month + "/" + year);
-        dateTo.setText(dayOfMonth + "/" + month + "/" + year + 1);
+        dateTo.setText(dayOfMonth + "/" + month + "/" + (year  + 1));
 
         //set initial dates
         calendar.set(year, month, dayOfMonth, 0, 0, 0);
@@ -321,7 +321,8 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                         TrainerMapFragment childMapFragment = new TrainerMapFragment();
                         Bundle args = new Bundle();
                         args.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
-
+                        args.putDouble("LONGITUDE", longitude);
+                        args.putDouble("LATITUDE", latitude);
                         //sort before pass
                         childMapFragment.setArguments(args);
 

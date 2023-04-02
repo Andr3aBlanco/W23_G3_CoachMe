@@ -30,6 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/ivTrainerPic"
             android:text="@string/tranerNameText"
+            android:fontFamily="@font/poppins_regular"
             android:textAppearance="@style/TextAppearance.AppCompat.Display2"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -39,7 +40,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/tvTrainerName"
+            android:fontFamily="@font/poppins_regular"
             android:layout_toRightOf="@id/ivTrainerPic"
+            android:layout_marginRight="45dp"
             android:text="@string/trainerBioText"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
@@ -48,8 +51,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/ivTrainerPic"
+            android:fontFamily="@font/poppins_regular"
             android:layout_below="@id/tvTrainerBio"
             android:text="@string/tvPriceHourText" />
+
+        <ImageView
+            android:id="@+id/ivStarImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/ivTrainerPic"
+            android:layout_below="@id/tvPriceHour"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/rating_star_cyan" />
 
         <TextView
             android:id="@+id/tvTrainerRating"
@@ -58,8 +71,9 @@
             android:layout_below="@id/tvPriceHour"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_toRightOf="@id/ivTrainerPic"
+            android:layout_marginBottom="4dp"
+            android:fontFamily="@font/poppins_regular"
+            android:layout_toRightOf="@id/ivStarImage"
             android:text="@string/tvTrainingRating"
             android:textSize="12sp" />
 
@@ -96,7 +110,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/tvTrainerRating"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <com.bawp.coachme.model.CustomCalendarView
                 android:id="@+id/cvDates"

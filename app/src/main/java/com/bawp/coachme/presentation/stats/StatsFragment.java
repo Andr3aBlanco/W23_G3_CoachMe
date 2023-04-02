@@ -155,10 +155,10 @@ public class StatsFragment extends Fragment {
                 "titleTextStyle: {color: '#613dc1', fontSize: 16, bold: true, align: 'center'}, " +
                 "axisTitlesPosition: 'in',"+
                 "backgroundColor:{ fill: '#fcfffd'}, " +
-                "chartArea: { backgroundColor: '#fcfffd', width: '100%', height: '65%', left : 0}," +
+                "chartArea: { backgroundColor: '#fcfffd', width: '100%', height: '65%', left : 20}," +
                 "colors: ['#5E60CE', '#48BFE3', '#64DFDF', '#7400B8', '#80FFDB', '#0099C6', '#6930C3', '#72EFDD', '#5390D9', '#64DFDF'], " +
                 "hAxis: {textStyle: {color: '#613dc1', fontSize: 16}, slantedText: true, slantedTextAngle: 90}, " +
-                "vAxis:{title: 'Hours'} "+
+                "vAxis:{title: 'Hours', titleTextStyle: {color: '#613dc1', fontSize: 16}, textStyle: {color: '#613dc1', fontSize: 12}, format:'#'} "+
                 "}";
 
         pieChartYear.getSettings().setJavaScriptEnabled(true);

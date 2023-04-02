@@ -183,6 +183,12 @@ public class DBHelper extends SQLiteOpenHelper {
             "trainerID TEXT, " +
             "FOREIGN KEY(trainerID) REFERENCES trainers(_id) " +
             ");";
+
+    private static final String CREATE_TRAINER_BIO_TABLE = "CREATE TABLE trainerbio( " +
+            "trainerId TEXT PRIMARY KEY,"+
+            "bioSummary TEXT, " +
+            "FOREIGN KEY(trainerId) REFERENCES trainers(_id)" +
+            ");";
     public static final String URL_FIRESTORE_SELF_WORKOUT_PLANS_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutPlans.csv";
     public static final String URL_FIRESTORE_SELF_WORKOUT_SESSION_TYPES_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutSessionTypes.csv";
     public static final String URL_FIRESTORE_SELF_PLAN_EXERCISES_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutPlanExercises.csv";
@@ -194,6 +200,10 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String URL_FIRESTORE_TRAINER_OPEN_SCHEDULE_TABLE="gs://w23-g3-coachme.appspot.com/sqlite_datasets/schedule.csv";
 
     public static final String URL_FIRESTORE_APPOINTMENTS_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/appointments.csv";
+
+    public static final String URL_FIRESTORE_TRAINERBIO_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/trainerbio.csv";
+
+
     public DBHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -228,6 +238,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_RATINGS_TABLE);
         db.execSQL(CREATE_TRAINERSERVICE_TABLE);
         db.execSQL(CREATE_TRAINER_OPEN_SCHEDULE_TABLE);
+        db.execSQL(CREATE_TRAINER_BIO_TABLE);
         databaseJustCreated=true;
         //uploadSelfWorkoutPlans();
 
@@ -247,6 +258,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS ratings");   // Remove this one later
         db.execSQL("DROP TABLE IF EXISTS trainerservice");
         db.execSQL("DROP TABLE IF EXISTS schedule");
+        db.execSQL("DROP TABLE IF EXISTS trainerbio");
         onCreate(db);
     }
 
@@ -487,6 +499,35 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
+    public void uploadTrainerBio(byte[] bytes){
+
+        String content = null; // Convert byte array to string
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            content = new String(bytes, "UTF-8");
+            CSVReader reader = new CSVReader(new StringReader(content));
+            String[] nextLine;
+            while ((nextLine = reader.readNext()) != null) {
+
+                ContentValues trainerBioContents = new ContentValues();
+                trainerBioContents.put("trainerId",nextLine[0]);
+                trainerBioContents.put("bioSummary",nextLine[1]);
+                db.insert("trainerbio", null, trainerBioContents);
+
+            }
+
+            db.close();
+
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        } catch (CsvValidationException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     public void uploadAppointments(byte[] bytes){
 
         String content = null; // Convert byte array to string
@@ -563,6 +604,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         db.close();
     }
+
 
     /* -------------------------------
     -----------APPOINTMENTS----------
@@ -2066,6 +2108,59 @@ public class DBHelper extends SQLiteOpenHelper {
         return count;
     }
 
+
+    // GET trainer bio
+    @SuppressLint("Range")
+    public String getTrainerBioSummary(String trainerId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] projection = { "bioSummary" };
+        String selection = "trainerId = ?";
+        String[] selectionArgs = { trainerId };
+
+        Cursor cursor = db.query(
+                "trainerbio",
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+
+        String bioSummary = "";
+
+        if (cursor.moveToFirst()) {
+            bioSummary = cursor.getString(cursor.getColumnIndex("bioSummary"));
+        }
+
+        cursor.close();
+        db.close();
+
+        return bioSummary;
+    }
+
+    public List<String> getServicesByTrainerId(String trainerId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<String> services = new ArrayList<>();
+
+        String[] selectionArgs = {trainerId};
+        String query = "SELECT service FROM trainerservice WHERE trainerID = ?";
+
+        Cursor cursor = db.rawQuery(query, selectionArgs);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String service = cursor.getString(cursor.getColumnIndex("service"));
+                services.add(service);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return services;
+    }
 
 
 }

@@ -112,15 +112,16 @@
 
             <RadioButton
                 android:id="@+id/rbMapView"
-                android:layout_width="60dp"
+                android:layout_width="80dp"
                 android:layout_height="30dp"
+                android:layout_marginRight="1dp"
                 android:checked="true"
                 android:text="Map" />
         </RadioGroup>
 
         <TextView
             android:id="@+id/txtOrderBy"
-            android:layout_width="100dp"
+            android:layout_width="80dp"
             android:layout_height="40dp"
             android:layout_below="@id/llServicesFilter2"
             android:layout_toRightOf="@id/rgMapListSelector"
@@ -143,6 +144,6 @@
         android:layout_height="match_parent"
         android:layout_marginTop="100dp"
         android:layout_marginBottom="50dp"
-        android:background="#48BFE3" />
+        android:background="#E3F2FD" />
 
 </FrameLayout>

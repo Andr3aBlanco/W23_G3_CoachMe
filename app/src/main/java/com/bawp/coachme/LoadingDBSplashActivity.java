@@ -124,7 +124,7 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                             String address = snapshot.child("address").getValue(String.class);
                             String mobile = snapshot.child("phoneNumber").getValue(String.class);
                             // Update TextViews with user data
-                            UserSingleton.getInstance().setUserId(current_User);
+                            UserSingleton.getInstance().setUserId("-NOjpL1jiGcc80qBrFIl"); // chnage back to current_user
                             UserSingleton.getInstance().setFirstName(firstName);
                             UserSingleton.getInstance().setLastName(lastName);
                             UserSingleton.getInstance().setAddress(address);
@@ -157,6 +157,7 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                         StorageReference csvFileTrainerService = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_TRAINERSERVICE_TABLE);
                         StorageReference csvFileSchedule = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_TRAINER_OPEN_SCHEDULE_TABLE);
                         StorageReference csvFileAppointments = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_APPOINTMENTS_TABLE);
+                        StorageReference csvFileTrainerBio = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_TRAINERBIO_TABLE);
 
                         List<Task<byte[]>> downloadTasks = new ArrayList<>();
                         downloadTasks.add(csvFileWp.getBytes(Long.MAX_VALUE));
@@ -167,6 +168,7 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                         downloadTasks.add(csvFileTrainerService.getBytes(Long.MAX_VALUE));
                         downloadTasks.add(csvFileSchedule.getBytes(Long.MAX_VALUE));
                         downloadTasks.add(csvFileAppointments.getBytes(Long.MAX_VALUE));
+                        downloadTasks.add(csvFileTrainerBio.getBytes(Long.MAX_VALUE));
 
                         txtViewLoadingText.setText("Downloading Datasets...");
                         // Wait for all Tasks to complete
@@ -183,6 +185,7 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                                 byte[] csvFileTrainerServiceByte = task.getResult().get(5);
                                 byte[] csvScheduleByte = task.getResult().get(6);
                                 byte[] csvAppointmentByte = task.getResult().get(7);
+                                byte[] csvTrainerBioByte = task.getResult().get(8);
 
                                 dbHelper.uploadSelfWorkoutPlans(csvFileWpByte);
                                 dbHelper.uploadSelfWorkoutSessionTypes(csvFileWSTByte);
@@ -197,6 +200,7 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                                 //some dump data
                                 dbHelper.uploadSampleAppointment();
                                 //dbHelper.uploadSampleWorkoutPlanByUser();
+                                dbHelper.uploadTrainerBio(csvTrainerBioByte);
 
                                 moveToMainActivity();
                             }
