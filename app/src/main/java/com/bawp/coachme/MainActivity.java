@@ -3,11 +3,6 @@ package com.bawp.coachme;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.provider.Settings;
-import android.view.View;
-
-import androidx.appcompat.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -17,14 +12,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bawp.coachme.databinding.ActivityMainBinding;
-import com.bawp.coachme.model.User;
 import com.bawp.coachme.presentation.home.HomeFragment;
 import com.bawp.coachme.presentation.order.OrdersFragment;
 import com.bawp.coachme.presentation.stats.StatsFragment;
 import com.bawp.coachme.presentation.trainermap.TrainerSearchFragment;
-import com.bawp.coachme.presentation.userAuthantication.LoginActivity;
-import com.bawp.coachme.presentation.userAuthantication.RegisterActivity;
-import com.bawp.coachme.utils.DBHelper;
+import com.bawp.coachme.presentation.userAuthentication.LoginActivity;
 import com.bawp.coachme.utils.UserSingleton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,9 +26,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
