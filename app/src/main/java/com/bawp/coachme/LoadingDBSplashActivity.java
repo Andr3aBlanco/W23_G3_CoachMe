@@ -124,7 +124,8 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                             String address = snapshot.child("address").getValue(String.class);
                             String mobile = snapshot.child("phoneNumber").getValue(String.class);
                             // Update TextViews with user data
-                            UserSingleton.getInstance().setUserId("-NOjpL1jiGcc80qBrFIl"); // chnage back to current_user
+                            UserSingleton.getInstance().setUserId(current_User); // chnage back to current_user
+                            System.out.println("CURRENT USER " + current_User );
                             UserSingleton.getInstance().setFirstName(firstName);
                             UserSingleton.getInstance().setLastName(lastName);
                             UserSingleton.getInstance().setAddress(address);

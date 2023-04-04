@@ -23,7 +23,7 @@ package com.bawp.coachme.model;
 
 import java.io.Serializable;
 
-public class SelfWorkoutPlanExercise implements Serializable {
+public class    SelfWorkoutPlanExercise implements Serializable {
 
     private String id;
     private String selfWorkoutSessionTypeId;

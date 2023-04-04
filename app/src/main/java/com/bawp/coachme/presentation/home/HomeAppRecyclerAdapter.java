@@ -14,7 +14,10 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,6 +29,12 @@ import com.bawp.coachme.model.Appointment;
 import com.bawp.coachme.model.Trainer;
 import com.bawp.coachme.utils.DBHelper;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -56,6 +65,39 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
         View view = inflater.inflate(R.layout.home_app_cardview_layout, parent, false);
         HomeAppRecyclerAdapter.HomeAppViewHolder holder = new HomeAppRecyclerAdapter.HomeAppViewHolder(view);
 
+        //Click listener for see appointment details button
+        holder.btnAppDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(holder.rlMapApppDetails.getVisibility() == View.GONE){
+                    holder.rlMapApppDetails.setVisibility(View.VISIBLE);
+                }else{
+                    holder.rlMapApppDetails.setVisibility(View.GONE);
+                }
+
+
+
+                // for the map
+                holder.mvLocation.onCreate(null);
+               holder.mvLocation.getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(GoogleMap googleMap) {
+                        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+
+                        // current position
+                        int currentposition = holder.getBindingAdapterPosition();
+                        System.out.println("INSIDE THE HOME ADAPTER position " + currentposition);
+                        Trainer trainer = dbHelper.getTrainerById(appointmentList.get(currentposition).getTrainerId());
+                        LatLng trainerLocation = new LatLng(trainer.getLatitudeCoord(), trainer.getLongitudeCoord());
+                        googleMap.addMarker(new MarkerOptions().position(trainerLocation).title(trainer.getFirstName()));
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(trainerLocation));
+                    }
+                });
+            }
+        });
+
         return holder;
     }
 
@@ -82,6 +124,8 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
 
         String description = serviceType + " Session\n"+formattedBookedDate;
         holder.mTxtViewProductDetail.setText(description);
+
+
     }
 
     @Override
@@ -96,17 +140,30 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
         TextView mTxtViewProductDetail;
         ImageView mImgViewTrainerPhoto;
 
+        ImageButton btnAppDetails;
+
+        // Additional details
+        MapView mvLocation;
+        RelativeLayout rlMapApppDetails;
+
+
         public HomeAppViewHolder(@NonNull View itemView) {
             super(itemView);
             mCardView = itemView.findViewById(R.id.home_item_card_container);
             mTxtViewProductTitle = itemView.findViewById(R.id.txtViewProductTitle);
             mTxtViewProductDetail = itemView.findViewById(R.id.txtViewProductDetail);
             mImgViewTrainerPhoto = itemView.findViewById(R.id.imgViewTrainerPhoto);
+            btnAppDetails = itemView.findViewById(R.id.btnCheckAppointmentHome);
+            mvLocation = itemView.findViewById(R.id.mapViewAppLocation);
+            rlMapApppDetails = itemView.findViewById(R.id.rlAappAddDetails);
         }
     }
 
     public interface SetOnItemClickListener{
         public void setOnItemClick(int i);
     }
+
+
+
 
 }

@@ -67,7 +67,7 @@ public class TrainerMapFragment extends Fragment {
           trainersMapFiltered = (HashMap<String, Trainer>) getArguments().getSerializable("FILTERED_TRAINERS");
           latitude = getArguments().getDouble("LATITUDE");
           longitude = getArguments().getDouble("LONGITUDE");
-            Log.d("TrainerMap", "Latitude: " + latitude + ", Longitude: " + longitude); //My location ok :)
+          Log.d("TrainerMap", "Latitude: " + latitude + ", Longitude: " + longitude); //My location ok :)
         }
     }
 
@@ -131,14 +131,6 @@ public class TrainerMapFragment extends Fragment {
                 checkLocationPermissionAndEnableMyLocation();
 
                         addMarkersForTrainers(trainersMapFiltered);
-
-                //Print unfiltered trainers
-//                for (Map.Entry<String, User> entry : trainersMapFiltered.entrySet()) {
-//                    String key = entry.getKey();
-//                    User value = entry.getValue();
-//                    System.out.println(key + " = " + value.getFirstName());
-//                }
-
 
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
