@@ -23,6 +23,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bawp.coachme.LoadingDBSplashActivity;
@@ -63,7 +64,7 @@ public class NewUserForm extends AppCompatActivity {
     EditText phoneNumberTxt;
     Button confirmDataBtn;
     FirebaseAuth auth;
-Button btnCurrent_location;
+TextView btnCurrent_location;
     FirebaseUser user;
     String current_User;
 
