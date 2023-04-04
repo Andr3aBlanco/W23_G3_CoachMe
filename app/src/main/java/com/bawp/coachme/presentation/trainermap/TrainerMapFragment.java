@@ -3,7 +3,11 @@ package com.bawp.coachme.presentation.trainermap;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,9 +46,15 @@ import java.util.Map;
 public class TrainerMapFragment extends Fragment {
 
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
 
     private GoogleMap googleMap;
     private List<Trainer> theFilteredTrainers;
+    private double latitude;
+    private double longitude;
+    private LocationManager locationManager;
+    private String provider;
     private HashMap<String, Trainer> trainersMapFiltered = new HashMap<>();
 
     private MapView mapView;
@@ -55,6 +65,46 @@ public class TrainerMapFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
           trainersMapFiltered = (HashMap<String, Trainer>) getArguments().getSerializable("FILTERED_TRAINERS");
+          latitude = getArguments().getDouble("LATITUDE");
+          longitude = getArguments().getDouble("LONGITUDE");
+          Log.d("TrainerMap", "Latitude: " + latitude + ", Longitude: " + longitude); //My location ok :)
+
+
+            // Get the location manager and provider
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            }
+            provider = LocationManager.GPS_PROVIDER;
+
+            // Request location updates
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+
+            } else {
+
+                // Get the location manager and provider
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+                }
+                provider = LocationManager.GPS_PROVIDER;
+
+                try {
+//                locationManager.requestLocationUpdates(provider,400,1,this);
+
+                    // Get the last known location
+                    Location location = locationManager.getLastKnownLocation(provider);
+                    if (location != null) {
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
+                        Log.d("TrainerSearch", "Latitude: " + latitude + ", Longitude: " + longitude); //My location ok :)
+                    }
+                } catch(SecurityException e){
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -68,32 +118,25 @@ public class TrainerMapFragment extends Fragment {
         mapView = (MapView) view.findViewById(R.id.mapTrainersF); //
         mapView.onCreate(savedInstanceState); //
 
+
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(@NonNull GoogleMap map) {
                 googleMap = map;
 
                 // Set the initial position and zoom level
-                LatLng initialPosition = new LatLng(49.18308405089783, -122.95854180247775); // Vancouver Metro 49.18308405089783, -122.95854180247775
+                LatLng initialPosition = new LatLng(latitude, longitude); // Vancouver Metro 49.18308405089783, -122.95854180247775
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 10f));
 
-                Log.d("Andrea", "Map Ready");
+//                Log.d("Andrea", "Map Ready");
                 checkLocationPermissionAndEnableMyLocation();
 
                         addMarkersForTrainers(trainersMapFiltered);
 
-                //Print unfiltered trainers
-//                for (Map.Entry<String, User> entry : trainersMapFiltered.entrySet()) {
-//                    String key = entry.getKey();
-//                    User value = entry.getValue();
-//                    System.out.println(key + " = " + value.getFirstName());
-//                }
-
-
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(@NonNull Marker marker) {
-                        Log.d("ANDREA", "Clicked marker");
+//                        Log.d("ANDREA", "Clicked marker");
 
                         //Parameters for the object creation
                         String trainerID =marker.getSnippet();

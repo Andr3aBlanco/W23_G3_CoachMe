@@ -20,4 +20,5 @@
     <color name="medium_workout_color">#FFA500</color>
     <color name="intense_workout_color">#6A1B9A</color>
     <color name="transparent">#00FAF6F6</color>
+    <color name="cancel_red">#d1105a</color>
 </resources>

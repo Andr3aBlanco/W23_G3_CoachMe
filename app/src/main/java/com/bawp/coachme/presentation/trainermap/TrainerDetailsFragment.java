@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -105,6 +106,7 @@ public class TrainerDetailsFragment extends Fragment {
     String location;
     String trainerId;
     String customerId;
+    String trainerBio;
 
     DBHelper dbHelper;
 
@@ -148,14 +150,17 @@ public class TrainerDetailsFragment extends Fragment {
         CardView wholeCard = view.findViewById(R.id.cardViewTrainerDetails);
         Button addCart = view.findViewById(R.id.btnAddCart);
 //        calendarView = view.findViewById(R.id.cvDates); //check this
-
+        Spinner spinServices = view.findViewById(R.id.spinService);
 
 
         calendarView = view.findViewById(R.id.cvDates);
-        List<Date> disabledDates = new ArrayList<>();
+
+        List<Long> disabledDates = new ArrayList<>();
         Date newDate = new Date();
-        disabledDates.add(newDate);
-        disabledDates.add(new Date());
+        Long newDateMilli = newDate.getTime();
+        disabledDates.add(newDateMilli);
+        System.out.println("NEW DATE IN TRAINER DETAILS " + newDateMilli);
+
         calendarView.setDisabledDates(disabledDates);
 
         Calendar currentCalendar = Calendar.getInstance();
@@ -179,8 +184,10 @@ public class TrainerDetailsFragment extends Fragment {
 
         double rating = currentTrainer.getRating();
         availApp =   dbHelper.getTimesByTrainerID(currentTrainer.getId());
+        trainerBio = dbHelper.getTrainerBioSummary(currentTrainer.getId());
 
 
+        tvBio.setText(trainerBio);
         //Create hashmap of date and times
         // Loop through the appointment times in the List
         for (long timeInMillis : availApp) {
@@ -213,6 +220,12 @@ public class TrainerDetailsFragment extends Fragment {
             }
         }
 
+        // get services
+        List<String> currentServices = dbHelper.getServicesByTrainerId(currentTrainer.getId());
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, currentServices);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinServices.setAdapter(adapter);
 
 
         //click listener for the button
@@ -294,7 +307,7 @@ public class TrainerDetailsFragment extends Fragment {
 
                 if(trainerCustomListAdapter.getSelectedHour() == position ){
                     // If clicked is the same
-                    System.out.println("Index == tp se;ected position ");
+                    System.out.println("Index == tp selected position ");
                     trainerCustomListAdapter.setSelectedHour(-1);
                     trainerCustomListAdapter.notifyDataSetChanged();
                 } else
@@ -345,7 +358,7 @@ public class TrainerDetailsFragment extends Fragment {
                     trainerId = currentTrainer.getId();
 
                     // modifying in layout
-                    serviceType = "To be defined";
+                    serviceType = spinServices.getSelectedItem().toString();
                     totalPrice = currentTrainer.getFlatPrice();
 
                     // create query to delete appointment by time

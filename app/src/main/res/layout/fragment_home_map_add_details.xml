@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="300dp"
+    android:layout_height="300dp"
+    tools:context=".presentation.home.HomeMapAddDetails">
+
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/mapViewAppLocation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:apiKey="AIzaSyAkm-OeCK3xywaBvOeRGWOGxHF-4iyGfY8"
+        android:clickable="true"
+        android:contentDescription="@string/NoSpeakableText"
+        android:enabled="true"
+        android:focusable="true"/>
+
+
+</FrameLayout>

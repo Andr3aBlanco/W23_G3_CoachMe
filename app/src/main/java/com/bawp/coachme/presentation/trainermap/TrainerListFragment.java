@@ -22,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -129,6 +130,7 @@ public class TrainerListFragment extends Fragment {
         private  Button closeBtn;
         private Button addCart;
         private CalendarView calendarView;
+        private Spinner spinServices;
 
         // constructor OK
         public TrainerViewHolder(@NonNull View itemView) {
@@ -151,6 +153,7 @@ public class TrainerListFragment extends Fragment {
 
             closeCard = itemView.findViewById(R.id.btnCloseCard);
             addCart = itemView.findViewById(R.id.btnAddCart);
+            spinServices = itemView.findViewById(R.id.spinService);
 
         }
     }
@@ -282,6 +285,16 @@ public class TrainerListFragment extends Fragment {
             holder.tvPrice.setText(formatter.format(unsortedTrainers.get(position).getFlatPrice()));
             holder.tvRating.setText(String.format("%.2f", unsortedTrainers.get(position).getRating())); //Ok
 
+            String trainerBio = dbHelper.getTrainerBioSummary(unsortedTrainers.get(position).getId());
+            holder.tvBio.setText(trainerBio);
+
+
+            // for the spinner
+            List<String> currentServices = dbHelper.getServicesByTrainerId(unsortedTrainers.get(position).getId());
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, currentServices);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            holder.spinServices.setAdapter(adapter);
             //Here goes all the logic
             holder.seeMore.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -296,22 +309,7 @@ public class TrainerListFragment extends Fragment {
                         cardStatus = 0;
                     }
 
-                     // Disable dates
 
-
-                    // Disable click on all dates that are not in the available appointment list
-                    for (long appTime : availApp) {
-                       holder.calendarView.setDate(appTime);
-                        View view = holder.calendarView.getChildAt(0);
-                        if (view instanceof ViewGroup) {
-                            ViewGroup vg = (ViewGroup) view;
-                            for (int i = 0; i < vg.getChildCount(); i++) {
-                                View child = vg.getChildAt(i);
-                                child.setClickable(true);
-//                                child.setBackgroundColor(R.color.black);
-                            }
-                        }
-                    }
                 }
             });
 
@@ -367,7 +365,7 @@ public class TrainerListFragment extends Fragment {
 
                     if(trainerCustomListAdapter.getSelectedHour() == position ){
                         // If clicked is the same
-                        System.out.println("Index == tp se;ected position ");
+                        System.out.println("Index == tp selected position ");
                         trainerCustomListAdapter.setSelectedHour(-1);
                         trainerCustomListAdapter.notifyDataSetChanged();
                     } else
@@ -410,7 +408,7 @@ public class TrainerListFragment extends Fragment {
 
                     location = unsortedTrainers.get(position).getAddress();
                     trainerId = unsortedTrainers.get(position).getId();
-                    serviceType = "To be defined";
+                    serviceType = holder.spinServices.getSelectedItem().toString();
                     totalPrice = unsortedTrainers.get(position).getFlatPrice();
 
                     // create query to delete appointment by time
