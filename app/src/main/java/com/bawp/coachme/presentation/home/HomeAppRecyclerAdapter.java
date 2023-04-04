@@ -76,10 +76,9 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
                     holder.rlMapApppDetails.setVisibility(View.GONE);
                 }
 
-
-
                 // for the map
                 holder.mvLocation.onCreate(null);
+
                holder.mvLocation.getMapAsync(new OnMapReadyCallback() {
                     @Override
                     public void onMapReady(GoogleMap googleMap) {

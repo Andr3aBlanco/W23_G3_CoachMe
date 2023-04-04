@@ -2140,6 +2140,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return bioSummary;
     }
 
+    @SuppressLint("Range")
     public List<String> getServicesByTrainerId(String trainerId) {
         SQLiteDatabase db = this.getReadableDatabase();
         List<String> services = new ArrayList<>();
