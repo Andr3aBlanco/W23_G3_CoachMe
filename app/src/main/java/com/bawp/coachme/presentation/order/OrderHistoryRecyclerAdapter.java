@@ -66,7 +66,7 @@ public class OrderHistoryRecyclerAdapter extends RecyclerView.Adapter<OrderHisto
         String formattedNumber = String.format("%04d", orderId);
         String orderTitle = "ORDER Nº "+ formattedNumber;
 
-        DateFormat format = new SimpleDateFormat("EEEE, dd/MM/yyyy");
+        DateFormat format = new SimpleDateFormat("EEEE, yyyy-MM-dd");
         DateFormat formatDetail = new SimpleDateFormat("dd/MM (HH:mm)");
         String formattedPaymentDate = "Payment Date\n"+format.format(paymentList.get(position).getPaymentDate());
 

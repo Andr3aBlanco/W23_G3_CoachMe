@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_halfbackground2"
-    tools:context=".presentation.user.ProfileFragment">
+    tools:context=".presentation.userAuthentication.ProfileFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
