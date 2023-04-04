@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -143,31 +144,7 @@ public class SelfworkoutFragment extends Fragment {
 
                     }else{
 
-                        //The user wants to restart the session
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        builder.setTitle("Attention!");
-                        builder.setMessage("You have finished your workout plan for today. Do you want to restart the session?");
-                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                isNewSession = true;
-                                dbHelper.updateSelfWorkoutSessionStatus(session.getId(),1);
-                                dbHelper.deleteSelfWorkoutSessionLogsBySessionId(session.getId());
-
-                                SelfWorkoutSession updatedSession = dbHelper.getSessionById(session.getId());
-
-                                dialog.dismiss();
-                                moveToSelfWorkoutSessions(sessionTypes, updatedSession);
-                            }
-                        });
-                        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                        AlertDialog dialog = builder.create();
-                        dialog.show();
+                        Toast.makeText(getContext(),"You have finished your workout for today. If you want restart your session select 'Restart Workout'",Toast.LENGTH_LONG).show();
 
                     }
 
@@ -252,7 +229,7 @@ public class SelfworkoutFragment extends Fragment {
 
         Bundle passDataToFragment = new Bundle();
         passDataToFragment.putSerializable("sessionTypesList",(Serializable) sessionTypes);
-        passDataToFragment.putSerializable("sessionObj",(Serializable) currentSession ) ;
+        passDataToFragment.putSerializable("sessionObj",(Serializable) session ) ;
         passDataToFragment.putSerializable("workoutUserId",selfworkoutUserId ) ;
         passDataToFragment.putBoolean("isNewSession",isNewSession);
 
@@ -342,8 +319,6 @@ public class SelfworkoutFragment extends Fragment {
                 linearLayout.addView(txtViewDuration);
 
             }
-
-
 
             llTableSessionsDetail.addView(linearLayout);
 
