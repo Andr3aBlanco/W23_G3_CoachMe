@@ -11,6 +11,7 @@ package com.bawp.coachme.presentation.home;
  */
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bawp.coachme.R;
@@ -50,6 +53,15 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
     SetOnItemClickListener listener;
     DBHelper dbHelper;
 
+    public List<Appointment> getAppointmentList() {
+        return appointmentList;
+    }
+
+    public void setAppointmentList(List<Appointment> appointmentList) {
+        this.appointmentList = appointmentList;
+        notifyDataSetChanged();
+    }
+
     public HomeAppRecyclerAdapter(List<Appointment> appointmentList, Context context, SetOnItemClickListener listener){
         this.appointmentList = appointmentList;
         this.context = context;
@@ -65,35 +77,52 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
         View view = inflater.inflate(R.layout.home_app_cardview_layout, parent, false);
         HomeAppRecyclerAdapter.HomeAppViewHolder holder = new HomeAppRecyclerAdapter.HomeAppViewHolder(view);
 
-        //Click listener for see appointment details button
+
         holder.btnAppDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                //Click listener for see appointment details button
+                int position = holder.getBindingAdapterPosition();
+                System.out.println("POSITION IN ON CREATE IN HOME ADAPTER " + position);
+
+                Trainer trainer = dbHelper.getTrainerById(appointmentList.get(position).getTrainerId());
+                double latitude = trainer.getLatitudeCoord();
+                double longitude = trainer.getLongitudeCoord();
+
                 if(holder.rlMapApppDetails.getVisibility() == View.GONE){
                     holder.rlMapApppDetails.setVisibility(View.VISIBLE);
+
+                    HomeMapAddDetails mapAddDetails = new HomeMapAddDetails();
+                    Bundle args = new Bundle();
+                    args.putDouble("LATITUDE", latitude);
+                    args.putDouble("LONGITUDE", longitude);
+                    mapAddDetails.setArguments(args);
+
+                    FragmentTransaction transaction = ((FragmentActivity)context).getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.frameMapAddDetails, mapAddDetails);
+                    transaction.addToBackStack(null);
+                    transaction.commit();
+
                 }else{
                     holder.rlMapApppDetails.setVisibility(View.GONE);
                 }
 
-                // for the map
-                holder.mvLocation.onCreate(null);
+            }
+        });
 
-               holder.mvLocation.getMapAsync(new OnMapReadyCallback() {
-                    @Override
-                    public void onMapReady(GoogleMap googleMap) {
-                        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        holder.cancelApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                //Click listener for see appointment details button
+                int position = holder.getBindingAdapterPosition();
 
-                        // current position
-                        int currentposition = holder.getBindingAdapterPosition();
-                        System.out.println("INSIDE THE HOME ADAPTER position " + currentposition);
-                        Trainer trainer = dbHelper.getTrainerById(appointmentList.get(currentposition).getTrainerId());
-                        LatLng trainerLocation = new LatLng(trainer.getLatitudeCoord(), trainer.getLongitudeCoord());
-                        googleMap.addMarker(new MarkerOptions().position(trainerLocation).title(trainer.getFirstName()));
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(trainerLocation));
-                    }
-                });
+                    dbHelper.updateAppointmentStatus(appointmentList.get(position).getId(),2);
+                    appointmentList.remove(position);
+                    System.out.println("APPOINTMENT CANCELLED. ");
+                    setAppointmentList(appointmentList);
+
             }
         });
 
@@ -125,6 +154,7 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
         holder.mTxtViewProductDetail.setText(description);
 
 
+
     }
 
     @Override
@@ -141,9 +171,8 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
 
         ImageButton btnAppDetails;
 
-        // Additional details
-        MapView mvLocation;
         RelativeLayout rlMapApppDetails;
+        Button cancelApp;
 
 
         public HomeAppViewHolder(@NonNull View itemView) {
@@ -153,8 +182,10 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
             mTxtViewProductDetail = itemView.findViewById(R.id.txtViewProductDetail);
             mImgViewTrainerPhoto = itemView.findViewById(R.id.imgViewTrainerPhoto);
             btnAppDetails = itemView.findViewById(R.id.btnCheckAppointmentHome);
-            mvLocation = itemView.findViewById(R.id.mapViewAppLocation);
             rlMapApppDetails = itemView.findViewById(R.id.rlAappAddDetails);
+            cancelApp = itemView.findViewById(R.id.btnCancelApp);
+
+
         }
     }
 

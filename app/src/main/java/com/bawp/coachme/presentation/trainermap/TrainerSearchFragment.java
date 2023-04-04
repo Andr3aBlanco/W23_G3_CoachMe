@@ -264,15 +264,15 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
 
                 switch (selectedValue){
                     case "Rating":
-                        sortingOption = 2;
+                        sortingOption = 1;
                         break;
 
                     case "Distance":
-                        sortingOption = 3;
+                        sortingOption = 2;
                         break;
 
                     case "Price":
-                        sortingOption = 1;
+                        sortingOption = 3;
                         break;
                     default:
                         sortingOption = 1;

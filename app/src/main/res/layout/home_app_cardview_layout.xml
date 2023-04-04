@@ -86,12 +86,25 @@
         android:visibility="gone">
 
 
-        <com.google.android.gms.maps.MapView
-            android:id="@+id/mapViewAppLocation"
+        <FrameLayout
             android:layout_width="300dp"
             android:layout_height="300dp"
+            android:layout_margin="2dp"
             android:layout_centerHorizontal="true"
-            />
+            android:id="@+id/frameMapAddDetails">
+
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/btnCancelApp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/frameMapAddDetails"
+            android:layout_centerHorizontal="true"
+            android:backgroundTint="@color/cancel_red"
+            android:fontFamily="@font/poppins_bold"
+            android:text="CANCEL APPOINTMENT" />
+
     </RelativeLayout>
 
 </com.google.android.material.card.MaterialCardView>

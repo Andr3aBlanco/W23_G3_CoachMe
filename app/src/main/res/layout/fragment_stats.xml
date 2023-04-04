@@ -11,11 +11,13 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="60dp">
+        android:layout_marginBottom="60dp"
+        >
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:id="@+id/statsBanner">
 
         <ImageView
             android:id="@+id/imageViewStats"
@@ -46,7 +48,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/noHistoryText"
-        android:layout_marginTop="150dp"
+        android:layout_below="@+id/statsBanner"
         android:textSize="20sp"
         android:visibility="gone"/>
 
@@ -54,23 +56,23 @@
         android:id="@+id/chartWebView"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:layout_marginTop="150dp"
-        android:background="#fcfffd"/>
+        android:background="#fcfffd"
+        android:layout_below="@id/txtNoHistoryText"/>
 
     <WebView
         android:id="@+id/barChart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="450dp"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
         android:background="#fcfffd"
+        android:layout_below="@+id/chartWebView"
         />
 
     <TextView
         android:id="@+id/txtTotalHours"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="730dp"
         android:gravity="center_horizontal"
+        android:layout_below="@id/barChart"
         android:fontFamily="@font/poppins_regular"
         android:text=""
         android:textColor="#6247aa"

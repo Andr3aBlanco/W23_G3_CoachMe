@@ -27,6 +27,7 @@ import com.bawp.coachme.model.SelfWorkoutPlanByUser;
 import com.bawp.coachme.presentation.feedback.AppHistoryListFragment;
 import com.bawp.coachme.presentation.selfworkout.SelfworkoutFragment;
 import com.bawp.coachme.presentation.selfworkout.SelfworkoutSessionTypeFragment;
+import com.bawp.coachme.presentation.trainermap.TrainerSearchFragment;
 import com.bawp.coachme.utils.DBHelper;
 import com.bawp.coachme.utils.UserSingleton;
 import com.google.firebase.storage.FirebaseStorage;
@@ -56,6 +57,7 @@ public class HomeFragment extends Fragment {
     LinearLayout llNoAppAvailable;
     Button btnGoToWorkoutMktp;
     Button btnViewPreviousAppointments;
+    Button btnBookNewApp;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -194,6 +196,21 @@ public class HomeFragment extends Fragment {
                     Toast.makeText(getContext(), "No previous appointments available", Toast.LENGTH_LONG).show();
                 }
 
+            }
+        });
+
+        btnBookNewApp = view.findViewById(R.id.btnHomeBookNew);
+
+        btnBookNewApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TrainerSearchFragment trainerSearchFragment = new TrainerSearchFragment();
+                FragmentManager fm = getParentFragmentManager();
+                FragmentTransaction ft = fm.beginTransaction();
+
+                ft.replace(R.id.barFrame, trainerSearchFragment);
+                ft.addToBackStack("Trainer-Search");
+                ft.commit();
             }
         });
 
