@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bawp.coachme.presentation.user.ProfileFragment;
+import com.bawp.coachme.presentation.userAuthentication.ProfileFragment;
 import com.bawp.coachme.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

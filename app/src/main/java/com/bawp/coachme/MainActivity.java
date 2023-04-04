@@ -20,7 +20,7 @@ import com.bawp.coachme.presentation.userAuthentication.LoginActivity;
 import com.bawp.coachme.utils.UserSingleton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.bawp.coachme.presentation.user.ProfileFragment;
+import com.bawp.coachme.presentation.userAuthentication.ProfileFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
