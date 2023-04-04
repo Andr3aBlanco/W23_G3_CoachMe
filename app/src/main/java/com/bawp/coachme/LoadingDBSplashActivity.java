@@ -117,8 +117,7 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                     databaseRef.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                         String  firstName = snapshot.child("firstName").getValue(String.class);
+                            String  firstName = snapshot.child("firstName").getValue(String.class);
                             String  lastName = snapshot.child("lastName").getValue(String.class);
                             String  email = snapshot.child("email").getValue(String.class);
                             String address = snapshot.child("address").getValue(String.class);
@@ -132,7 +131,6 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                             UserSingleton.getInstance().setEmail(email);
                             UserSingleton.getInstance().setPhoneNumber(mobile);
                             UserSingleton.getInstance().setUserDeviceToken(token);
-
                         }
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
@@ -141,7 +139,6 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                     });
                     databaseRef.child("deviceToken").setValue(token);
                     //setting up user singleton
-
 
                     DBHelper dbHelper = new DBHelper(this);
                     SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -171,9 +168,6 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                         downloadTasks.add(csvFileAppointments.getBytes(Long.MAX_VALUE));
                         downloadTasks.add(csvFileTrainerBio.getBytes(Long.MAX_VALUE));
 
-                        txtViewLoadingText.setText("Downloading Datasets...");
-                        // Wait for all Tasks to complete
-                        Task<List<byte[]>> allTasks = Tasks.whenAllSuccess(downloadTasks);
 
                         allTasks.addOnCompleteListener(new OnCompleteListener<List<byte[]>>() {
                             @Override

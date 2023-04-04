@@ -4,28 +4,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.userAuthantication.LoginActivity">
+    android:background="@drawable/bg_halfbackground2"
+    tools:context=".presentation.userAuthentication.LoginActivity">
 
     <TextView
         android:id="@+id/appTitleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:text="@string/app_name"
+        android:textColor="@color/white"
         android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.088" />
 
     <EditText
         android:id="@+id/txtusername"
         android:layout_width="0dp"
+        android:drawableLeft="@drawable/ic_white_email"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="32dp"
+        android:textColorHint="@color/white"
+
         android:ems="10"
+        android:textColor="@color/white"
         android:hint="email"
+        android:drawablePadding="20dp"
         android:inputType="textPersonName"
         android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -40,20 +50,27 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="32dp"
+        android:textColor="@color/white"
+        android:drawablePadding="20dp"
+        android:drawableLeft="@drawable/baseline_password"
         android:ems="10"
+
+        android:textColorHint="@color/white"
         android:hint="Password"
         android:inputType="textPassword"
         android:minHeight="48dp"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtusername" />
 
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/btnLogin"
-        android:layout_width="185dp"
-        android:layout_height="59dp"
-        android:layout_marginTop="52dp"
+        android:layout_width="192dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="60dp"
+        android:backgroundTint="#8D82F6"
         android:text="@string/btnLogIn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,11 +78,11 @@
 
     <ImageView
         android:id="@+id/imageFacebookAuth"
-        android:layout_width="70dp"
-        android:layout_height="92dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="64dp"
+        android:layout_height="79dp"
+        android:layout_marginTop="28dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.618"
+        app:layout_constraintHorizontal_bias="0.61"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnGoToRegister"
         app:srcCompat="@drawable/facebooklogo" />
@@ -74,9 +91,9 @@
         android:id="@+id/imageGoogleAuth"
         android:layout_width="60dp"
         android:layout_height="72dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.296"
+        app:layout_constraintHorizontal_bias="0.369"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnGoToRegister"
         app:srcCompat="@drawable/google_logo" />
@@ -91,13 +108,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.button.MaterialButton
+    <TextView
         android:id="@+id/btnGoToRegister"
-        android:layout_width="185dp"
-        android:layout_height="59dp"
-        android:layout_marginTop="52dp"
+        android:layout_width="263dp"
+        android:layout_height="31dp"
+        android:layout_marginTop="32dp"
         android:text="@string/btnRegister"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.641"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnLogin" />
 
@@ -107,7 +126,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="@string/txtsignin"
-        android:textSize="24sp"
+        android:textSize="29sp"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -117,10 +137,10 @@
         android:id="@+id/txtForgotPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/white"
         android:text="@string/txtForgetPass"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageGoogleAuth" />
 </androidx.constraintlayout.widget.ConstraintLayout>

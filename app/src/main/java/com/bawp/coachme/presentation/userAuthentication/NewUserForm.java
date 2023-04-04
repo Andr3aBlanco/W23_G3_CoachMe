@@ -1,4 +1,4 @@
-package com.bawp.coachme.presentation.userAuthantication;
+package com.bawp.coachme.presentation.userAuthentication;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -18,22 +18,20 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bawp.coachme.LoadingDBSplashActivity;
-import com.bawp.coachme.MainActivity;
 import com.bawp.coachme.R;
 import com.bawp.coachme.model.Role;
 import com.bawp.coachme.model.User;
 import com.bawp.coachme.utils.UserSingleton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -63,7 +61,7 @@ public class NewUserForm extends AppCompatActivity {
     EditText phoneNumberTxt;
     Button confirmDataBtn;
     FirebaseAuth auth;
-Button btnCurrent_location;
+TextView btnCurrent_location;
     FirebaseUser user;
     String current_User;
 
