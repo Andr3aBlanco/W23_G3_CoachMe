@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,7 @@ public class HomeMapAddDetails extends Fragment {
 
             longitude = getArguments().getDouble("LONGITUDE");
             latitude = getArguments().getDouble("LATITUDE");
+            Log.d("ANDREA", "Got new long lan " + longitude + " " + latitude);
         }
 
 
@@ -57,7 +59,7 @@ public class HomeMapAddDetails extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_home_map_add_details, container, false);
 
-        mapView = view.findViewById(R.id.mapViewAppLocation);
+//        mapView = view.findViewById(R.id.mapViewAppLocation);
         mapView.onCreate(savedInstanceState);
 
         mapView.getMapAsync(new OnMapReadyCallback() {
