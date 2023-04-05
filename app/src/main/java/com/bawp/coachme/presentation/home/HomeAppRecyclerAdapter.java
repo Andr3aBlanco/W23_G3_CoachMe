@@ -118,10 +118,10 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
                 //Click listener for see appointment details button
                 int position = holder.getBindingAdapterPosition();
 
-                    dbHelper.updateAppointmentStatus(appointmentList.get(position).getId(),2);
-                    appointmentList.remove(position);
-                    System.out.println("APPOINTMENT CANCELLED. ");
-                    setAppointmentList(appointmentList);
+                dbHelper.updateAppointmentStatus(appointmentList.get(position).getId(),2);
+                appointmentList.remove(position);
+                System.out.println("APPOINTMENT CANCELLED. ");
+                setAppointmentList(appointmentList);
 
             }
         });
@@ -143,7 +143,13 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
                 .load(imageRef)
                 .into(holder.mImgViewTrainerPhoto);
 
-        holder.mTxtViewProductTitle.setText("Training with "+trainer.getFirstName());
+        String appointmentTitle = "Training with "+trainer.getFirstName();
+
+        if (appointmentList.get(position).getStatus() == 4){
+            appointmentTitle += "\nIn Progress!";
+        }
+
+        holder.mTxtViewProductTitle.setText(appointmentTitle);
 
         Date bookedDate = new Date(appointmentList.get(position).getBookedDate());
         DateFormat format = new SimpleDateFormat("EEE, dd/MM/yy HH:mm");
