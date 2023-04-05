@@ -1,4 +1,4 @@
-package com.bawp.coachme.presentation.user;
+package com.bawp.coachme.presentation.userAuthentication;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,8 +15,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.bawp.coachme.presentation.userAuthantication.EditUserProfileFragment;
-import com.bawp.coachme.presentation.userAuthantication.LoginActivity;
+import com.bawp.coachme.presentation.userAuthentication.EditUserProfileFragment;
+import com.bawp.coachme.presentation.userAuthentication.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;

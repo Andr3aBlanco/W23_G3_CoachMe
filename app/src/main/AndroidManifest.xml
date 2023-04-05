@@ -22,13 +22,13 @@
             android:resource="@drawable/baseline_fitness_center_24" />
 
         <activity
-            android:name=".presentation.userAuthantication.ResetPasswordActivity"
+            android:name=".presentation.userAuthentication.ResetPasswordActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.userAuthantication.FacebookSignInActivity"
+            android:name=".presentation.userAuthentication.FacebookSignInActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.userAuthantication.GoogleSignInActivity"
+            android:name=".presentation.userAuthentication.GoogleSignInActivity"
             android:exported="false" />
         <activity
             android:name=".presentation.trainermap.TrainerMapActivity"
@@ -57,7 +57,7 @@
         </activity>
 
         <activity
-            android:name=".presentation.userAuthantication.LoginActivity"
+            android:name=".presentation.userAuthentication.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -67,10 +67,10 @@
 
         </activity>
         <activity
-            android:name=".presentation.userAuthantication.RegisterActivity"
+            android:name=".presentation.userAuthentication.RegisterActivity"
             android:exported="true" />
         <activity
-            android:name=".presentation.userAuthantication.NewUserForm"
+            android:name=".presentation.userAuthentication.NewUserForm"
             android:exported="true" />
 
         <meta-data

@@ -15,13 +15,13 @@
     <string name="txtsignin">Sign in</string>
     <string name="txtCreateAccount">Create Account</string>
     <string name="btnNext_">Next</string>
-    <string name="txtCreateCoachmeAccount">Create a Coachme account</string>
+    <string name="txtCreateCoachmeAccount">Signup</string>
     <string name="facebook_app_id">1671473303313437</string>
     <string name="fb_login_protocol_scheme">fb1671473303313437</string>
     <string name="facebook_client_token">56789</string>
     <string name="txtresettitle">Reset Your password</string>
     <string name="btnReset">Reset</string>
-    <string name="btnRegister">Register</string>
+    <string name="btnRegister">Not a member? Signup  now</string>
     <string name="txtBacktoLogIn">Back to Sign In</string>
     <string name="txtGetCurrentLoc">Get Current Location</string>
     <string name="txtForgetPass">Forgot Password?</string>

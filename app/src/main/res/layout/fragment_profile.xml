@@ -3,37 +3,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
-    tools:context=".presentation.user.ProfileFragment">
+    android:background="@drawable/bg_halfbackground2"
+    tools:context=".presentation.userAuthentication.ProfileFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="250dp"
-            android:background="#5CC09F">
+            android:background="@drawable/bg_halfbackground2">
+
             <ImageView
+                android:id="@+id/imageView_profile_dp"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:id="@+id/imageView_profile_dp"
-                android:shape="ring"
                 android:layout_centerInParent="true"
+                android:background="@drawable/ic_bart"
 
-                android:thicknessRatio="1.9"
+                android:shape="ring"
 
-                android:background="@drawable/ic_bart"/>
+                android:thicknessRatio="1.9" />
+
             <TextView
+                android:id="@+id/textView_show_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView_show_name"
                 android:layout_below="@id/imageView_profile_dp"
-                android:hint="Loading..."
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="5dp"
+                android:hint="Loading..."
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white" />
         </RelativeLayout>
         <!--first name-->
         <RelativeLayout
@@ -159,6 +162,7 @@
             android:background="@color/white">
 
             <Button
+                android:backgroundTint="#8D82F6"
                 android:id="@+id/btnEditProfileSave"
                 android:layout_width="343dp"
                 android:layout_height="wrap_content"
@@ -174,6 +178,7 @@
             android:background="@color/white">
 
             <Button
+                android:backgroundTint="#8D82F6"
                 android:id="@+id/btnSignOut"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
