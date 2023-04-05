@@ -168,6 +168,9 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                         downloadTasks.add(csvFileAppointments.getBytes(Long.MAX_VALUE));
                         downloadTasks.add(csvFileTrainerBio.getBytes(Long.MAX_VALUE));
 
+                        txtViewLoadingText.setText("Downloading Datasets...");
+                        // Wait for all Tasks to complete
+                        Task<List<byte[]>> allTasks = Tasks.whenAllSuccess(downloadTasks);
 
                         allTasks.addOnCompleteListener(new OnCompleteListener<List<byte[]>>() {
                             @Override
@@ -187,14 +190,10 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                                 dbHelper.uploadSelfWorkoutPlanExercises(csvFileExByte);
                                 dbHelper.uploadTrainers(csvFileTrainerByte);
 
-                                // do there the trainers
                                 dbHelper.uploadRatings(csvFileRatingsByte);
                                 dbHelper.uploadTrainerService(csvFileTrainerServiceByte);
                                 dbHelper.uploadTrainerSchedule(csvScheduleByte);
-                                dbHelper.uploadAppointments(csvAppointmentByte);
-                                //some dump data
-                                dbHelper.uploadSampleAppointment();
-                                //dbHelper.uploadSampleWorkoutPlanByUser();
+                                //dbHelper.uploadAppointments(csvAppointmentByte);
                                 dbHelper.uploadTrainerBio(csvTrainerBioByte);
 
                                 moveToMainActivity();
