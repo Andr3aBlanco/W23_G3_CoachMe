@@ -87,7 +87,7 @@ public class TrainerListFragment extends Fragment {
             currentLongitude = getArguments().getDouble("LONGITUDE");
 
             for(Trainer trainer: unsortTrainers.values()){
-                trainerList.add(trainer);
+                trainerList.add(trainer); // This is ok
             }
 
         }
@@ -105,9 +105,8 @@ public class TrainerListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 //        trainerList = dbHelper.getTrainers(); // chnage this to pass the  parameters
-        Log.d("Andrea", "Number of trainers: " + trainerList.size());
-        // Here call the adapter
-            Log.d("Andrea", "Inside the Trainer List"); // Loading ok
+        Log.d("TRAINERLISTFRAGMENT", "Number of trainers: " + trainerList.size());
+
         //set the adapter
         trainerListAdapter = new TrainerListFragment.TrainerViewAdapter(trainerList, trainerSearchFragment, sortOption, currentLatitude, currentLongitude );
         recyclerView.setAdapter(trainerListAdapter);
@@ -189,10 +188,10 @@ public class TrainerListFragment extends Fragment {
         String trainerId;
         String customerId;
 
-        List<Integer> hourList = new ArrayList<>();
-
-        List<Long> availApp = new ArrayList<>();
-        HashMap<String, List<Integer>> appointmentsMap = new HashMap<>();
+//        List<Integer> hourList = new ArrayList<>();
+//
+//        List<Long> availApp = new ArrayList<>();
+//        HashMap<String, List<Integer>> appointmentsMap = new HashMap<>();
 
         /*
         /*
@@ -222,6 +221,7 @@ public class TrainerListFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull TrainerViewHolder holder, int position) {
             // sorting the trainers
+//            final List<Integer> hourList = new ArrayList<>();
             if(sortingOpt == 1){
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -243,10 +243,11 @@ public class TrainerListFragment extends Fragment {
             Locale locate = new Locale("en", "CA");
             NumberFormat formatter = NumberFormat.getCurrencyInstance(locate);
             double rating = unsortedTrainers.get(position).getRating();
-            availApp =   dbHelper.getTimesByTrainerID(unsortedTrainers.get(position).getId());
+            List<Long> availApp =   dbHelper.getTimesByTrainerID(unsortedTrainers.get(position).getId());
 
 
             //Create hashmap of date and times
+            HashMap<String, List<Integer>> appointmentsMap = new HashMap<>();
             // Loop through the appointment times in the List
             for (long timeInMillis : availApp) {
                 // Create a Calendar object for the appointment time
@@ -264,17 +265,18 @@ public class TrainerListFragment extends Fragment {
                 // Create the key for the HashMap
                 String key = String.format("%04d-%02d-%02d", year, month, day); // Format the date as "yyyy-MM-dd"
 
+
                 // Check if the key is already in the HashMap
                 if (appointmentsMap.containsKey(key)) {
                     // Add the hour to the value List
-                    List<Integer> hourList = appointmentsMap.get(key);
-                    hourList.add(hour);
-                    appointmentsMap.put(key, hourList);
+                    List<Integer> hourList2 = appointmentsMap.get(key);
+                    hourList2.add(hour);
+                    appointmentsMap.put(key, hourList2);
                 } else {
                     // Create a new value List with the hour
-                    List<Integer> hourList = new ArrayList<>();
-                    hourList.add(hour);
-                    appointmentsMap.put(key, hourList);
+                    List<Integer> hourList2 = new ArrayList<>();
+                    hourList2.add(hour);
+                    appointmentsMap.put(key, hourList2);
                 }
             }
 
@@ -299,7 +301,6 @@ public class TrainerListFragment extends Fragment {
             holder.seeMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("Andrea", "SeMore clicked from the RecyclerAdapter");
 
                     if(cardStatus == 0 ) {
                         holder.calendarLayout.setVisibility(View.VISIBLE);
@@ -312,7 +313,6 @@ public class TrainerListFragment extends Fragment {
 
                 }
             });
-
 
 
 
@@ -336,10 +336,11 @@ public class TrainerListFragment extends Fragment {
                     // Create the key for the HashMap
                     String key = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth); // Add 1 to get the month in range 1-12
 
+
                     // Check if the clicked date is in the available appointment list
                     if (appointmentsMap.containsKey(key)) {
                         // Get the List of hours for the key
-                        hourList = appointmentsMap.get(key);
+                       List<Integer> hourList = appointmentsMap.get(key);
                         Collections.sort(hourList);
 
                         trainerCustomListAdapter = new TrainerCustomList(hourList);
@@ -348,7 +349,7 @@ public class TrainerListFragment extends Fragment {
 
                     } else {
 
-                        hourList = new ArrayList<>();
+                        List<Integer> hourList = new ArrayList<>();
                         trainerCustomListAdapter = new TrainerCustomList(hourList);
                         holder.listViewHours.setAdapter(trainerCustomListAdapter);
 
@@ -376,16 +377,18 @@ public class TrainerListFragment extends Fragment {
                     }
 
 
-                    int timeInt = hourList.get(position); // printing date OK
+                    String selectedItemText = parent.getItemAtPosition(position).toString();
+                    String timeString = selectedItemText.split(" ")[0]; // extract the time part
+                    int timeInt = Integer.parseInt(timeString); // parse the time to integer
+                    System.out.println("TRAINER LIST click on custom list time: " + timeInt);
 
                     selectedHour = timeInt;
-                    System.out.println("For appointment " + selectedYear + "/" + selectedMonth + "/" + selectedDay + "/" + selectedHour);
+                    System.out.println("Time for appointment " + selectedYear + "/" + selectedMonth + "/" + selectedDay + " : " + selectedHour);
                 }
             });
 
             holder.addCart.setOnClickListener((View v) -> {
 
-                Log.d("Andrea", "Clicked from adapter on addcart");
 
                 if(selectedHour == 100 ){
 
@@ -420,7 +423,7 @@ public class TrainerListFragment extends Fragment {
                     dbHelper.removeFromSchedule(trainerId, bookedDate, endOfHour);
                     String deviceToken = UserSingleton.getInstance().getUserDeviceToken();
 
-                    Log.d("Andrea", "Booked date " + bookedDate);
+                    Log.d("IN TRAINER LIST", "Booked date " + bookedDate + "  YYYY/MM/DD : HH " + selectedYear + "/" + selectedMonth + "/" + selectedDay + " : " + selectedHour);
                     // Create query to add appointment by time
                     dbHelper.addAppToCart(appId, bookedDate, registeredDate, serviceType, 1, totalPrice, location, trainerId, customerId, deviceToken);
                 }

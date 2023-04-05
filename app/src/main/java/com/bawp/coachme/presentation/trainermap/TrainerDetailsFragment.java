@@ -110,6 +110,8 @@ public class TrainerDetailsFragment extends Fragment {
 
     DBHelper dbHelper;
 
+
+
     List<Integer> hourList = new ArrayList<>();
     // Adapter
     ArrayAdapter<String> theAdapter;
@@ -234,6 +236,7 @@ public class TrainerDetailsFragment extends Fragment {
             public void onClick(View v) {
 
                 if(cardStatus == 0 ) {
+                    availApp =   dbHelper.getTimesByTrainerID(currentTrainer.getId());
                     calendarLayout.setVisibility(View.VISIBLE);
                     cardStatus = 1;
                 } else{
@@ -254,8 +257,6 @@ public class TrainerDetailsFragment extends Fragment {
                 selectedYear = year;
                 selectedHour = 100;
 
-                List<String> hoursString = new ArrayList<>();
-                List<Integer> hourList = new ArrayList<>();
 
                 Calendar clickedDate = Calendar.getInstance();
                 clickedDate.set(year, month, dayOfMonth, 0, 0, 0);
@@ -330,8 +331,6 @@ public class TrainerDetailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                Log.d("Andrea", "Inside add Cart click");
-
 
                 if(selectedHour == 100){
                     Toast.makeText(getContext(), "Select an appointment to add to Cart", Toast.LENGTH_SHORT).show();
@@ -348,7 +347,6 @@ public class TrainerDetailsFragment extends Fragment {
                     calendar.set(selectedYear, selectedMonth, selectedDay, selectedHour, 0, 0);
                     bookedDate = calendar.getTimeInMillis();
 
-                    Log.d("Andrea","Booked date :" + bookedDate);
 
                     Date today = new Date();
                     calendar.setTime(today);
@@ -372,6 +370,14 @@ public class TrainerDetailsFragment extends Fragment {
 
                     // Create query to add appointment by time
                     dbHelper.addAppToCart(appId, bookedDate, registeredDate, serviceType, 1, totalPrice, location, trainerId, customerId, deviceToken);
+
+
+                    int currentPosition = trainerCustomListAdapter.getSelectedHour();
+                    hourList.remove(currentPosition);
+                    trainerCustomListAdapter = new TrainerCustomList(hourList);
+                    listViewHours.setAdapter(trainerCustomListAdapter);
+                    selectedHour = 100;
+
                 }
             }
         });
@@ -380,7 +386,9 @@ public class TrainerDetailsFragment extends Fragment {
         closeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calendarLayout.setVisibility(View.GONE);
+
+                wholeCard.setVisibility(View.GONE);
+                System.out.println("TRAINER DETAILS IN MAP Click on close" );
             }
         });
 

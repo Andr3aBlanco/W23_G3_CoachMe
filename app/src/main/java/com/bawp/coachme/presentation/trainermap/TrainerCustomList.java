@@ -86,7 +86,7 @@ public class TrainerCustomList extends BaseAdapter {
 
         if(selectedHour == position) {
 
-            textView.setBackgroundColor(Color.GRAY);
+            textView.setBackgroundColor(Color.LTGRAY);
 
         } else{
 
