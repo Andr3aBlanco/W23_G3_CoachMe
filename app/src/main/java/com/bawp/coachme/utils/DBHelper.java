@@ -1813,14 +1813,25 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public void removeFromSchedule(String trainerID, long initTime, long endTime){
 
+        // Convert the last five digits of initTime to zeros
+        initTime = initTime / 100000 * 100000;
+
         SQLiteDatabase db = this.getWritableDatabase();
         String whereClause = "trainerID = ? AND time >= ? AND time <= ?";
         String[] whereArgs = { trainerID, String.valueOf(initTime), String.valueOf(endTime) };
 
         // Execute the DELETE SQL statement with the specified WHERE clause
-        db.delete("schedule", whereClause, whereArgs);
+       int rowsAffected =  db.delete("schedule", whereClause, whereArgs);
+        System.out.println("Rows affected: " + rowsAffected);
 
-        System.out.println("DELETING APPOINTMENT " + initTime); // working
+        // Query the table to get the length after the delete operation
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM schedule", null);
+        cursor.moveToFirst();
+        int count = cursor.getInt(0);
+        cursor.close();
+
+        System.out.println("DELETING APPOINTMENT " + initTime);
+        System.out.println("Table length after delete operation: " + count);
         // Close the database connection
         db.close();
     }

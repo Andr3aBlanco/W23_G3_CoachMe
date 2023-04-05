@@ -188,7 +188,9 @@ public class TrainerListFragment extends Fragment {
         String trainerId;
         String customerId;
 
-//        List<Integer> hourList = new ArrayList<>();
+        List<Integer> hourListOnAddCart = new ArrayList<>();
+
+        int currentCard = -1;
 //
 //        List<Long> availApp = new ArrayList<>();
 //        HashMap<String, List<Integer>> appointmentsMap = new HashMap<>();
@@ -296,18 +298,26 @@ public class TrainerListFragment extends Fragment {
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, currentServices);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+            if(position == currentCard ) {
+                holder.calendarLayout.setVisibility(View.VISIBLE);
+
+            } else{
+                holder.calendarLayout.setVisibility(View.GONE);
+
+            }
+
             holder.spinServices.setAdapter(adapter);
             //Here goes all the logic
             holder.seeMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-                    if(cardStatus == 0 ) {
-                        holder.calendarLayout.setVisibility(View.VISIBLE);
-                        cardStatus = 1;
+                    if(currentCard != holder.getBindingAdapterPosition() ) {
+                        currentCard = holder.getBindingAdapterPosition();
+                        notifyDataSetChanged();
                     } else{
-                        holder.calendarLayout.setVisibility(View.GONE);
-                        cardStatus = 0;
+                        currentCard = -1;
+                        notifyDataSetChanged();
                     }
 
 
@@ -345,14 +355,14 @@ public class TrainerListFragment extends Fragment {
 
                         trainerCustomListAdapter = new TrainerCustomList(hourList);
                         holder.listViewHours.setAdapter(trainerCustomListAdapter);
-
+                        hourListOnAddCart = hourList;
 
                     } else {
 
                         List<Integer> hourList = new ArrayList<>();
                         trainerCustomListAdapter = new TrainerCustomList(hourList);
                         holder.listViewHours.setAdapter(trainerCustomListAdapter);
-
+                        hourListOnAddCart = new ArrayList<>();
 
                         Toast.makeText(getContext(), "This date is not available", Toast.LENGTH_SHORT).show();
                     }
@@ -369,20 +379,26 @@ public class TrainerListFragment extends Fragment {
                         System.out.println("Index == tp selected position ");
                         trainerCustomListAdapter.setSelectedHour(-1);
                         trainerCustomListAdapter.notifyDataSetChanged();
+                        selectedHour = 100;
+
                     } else
                     {
                         System.out.println("Index != tp selected position ");
                         trainerCustomListAdapter.setSelectedHour(position);
                         trainerCustomListAdapter.notifyDataSetChanged();
+
+
+                        String selectedItemText = parent.getItemAtPosition(position).toString();
+                        String timeString = selectedItemText.split(" ")[0]; // extract the time part
+                        int timeInt = Integer.parseInt(timeString); // parse the time to integer
+                        System.out.println("TRAINER LIST click on custom list time: " + timeInt);
+                        selectedHour = timeInt;
                     }
 
 
-                    String selectedItemText = parent.getItemAtPosition(position).toString();
-                    String timeString = selectedItemText.split(" ")[0]; // extract the time part
-                    int timeInt = Integer.parseInt(timeString); // parse the time to integer
-                    System.out.println("TRAINER LIST click on custom list time: " + timeInt);
 
-                    selectedHour = timeInt;
+
+
                     System.out.println("Time for appointment " + selectedYear + "/" + selectedMonth + "/" + selectedDay + " : " + selectedHour);
                 }
             });
@@ -426,6 +442,13 @@ public class TrainerListFragment extends Fragment {
                     Log.d("IN TRAINER LIST", "Booked date " + bookedDate + "  YYYY/MM/DD : HH " + selectedYear + "/" + selectedMonth + "/" + selectedDay + " : " + selectedHour);
                     // Create query to add appointment by time
                     dbHelper.addAppToCart(appId, bookedDate, registeredDate, serviceType, 1, totalPrice, location, trainerId, customerId, deviceToken);
+
+                    // call method to update the listHours and generate adapter
+                    int currentPosition = trainerCustomListAdapter.getSelectedHour();
+                    hourListOnAddCart.remove(currentPosition);
+                    trainerCustomListAdapter = new TrainerCustomList(hourListOnAddCart);
+                    holder.listViewHours.setAdapter(trainerCustomListAdapter);
+                    selectedHour = 100;
                 }
             });
 

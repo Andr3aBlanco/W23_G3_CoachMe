@@ -311,16 +311,19 @@ public class TrainerDetailsFragment extends Fragment {
                     System.out.println("Index == tp selected position ");
                     trainerCustomListAdapter.setSelectedHour(-1);
                     trainerCustomListAdapter.notifyDataSetChanged();
+                    selectedHour = 100;
                 } else
                 {
                     System.out.println("Index != tp selected position ");
                     trainerCustomListAdapter.setSelectedHour(position);
                     trainerCustomListAdapter.notifyDataSetChanged();
+
+                    selectedHour = hourList.get(position); // printing date OK;
                 }
 
 
 
-                selectedHour = hourList.get(position); // printing date OK;
+
                 System.out.println("For appointment " + selectedYear + "/" + selectedMonth + "/" + selectedDay + "/" + selectedHour);
             }
         });
@@ -386,9 +389,10 @@ public class TrainerDetailsFragment extends Fragment {
         closeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                availApp =   dbHelper.getTimesByTrainerID(currentTrainer.getId());
                 wholeCard.setVisibility(View.GONE);
                 System.out.println("TRAINER DETAILS IN MAP Click on close" );
+
             }
         });
 
