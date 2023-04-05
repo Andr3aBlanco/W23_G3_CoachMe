@@ -47,6 +47,15 @@ public class CoachMeFirebaseMessagingService extends FirebaseMessagingService {
         String message = remoteMessage.getNotification().getBody();
         String deviceToken = remoteMessage.getTo();
 
+        //Validate if the getData() HashMap returns the appId
+        if (!remoteMessage.getData().isEmpty()){
+            String appointmentId = remoteMessage.getData().get("appId");
+            String status = remoteMessage.getData().get("status");
+            DBHelper dbHelper = new DBHelper(getApplicationContext());
+            dbHelper.updateAppointmentStatus(appointmentId,Integer.parseInt(status));
+            Log.d("Appointment-Update","Updating Appointment status from FCM");
+        }
+
         // Create a notification builder with the appointment details
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.baseline_fitness_center_24)

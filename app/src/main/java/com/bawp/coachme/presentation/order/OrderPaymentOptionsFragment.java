@@ -27,7 +27,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,7 +49,6 @@ import com.bawp.coachme.R;
 import com.bawp.coachme.model.Appointment;
 import com.bawp.coachme.model.OrderNotifcation;
 import com.bawp.coachme.model.Payment;
-import com.bawp.coachme.model.SelfWorkoutPlanByUser;
 import com.bawp.coachme.model.User;
 import com.bawp.coachme.utils.DBHelper;
 import com.bawp.coachme.utils.UserSingleton;
