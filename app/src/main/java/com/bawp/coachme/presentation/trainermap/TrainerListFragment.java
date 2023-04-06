@@ -1,5 +1,15 @@
 package com.bawp.coachme.presentation.trainermap;
 
+/**
+ * Class: TrainerListFragment
+ *
+ * This class contains both the list container
+ * and the Recycler Adapter
+ *
+ * @author Andrea Blanco
+ *
+ * **/
+
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
@@ -376,14 +386,12 @@ public class TrainerListFragment extends Fragment {
 
                     if(trainerCustomListAdapter.getSelectedHour() == position ){
                         // If clicked is the same
-                        System.out.println("Index == tp selected position ");
                         trainerCustomListAdapter.setSelectedHour(-1);
                         trainerCustomListAdapter.notifyDataSetChanged();
                         selectedHour = 100;
 
                     } else
                     {
-                        System.out.println("Index != tp selected position ");
                         trainerCustomListAdapter.setSelectedHour(position);
                         trainerCustomListAdapter.notifyDataSetChanged();
 
@@ -391,15 +399,10 @@ public class TrainerListFragment extends Fragment {
                         String selectedItemText = parent.getItemAtPosition(position).toString();
                         String timeString = selectedItemText.split(" ")[0]; // extract the time part
                         int timeInt = Integer.parseInt(timeString); // parse the time to integer
-                        System.out.println("TRAINER LIST click on custom list time: " + timeInt);
                         selectedHour = timeInt;
                     }
 
 
-
-
-
-                    System.out.println("Time for appointment " + selectedYear + "/" + selectedMonth + "/" + selectedDay + " : " + selectedHour);
                 }
             });
 
@@ -439,7 +442,6 @@ public class TrainerListFragment extends Fragment {
                     dbHelper.removeFromSchedule(trainerId, bookedDate, endOfHour);
                     String deviceToken = UserSingleton.getInstance().getUserDeviceToken();
 
-                    Log.d("IN TRAINER LIST", "Booked date " + bookedDate + "  YYYY/MM/DD : HH " + selectedYear + "/" + selectedMonth + "/" + selectedDay + " : " + selectedHour);
                     // Create query to add appointment by time
                     dbHelper.addAppToCart(appId, bookedDate, registeredDate, serviceType, 1, totalPrice, location, trainerId, customerId, deviceToken);
 

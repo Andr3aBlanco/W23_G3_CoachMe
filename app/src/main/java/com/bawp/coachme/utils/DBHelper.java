@@ -8,6 +8,8 @@ package com.bawp.coachme.utils;
  *
  * @author Luis Miguel Miranda
  * @version 1.0
+ *
+ * @coauthor Andrea Blanco
  */
 
 import android.annotation.SuppressLint;
@@ -1724,8 +1726,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
             } while(cursor.moveToNext());
         }
-
-//        Log.d("Andrea", "Trainers from SQLLite " + count);
 
         db.close();
         return tempTrainers;

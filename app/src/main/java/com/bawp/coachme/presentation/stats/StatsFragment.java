@@ -39,6 +39,11 @@ import java.util.List;
 
 import javax.inject.Singleton;
 
+/**
+ * Class StatsFragment.java
+ *
+ * This
+ * **/
 
 public class StatsFragment extends Fragment {
 

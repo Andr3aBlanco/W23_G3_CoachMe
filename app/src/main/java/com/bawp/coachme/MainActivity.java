@@ -27,6 +27,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+/**
+ * Class: MainActivity.java
+ *
+ * This is the activity that hosts the FrameLayout where the sections included
+ * in the navigation bar are hosted
+ *
+ * It also hosts the Bottom Navigation Bar
+ *
+ * @author Andrea Blanco / Jaydipkumar Mulani
+ * **/
+
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
@@ -41,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        replaceFragment(new HomeFragment()); // chnage back to home
+        replaceFragment(new HomeFragment());
         fragmentBinding();
     }
 

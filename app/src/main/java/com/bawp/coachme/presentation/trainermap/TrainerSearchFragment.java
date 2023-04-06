@@ -53,9 +53,14 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link TrainerSearchFragment#newInstance} factory method to
- * create an instance of this fragment.
+* Class TrainerSearchFragment.java
+ *
+ * Fragment that contains the logic to retrieve the trainers
+ * and pass them to TrainerMapFragment or to the TrainerListFragment
+ * It also get the options from the search filter and passes it to
+ * the TrainerListFragment
+ *
+ * @author Andrea Blanco
  */
 public class TrainerSearchFragment extends Fragment implements LocationListener {
 
@@ -234,7 +239,6 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                 if (location != null) {
                     latitude = location.getLatitude();
                     longitude = location.getLongitude();
-                    Log.d("TrainerSearch", "Latitude: " + latitude + ", Longitude: " + longitude); //My location ok :)
                 }
             } catch(SecurityException e){
                 e.printStackTrace();
@@ -360,22 +364,16 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
 
                 if (crossfit.isChecked()) {
                     selectedServices.add("Crossfit");
-                    Log.d("Andrea", "Checkbox selected");
                 }
                 if (yoga.isChecked()) {
                     selectedServices.add("Yoga");
-                    Log.d("Andrea", "Checkbox selected");
                 }
                 if (pilates.isChecked()) {
                     selectedServices.add("Pilates");
-                    Log.d("Andrea", "Checkbox selected");
                 }
                 if (martials.isChecked()) {
                     selectedServices.add("Martials");
-                    Log.d("Andrea", "Checkbox selected");
                 }
-
-                Log.d("Andrea", "Inside click search  this is the end time " + endDate + "initial date: " + initialDate);
 
                 // On search - dates and services migh change or not
                 filteredTrainersList = dbHelper.getTrainersByServicesAndDate(selectedServices, initialDate, endDate); // Filter ok
@@ -495,14 +493,12 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                             //Fix start date in miliseconds
                             Calendar calendar = Calendar.getInstance();
                             calendar.set(year1, monthOfYear, dayOfMonth, 0, 0, 0);
-                            Log.d("Andrea", "This is the date picked " + calendar.getTime() + " " + calendar.getTime().getTime());
                             initialDate = calendar.getTime().getTime();
 
                         } else {
                             //fix end date in miliseconds
                             Calendar calendar = Calendar.getInstance();
                             calendar.set(year1, monthOfYear, dayOfMonth, 23, 59, 59);
-                            Log.d("Andrea", "This is the date picked" + calendar.getTime().getTime());
                             endDate = calendar.getTime().getTime();
                         }
                         String selectedDate = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year1;

@@ -8,6 +8,7 @@ package com.bawp.coachme.presentation.home;
  *
  * @author Luis Miguel Miranda
  * @version 1.0
+ *
  */
 
 import android.content.Context;

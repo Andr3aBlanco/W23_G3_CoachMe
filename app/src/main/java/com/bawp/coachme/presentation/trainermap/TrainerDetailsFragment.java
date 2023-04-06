@@ -1,5 +1,13 @@
 package com.bawp.coachme.presentation.trainermap;
 
+/**
+ * Fragment that displays the details of a trainer
+ * This fragment is called from the onclick Market on the map
+ * for search
+ * and the layout of this fragment is used in the Trainer List
+ * Recycler Adapter
+ * **/
+
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -161,7 +169,6 @@ public class TrainerDetailsFragment extends Fragment {
         Date newDate = new Date();
         Long newDateMilli = newDate.getTime();
         disabledDates.add(newDateMilli);
-        System.out.println("NEW DATE IN TRAINER DETAILS " + newDateMilli);
 
         calendarView.setDisabledDates(disabledDates);
 
@@ -308,23 +315,17 @@ public class TrainerDetailsFragment extends Fragment {
 
                 if(trainerCustomListAdapter.getSelectedHour() == position ){
                     // If clicked is the same
-                    System.out.println("Index == tp selected position ");
                     trainerCustomListAdapter.setSelectedHour(-1);
                     trainerCustomListAdapter.notifyDataSetChanged();
                     selectedHour = 100;
                 } else
                 {
-                    System.out.println("Index != tp selected position ");
                     trainerCustomListAdapter.setSelectedHour(position);
                     trainerCustomListAdapter.notifyDataSetChanged();
 
                     selectedHour = hourList.get(position); // printing date OK;
                 }
 
-
-
-
-                System.out.println("For appointment " + selectedYear + "/" + selectedMonth + "/" + selectedDay + "/" + selectedHour);
             }
         });
 
@@ -391,7 +392,6 @@ public class TrainerDetailsFragment extends Fragment {
             public void onClick(View v) {
                 availApp =   dbHelper.getTimesByTrainerID(currentTrainer.getId());
                 wholeCard.setVisibility(View.GONE);
-                System.out.println("TRAINER DETAILS IN MAP Click on close" );
 
             }
         });

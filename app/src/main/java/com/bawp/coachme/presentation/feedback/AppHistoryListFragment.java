@@ -1,5 +1,14 @@
 package com.bawp.coachme.presentation.feedback;
 
+/**
+ *
+ * Class AppHistoryListFragment.java
+ *
+ * Fragment to set the recycler adapter for the list of past appointments
+ *
+ * @author Andrea Blanco
+ * **/
+
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;

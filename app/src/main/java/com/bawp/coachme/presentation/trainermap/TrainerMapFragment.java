@@ -1,5 +1,16 @@
 package com.bawp.coachme.presentation.trainermap;
 
+
+/**
+ * Class TrainerMapFragment.java
+ *
+ * Fragment that displays the map to search trainer by geo location
+ * This fragment gets as parameter the list of trainers to be displayed
+ * All the logic for loading map markers and displaying is here
+ * and on click on the markers it loads the TrainerDetailsFragment
+ *
+ * @author Andrea Blanco
+ * **/
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 import android.Manifest;
@@ -67,8 +78,6 @@ public class TrainerMapFragment extends Fragment {
           trainersMapFiltered = (HashMap<String, Trainer>) getArguments().getSerializable("FILTERED_TRAINERS");
           latitude = getArguments().getDouble("LATITUDE");
           longitude = getArguments().getDouble("LONGITUDE");
-          Log.d("TrainerMap", "Latitude: " + latitude + ", Longitude: " + longitude); //My location ok :)
-
 
             // Get the location manager and provider
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -99,7 +108,6 @@ public class TrainerMapFragment extends Fragment {
                     if (location != null) {
                         latitude = location.getLatitude();
                         longitude = location.getLongitude();
-                        Log.d("TrainerSearch", "Latitude: " + latitude + ", Longitude: " + longitude); //My location ok :)
                     }
                 } catch(SecurityException e){
                     e.printStackTrace();
@@ -114,7 +122,6 @@ public class TrainerMapFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.trainer_map_fragment, container, false);
 
-        Log.d("Andrea", "The map was loaded");
         mapView = (MapView) view.findViewById(R.id.mapTrainersF); //
         mapView.onCreate(savedInstanceState); //
 
@@ -128,7 +135,6 @@ public class TrainerMapFragment extends Fragment {
                 LatLng initialPosition = new LatLng(latitude, longitude); // Vancouver Metro 49.18308405089783, -122.95854180247775
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 10f));
 
-//                Log.d("Andrea", "Map Ready");
                 checkLocationPermissionAndEnableMyLocation();
 
                         addMarkersForTrainers(trainersMapFiltered);
@@ -136,7 +142,6 @@ public class TrainerMapFragment extends Fragment {
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(@NonNull Marker marker) {
-//                        Log.d("ANDREA", "Clicked marker");
 
                         //Parameters for the object creation
                         String trainerID =marker.getSnippet();

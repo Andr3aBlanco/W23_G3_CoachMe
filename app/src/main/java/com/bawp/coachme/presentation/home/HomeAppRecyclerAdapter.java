@@ -63,8 +63,6 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
 
      MapView mapView;
 
-//    MapView mapView;
-    HomeMapAddDetails mapAddDetails;
 
     public List<Appointment> getAppointmentList() {
         return appointmentList;
@@ -85,8 +83,6 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
     @NonNull
     @Override
     public HomeAppViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-        System.out.println("THIS IS THE CURRENT CARD " + currentCard);
 
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -110,9 +106,9 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
 
                 }
 
-                Debug.MemoryInfo memoryInfo = new Debug.MemoryInfo();
-                Debug.getMemoryInfo(memoryInfo);
-                Log.d("RAM", "Total memory used: " + memoryInfo.getTotalPss() + " KB");
+//                Debug.MemoryInfo memoryInfo = new Debug.MemoryInfo();
+//                Debug.getMemoryInfo(memoryInfo);
+//                Log.d("RAM", "Total memory used: " + memoryInfo.getTotalPss() + " KB");
 
             }
         });
@@ -126,7 +122,6 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
 
                     dbHelper.updateAppointmentStatus(appointmentList.get(position).getId(),2);
                     appointmentList.remove(position);
-                    System.out.println("APPOINTMENT CANCELLED. ");
                     setAppointmentList(appointmentList);
 
             }
@@ -167,8 +162,6 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
         if(position == currentCard){
 
             holder.rlMapApppDetails.setVisibility(View.VISIBLE);
-
-            System.out.println("POSITION IN ON CREATE IN HOME ADAPTER " + currentCard);
 
             double latitude = trainer.getLatitudeCoord();
             double longitude = trainer.getLongitudeCoord();
