@@ -49,6 +49,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.inject.Singleton;
+
 public class LoadingDBSplashActivity extends AppCompatActivity {
 
     private boolean isExecutionFinished;
@@ -193,7 +195,7 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                                 dbHelper.uploadRatings(csvFileRatingsByte);
                                 dbHelper.uploadTrainerService(csvFileTrainerServiceByte);
                                 dbHelper.uploadTrainerSchedule(csvScheduleByte);
-                                //dbHelper.uploadAppointments(csvAppointmentByte);
+                                dbHelper.uploadAppointments(csvAppointmentByte);
                                 dbHelper.uploadTrainerBio(csvTrainerBioByte);
 
                                 moveToMainActivity();

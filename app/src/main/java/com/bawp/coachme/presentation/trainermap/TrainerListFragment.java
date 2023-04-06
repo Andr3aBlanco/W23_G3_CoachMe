@@ -114,8 +114,6 @@ public class TrainerListFragment extends Fragment {
         recyclerView = view.findViewById(R.id.trainer_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-//        trainerList = dbHelper.getTrainers(); // chnage this to pass the  parameters
-        Log.d("TRAINERLISTFRAGMENT", "Number of trainers: " + trainerList.size());
 
         //set the adapter
         trainerListAdapter = new TrainerListFragment.TrainerViewAdapter(trainerList, trainerSearchFragment, sortOption, currentLatitude, currentLongitude );
@@ -242,7 +240,8 @@ public class TrainerListFragment extends Fragment {
             } else if (sortingOpt == 2) {
 
                 TrainerDistanceSorter sorter = new TrainerDistanceSorter();
-                unsortedTrainers = sorter.sortByDistance(unsortedTrainers, yourLatitude, yourLongitude);
+                System.out.println("USER LOCATION LAT LON " + yourLongitude + "  " + yourLongitude);
+                unsortedTrainers = sorter.sortByDistance(unsortedTrainers, currentLatitude, currentLongitude);
 
             } else{
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

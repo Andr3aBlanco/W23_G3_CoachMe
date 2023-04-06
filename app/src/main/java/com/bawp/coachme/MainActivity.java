@@ -1,12 +1,20 @@
 package com.bawp.coachme;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -38,7 +46,20 @@ import com.google.firebase.database.ValueEventListener;
  * @author Andrea Blanco / Jaydipkumar Mulani
  * **/
 
+
+
 public class MainActivity extends AppCompatActivity {
+
+    private static final int PERMISSIONS_REQUEST_LOCATION = 1;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
+    private LocationManager locationManager;
+    private String provider;
+
+    private double latitude;
+    private double longitude;
+
+
 
     ActivityMainBinding binding;
     CountDownTimer countDownTimer;
@@ -54,6 +75,58 @@ public class MainActivity extends AppCompatActivity {
 
         replaceFragment(new HomeFragment());
         fragmentBinding();
+
+        // FROM HERE
+        // Check if the app has permission to access location information
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Request the permission if it hasn't been granted
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_LOCATION);
+
+        }
+
+//
+//        // Get the location manager and provider
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+//        }
+//        provider = LocationManager.GPS_PROVIDER;
+//
+//        // Request location updates
+//        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//
+//            ActivityCompat.requestPermissions(this,
+//                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+//                    MY_PERMISSIONS_REQUEST_LOCATION);
+//
+//        } else {
+//
+//            // Get the location manager and provider
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+//            }
+//            provider = LocationManager.GPS_PROVIDER;
+//
+//            try {
+////                locationManager.requestLocationUpdates(provider, 400, 1, this);
+//
+//                // Get the last known location
+//                Location location = locationManager.getLastKnownLocation(provider);
+//                if (location != null) {
+//                    latitude = location.getLatitude();
+//                    longitude = location.getLongitude();
+//
+//                    System.out.println("IN THE ON CREATE IN THE TRAINER SEARCH latitude longitude " + latitude + " "+ longitude);
+//                }
+//            } catch(SecurityException e){
+//                e.printStackTrace();
+//            }
+//        }
+
+        // TO HERE
     }
 
     private void fragmentBinding(){

@@ -1735,7 +1735,6 @@ public class DBHelper extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public List<Trainer> getTrainersByServicesAndDate(List<String> services, long dateFrom, long dateTo) {
         SQLiteDatabase db = getReadableDatabase();
-        System.out.println("Date FROM : " + dateFrom + " dateTo: " + dateTo);
 
         String selectQuery = "SELECT trainers._id, trainers.firstName, trainers.lastName, trainers.email, " +
                 "trainers.latitudeCoord, trainers.longitudeCoord, trainers.radius, trainers.flatPrice, trainers.phoneNumber," +
@@ -1750,7 +1749,6 @@ public class DBHelper extends SQLiteOpenHelper {
         // Add service filtering if services list is not empty
         if (!services.isEmpty()) {
             String serviceList = "'" + TextUtils.join("','", services) + "'";
-            System.out.println(serviceList);
             selectQuery += " AND trainerservice.service IN (" + serviceList + ") ";
         }
 
@@ -1777,12 +1775,10 @@ public class DBHelper extends SQLiteOpenHelper {
                 trainer.setRating(cursor.getDouble(cursor.getColumnIndex("avgRating")));
                 trainer.setTrainerProfileImage(cursor.getString(cursor.getColumnIndex("trainerProfileImage")));
 
-                System.out.println("NNNNN " + cursor.getString(cursor.getColumnIndex("_id")));
 
                 trainers.add(trainer);
             } while (cursor.moveToNext());
         }
-        System.out.println("FROM DBHELPER " + trainers.size() + "\n Date from " + dateFrom + " \n Date to " + dateTo);
         db.close();
 
         return trainers;
@@ -1803,7 +1799,6 @@ public class DBHelper extends SQLiteOpenHelper {
         if(cursor.moveToFirst()){
             do{
                 times.add(cursor.getLong(cursor.getColumnIndex("time")));
-                System.out.println(cursor.getLong(cursor.getColumnIndex("time")));
 
             }while(cursor.moveToNext());
         }
@@ -1822,7 +1817,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
         // Execute the DELETE SQL statement with the specified WHERE clause
        int rowsAffected =  db.delete("schedule", whereClause, whereArgs);
-        System.out.println("Rows affected: " + rowsAffected);
 
         // Query the table to get the length after the delete operation
         Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM schedule", null);
@@ -1830,8 +1824,6 @@ public class DBHelper extends SQLiteOpenHelper {
         int count = cursor.getInt(0);
         cursor.close();
 
-        System.out.println("DELETING APPOINTMENT " + initTime);
-        System.out.println("Table length after delete operation: " + count);
         // Close the database connection
         db.close();
     }
@@ -1867,7 +1859,6 @@ public class DBHelper extends SQLiteOpenHelper {
         String query = "SELECT * FROM appointments WHERE status=? AND customerId= ? ORDER BY bookedDate"; // revomed '?'
         Cursor cursor = db.rawQuery(query, new String[] {String.valueOf(status), customerId});
 
-        System.out.println("INSIDE getAppointmentsByCustomerIdAndStatus CustomerID " + customerId);
         if (cursor.moveToFirst()) {
             do {
                 String appointmentId = cursor.getString(cursor.getColumnIndex("_id"));
@@ -1922,7 +1913,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 avgRating = cursor.getFloat(cursor.getColumnIndex("avgRating"));
         }
 
-        System.out.println("This is the average rating for trainer " + trainerId + " " + avgRating);
 
         ContentValues values = new ContentValues();
         values.put("rating", avgRating);
@@ -2017,7 +2007,6 @@ public class DBHelper extends SQLiteOpenHelper {
         // Get the timestamp of 12 months ago
         calendar.add(Calendar.MONTH, -12);
         long timestamp12MonthsAgo = calendar.getTimeInMillis();
-        System.out.println("12 months ago " + timestamp12MonthsAgo);
 
         // Execute the query and retrieve the data
         Cursor cursor = db.rawQuery(query, new String[] {customerId, String.valueOf(timestamp12MonthsAgo), String.valueOf(System.currentTimeMillis())});
@@ -2086,7 +2075,6 @@ public class DBHelper extends SQLiteOpenHelper {
                         int count = countPercentageCursor.getInt(1);
                         double percentage = ((double) count / totalCount) * 100;
                         pieData.add(new String[]{serviceType, String.format("%.2f", percentage)});
-                        System.out.println("From inside method in helper " +serviceType + " " + percentage);
                     } while (countPercentageCursor.moveToNext());
                 }
             } finally {

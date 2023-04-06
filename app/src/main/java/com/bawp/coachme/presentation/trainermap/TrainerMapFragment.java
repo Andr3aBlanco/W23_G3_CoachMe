@@ -78,6 +78,7 @@ public class TrainerMapFragment extends Fragment {
           trainersMapFiltered = (HashMap<String, Trainer>) getArguments().getSerializable("FILTERED_TRAINERS");
           latitude = getArguments().getDouble("LATITUDE");
           longitude = getArguments().getDouble("LONGITUDE");
+          System.out.println("LAT LONG ON CREATE TRAINER MAP " + latitude + " " + longitude);
 
             // Get the location manager and provider
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -92,6 +93,8 @@ public class TrainerMapFragment extends Fragment {
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
 
+
+
             } else {
 
                 // Get the location manager and provider
@@ -102,12 +105,14 @@ public class TrainerMapFragment extends Fragment {
 
                 try {
 //                locationManager.requestLocationUpdates(provider,400,1,this);
-
+//
                     // Get the last known location
                     Location location = locationManager.getLastKnownLocation(provider);
                     if (location != null) {
                         latitude = location.getLatitude();
                         longitude = location.getLongitude();
+
+                        System.out.println("INSIDE THE TRAINER MAP IN THE ON CREATE " + longitude + " " + latitude);
                     }
                 } catch(SecurityException e){
                     e.printStackTrace();
@@ -134,6 +139,8 @@ public class TrainerMapFragment extends Fragment {
                 // Set the initial position and zoom level
                 LatLng initialPosition = new LatLng(latitude, longitude); // Vancouver Metro 49.18308405089783, -122.95854180247775
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 10f));
+
+                System.out.println("LAT LONG ON CREATE TRAINER MAP " + latitude + " " + longitude);
 
                 checkLocationPermissionAndEnableMyLocation();
 
