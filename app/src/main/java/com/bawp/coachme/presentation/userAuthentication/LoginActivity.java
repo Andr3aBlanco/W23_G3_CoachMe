@@ -1,11 +1,14 @@
-package com.bawp.coachme.presentation.userAuthentication;
+package com.bawp.coachme.presentation.userAuthantication;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.compose.ui.text.font.FontVariation;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
@@ -15,8 +18,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.window.SplashScreen;
 
 import com.bawp.coachme.LoadingDBSplashActivity;
+import com.bawp.coachme.MainActivity;
 import com.bawp.coachme.R;
 import com.bawp.coachme.utils.UserSingleton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,12 +29,21 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+/**
+ * Clsss: LoginActivity.java
+ * class which let user login to their existing account and verify credentials with firebase
+ * @author Jaydip mulani
+ * @version 1.0
+ */
 public class LoginActivity extends AppCompatActivity {
     String myDeviceId;
     Button logInBtn;
-    CountDownTimer countDownTimer;
+
     FirebaseAuth mAuth;
     ImageView googleLoginBtn;
     ImageView fbLoginBtn;
@@ -38,9 +52,9 @@ public class LoginActivity extends AppCompatActivity {
     EditText passwordtxt;
     TextView goToRegister, txtforgotpass;
     ProgressBar porgBar;
-    private String myDeviceToken;
+
     FirebaseUser user;
-    String current_User;
+
     DatabaseReference databaseRef;
 
     @Override

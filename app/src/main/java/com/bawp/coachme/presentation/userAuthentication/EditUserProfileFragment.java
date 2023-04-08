@@ -1,4 +1,11 @@
-package com.bawp.coachme.presentation.userAuthentication;
+package com.bawp.coachme.presentation.userAuthantication;
+/**
+ * Clsss: EditUserProfileFragment.java
+ * class that will gets the data from user account and will let them to modify their personal data
+ *
+ * @author Jaydip mulani
+ * @version 1.0
+ */
 
 import android.os.Bundle;
 
@@ -15,7 +22,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bawp.coachme.presentation.userAuthentication.ProfileFragment;
+import com.bawp.coachme.presentation.user.ProfileFragment;
 import com.bawp.coachme.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

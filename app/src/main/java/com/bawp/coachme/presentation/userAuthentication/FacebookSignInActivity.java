@@ -1,12 +1,21 @@
-package com.bawp.coachme.presentation.userAuthentication;
-
+package com.bawp.coachme.presentation.userAuthantication;
+/**
+ * Clsss: FacebookSignInActivity.java
+ * class which extends LoginActivity.class and it will helps user to get register or login easily with the facebook
+    and save data to the firebase
+ * @author Jaydip mulani
+ * @version 1.0
+ */
 import androidx.annotation.NonNull;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.widget.Toast;
 
 import com.bawp.coachme.LoadingDBSplashActivity;
+import com.bawp.coachme.MainActivity;
+import com.bawp.coachme.utils.UserSingleton;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -18,11 +27,17 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.OAuthCredential;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Arrays;
 
