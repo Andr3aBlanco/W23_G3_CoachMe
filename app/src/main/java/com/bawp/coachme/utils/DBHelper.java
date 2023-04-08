@@ -183,6 +183,12 @@ public class DBHelper extends SQLiteOpenHelper {
             "trainerID TEXT, " +
             "FOREIGN KEY(trainerID) REFERENCES trainers(_id) " +
             ");";
+
+    private static final String CREATE_TRAINER_BIO_TABLE = "CREATE TABLE trainerbio( " +
+            "trainerId TEXT PRIMARY KEY,"+
+            "bioSummary TEXT, " +
+            "FOREIGN KEY(trainerId) REFERENCES trainers(_id)" +
+            ");";
     public static final String URL_FIRESTORE_SELF_WORKOUT_PLANS_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutPlans.csv";
     public static final String URL_FIRESTORE_SELF_WORKOUT_SESSION_TYPES_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutSessionTypes.csv";
     public static final String URL_FIRESTORE_SELF_PLAN_EXERCISES_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/selfWorkoutPlanExercises.csv";
@@ -194,6 +200,10 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String URL_FIRESTORE_TRAINER_OPEN_SCHEDULE_TABLE="gs://w23-g3-coachme.appspot.com/sqlite_datasets/schedule.csv";
 
     public static final String URL_FIRESTORE_APPOINTMENTS_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/appointments.csv";
+
+    public static final String URL_FIRESTORE_TRAINERBIO_TABLE = "gs://w23-g3-coachme.appspot.com/sqlite_datasets/trainerbio.csv";
+
+
     public DBHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -228,6 +238,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_RATINGS_TABLE);
         db.execSQL(CREATE_TRAINERSERVICE_TABLE);
         db.execSQL(CREATE_TRAINER_OPEN_SCHEDULE_TABLE);
+        db.execSQL(CREATE_TRAINER_BIO_TABLE);
         databaseJustCreated=true;
         //uploadSelfWorkoutPlans();
 
@@ -247,6 +258,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS ratings");   // Remove this one later
         db.execSQL("DROP TABLE IF EXISTS trainerservice");
         db.execSQL("DROP TABLE IF EXISTS schedule");
+        db.execSQL("DROP TABLE IF EXISTS trainerbio");
         onCreate(db);
     }
 
@@ -487,6 +499,35 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
+    public void uploadTrainerBio(byte[] bytes){
+
+        String content = null; // Convert byte array to string
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            content = new String(bytes, "UTF-8");
+            CSVReader reader = new CSVReader(new StringReader(content));
+            String[] nextLine;
+            while ((nextLine = reader.readNext()) != null) {
+
+                ContentValues trainerBioContents = new ContentValues();
+                trainerBioContents.put("trainerId",nextLine[0]);
+                trainerBioContents.put("bioSummary",nextLine[1]);
+                db.insert("trainerbio", null, trainerBioContents);
+
+            }
+
+            db.close();
+
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        } catch (CsvValidationException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     public void uploadAppointments(byte[] bytes){
 
         String content = null; // Convert byte array to string
@@ -563,6 +604,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         db.close();
     }
+
 
     /* -------------------------------
     -----------APPOINTMENTS----------
@@ -1693,6 +1735,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public List<Trainer> getTrainersByServicesAndDate(List<String> services, long dateFrom, long dateTo) {
         SQLiteDatabase db = getReadableDatabase();
+        System.out.println("Date FROM : " + dateFrom + " dateTo: " + dateTo);
 
         String selectQuery = "SELECT trainers._id, trainers.firstName, trainers.lastName, trainers.email, " +
                 "trainers.latitudeCoord, trainers.longitudeCoord, trainers.radius, trainers.flatPrice, trainers.phoneNumber," +
@@ -1945,13 +1988,28 @@ public class DBHelper extends SQLiteOpenHelper {
     // Appointment history by month
     @SuppressLint("Range")
     public ArrayList<String[]> getAppointmentsCountByMonth(String customerId) {
-        ArrayList<String[]> result = new ArrayList<String[]>();
+        ArrayList<String[]> result = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
 
-        String query = "SELECT COUNT(_id), strftime('%m', bookedDate/1000, 'unixepoch') as month FROM appointments WHERE customerId = ? AND status = 5 GROUP BY month ORDER BY month ASC";
+        // Get the current month number
+        Calendar calendar = Calendar.getInstance();
+        int currentMonth = calendar.get(Calendar.MONTH) + 1;
 
-        Cursor cursor = db.rawQuery(query, new String[] { customerId });
+        // Construct the query to get the count of occurrences for each month
+        String query = "SELECT COUNT(_id), strftime('%m', bookedDate/1000, 'unixepoch') as month " +
+                "FROM appointments " +
+                "WHERE customerId = ? AND status = 5 " +
+                "AND bookedDate BETWEEN ? AND ? " +
+                "GROUP BY month " +
+                "ORDER BY month ASC";
 
+        // Get the timestamp of 12 months ago
+        calendar.add(Calendar.MONTH, -12);
+        long timestamp12MonthsAgo = calendar.getTimeInMillis();
+        System.out.println("12 months ago " + timestamp12MonthsAgo);
+
+        // Execute the query and retrieve the data
+        Cursor cursor = db.rawQuery(query, new String[] {customerId, String.valueOf(timestamp12MonthsAgo), String.valueOf(System.currentTimeMillis())});
         if (cursor.moveToFirst()) {
             do {
                 String[] data = new String[2];
@@ -1987,45 +2045,123 @@ public class DBHelper extends SQLiteOpenHelper {
                 "GROUP BY serviceType";
 
         // Execute the query to get the total count for each service type
-        Cursor totalCountCursor = db.rawQuery(totalCountQuery, new String[]{customerId, String.valueOf(oneYearAgo)});
-        HashMap<String, Integer> totalCounts = new HashMap<>();
-        int totalCount = 0;
-        if (totalCountCursor.moveToFirst()) {
-            do {
-                String serviceType = totalCountCursor.getString(0);
-                int count = totalCountCursor.getInt(1);
-                totalCounts.put(serviceType, count);
-                totalCount += count;
-            } while (totalCountCursor.moveToNext());
-        }
-        totalCountCursor.close();
+        Cursor totalCountCursor = null;
+        try {
+            totalCountCursor = db.rawQuery(totalCountQuery, new String[]{customerId, String.valueOf(oneYearAgo)});
+            HashMap<String, Integer> totalCounts = new HashMap<>();
+            int totalCount = 0;
+            if (totalCountCursor.moveToFirst()) {
+                do {
+                    String serviceType = totalCountCursor.getString(0);
+                    int count = totalCountCursor.getInt(1);
+                    totalCounts.put(serviceType, count);
+                    totalCount += count;
+                } while (totalCountCursor.moveToNext());
+            }
 
-        // Define the query to get the count and percentage for each service type
-        String countPercentageQuery = "SELECT serviceType, COUNT(*) " +
-                "FROM appointments " +
-                "WHERE customerId = ? AND status = 5 AND bookedDate >= ? " +
-                "GROUP BY serviceType";
+            // Define the query to get the count and percentage for each service type
+            String countPercentageQuery = "SELECT serviceType, COUNT(*) " +
+                    "FROM appointments " +
+                    "WHERE customerId = ? AND status = 5 AND bookedDate >= ? " +
+                    "GROUP BY serviceType";
 
-        // Execute the query to get the count and percentage for each service type
-        Cursor countPercentageCursor = db.rawQuery(countPercentageQuery, new String[]{customerId, String.valueOf(oneYearAgo)});
-        if (countPercentageCursor.moveToFirst()) {
-            do {
-                String serviceType = countPercentageCursor.getString(0);
-                int count = countPercentageCursor.getInt(1);
-                double percentage = ((double) count / totalCount) * 100;
-                pieData.add(new String[]{serviceType, String.format("%.2f", percentage)});
-                System.out.println("From inside method in helper " +serviceType + " " + percentage);
-            } while (countPercentageCursor.moveToNext());
+            // Execute the query to get the count and percentage for each service type
+            Cursor countPercentageCursor = null;
+            try {
+                countPercentageCursor = db.rawQuery(countPercentageQuery, new String[]{customerId, String.valueOf(oneYearAgo)});
+                if (countPercentageCursor.moveToFirst()) {
+                    do {
+                        String serviceType = countPercentageCursor.getString(0);
+                        int count = countPercentageCursor.getInt(1);
+                        double percentage = ((double) count / totalCount) * 100;
+                        pieData.add(new String[]{serviceType, String.format("%.2f", percentage)});
+                        System.out.println("From inside method in helper " +serviceType + " " + percentage);
+                    } while (countPercentageCursor.moveToNext());
+                }
+            } finally {
+                if (countPercentageCursor != null) {
+                    countPercentageCursor.close();
+                }
+            }
+        } finally {
+            if (totalCountCursor != null) {
+                totalCountCursor.close();
+            }
         }
-        countPercentageCursor.close();
 
         db.close();
 
         return pieData;
     }
 
+    @SuppressLint("Range")
+    public int getTotalWorkoutHours(String customerId){
+        int count = 0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT COUNT(*) FROM appointments WHERE customerId=? AND status=5";
+        Cursor cursor = db.rawQuery(query, new String[]{customerId});
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        cursor.close();
+        db.close();
+        return count;
+    }
 
 
+    // GET trainer bio
+    @SuppressLint("Range")
+    public String getTrainerBioSummary(String trainerId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] projection = { "bioSummary" };
+        String selection = "trainerId = ?";
+        String[] selectionArgs = { trainerId };
+
+        Cursor cursor = db.query(
+                "trainerbio",
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+
+        String bioSummary = "";
+
+        if (cursor.moveToFirst()) {
+            bioSummary = cursor.getString(cursor.getColumnIndex("bioSummary"));
+        }
+
+        cursor.close();
+        db.close();
+
+        return bioSummary;
+    }
+
+    @SuppressLint("Range")
+    public List<String> getServicesByTrainerId(String trainerId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<String> services = new ArrayList<>();
+
+        String[] selectionArgs = {trainerId};
+        String query = "SELECT service FROM trainerservice WHERE trainerID = ?";
+
+        Cursor cursor = db.rawQuery(query, selectionArgs);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String service = cursor.getString(cursor.getColumnIndex("service"));
+                services.add(service);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return services;
+    }
 
 
 }

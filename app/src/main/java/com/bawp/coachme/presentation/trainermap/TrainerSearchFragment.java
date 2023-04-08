@@ -170,7 +170,7 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
         int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
 
         dateFrom.setText(dayOfMonth + "/" + month + "/" + year);
-        dateTo.setText(dayOfMonth + "/" + month + "/" + year);
+        dateTo.setText(dayOfMonth + "/" + month + "/" + (year  + 1));
 
         //set initial dates
         calendar.set(year, month, dayOfMonth, 0, 0, 0);
@@ -178,6 +178,7 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
         calendar.set(year + 1, month, dayOfMonth, 23, 59, 59);
         endDate = calendar.getTime().getTime();
 
+        System.out.println("INSIDE THE TRAINER SEARCH from " + initialDate + "  to: " + endDate);
         // Get the first round of trainers with list empty and current day today + 1 year
         filteredTrainersList = dbHelper.getTrainersByServicesAndDate(selectedServices, initialDate, endDate);
 
@@ -263,15 +264,15 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
 
                 switch (selectedValue){
                     case "Rating":
-                        sortingOption = 2;
+                        sortingOption = 1;
                         break;
 
                     case "Distance":
-                        sortingOption = 3;
+                        sortingOption = 2;
                         break;
 
                     case "Price":
-                        sortingOption = 1;
+                        sortingOption = 3;
                         break;
                     default:
                         sortingOption = 1;
@@ -320,7 +321,8 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                         TrainerMapFragment childMapFragment = new TrainerMapFragment();
                         Bundle args = new Bundle();
                         args.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
-
+                        args.putDouble("LONGITUDE", longitude);
+                        args.putDouble("LATITUDE", latitude);
                         //sort before pass
                         childMapFragment.setArguments(args);
 

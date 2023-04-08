@@ -21,7 +21,7 @@ import java.util.List;
 
 public class CustomCalendarView extends CalendarView {
 
-    private List<Date> disabledDates;
+    private List<Long> disabledDates;
 
     public CustomCalendarView(Context context) {
         super(context);
@@ -38,7 +38,7 @@ public class CustomCalendarView extends CalendarView {
         disabledDates = new ArrayList<>();
     }
 
-    public void setDisabledDates(List<Date> dates) {
+    public void setDisabledDates(List<Long> dates) {
         disabledDates.clear();
         disabledDates.addAll(dates);
         invalidate();
@@ -48,6 +48,8 @@ public class CustomCalendarView extends CalendarView {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        System.out.println("ON DRAW IN CUSTOM");
+        // Iterate over all visible cells and disable the ones with a disabled date
         // Iterate over all visible cells and disable the ones with a disabled date
         for (int i = 0; i < getChildCount(); i++) {
             ViewGroup weekRow = (ViewGroup) getChildAt(i);
@@ -56,7 +58,17 @@ public class CustomCalendarView extends CalendarView {
                 if (dayView instanceof TextView) {
                     TextView dayTextView = (TextView) dayView;
                     Date day = new Date((Long) dayTextView.getTag());
-                    if (disabledDates.contains(day)) {
+
+                    // Remove the time component
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(day);
+                    cal.set(Calendar.HOUR_OF_DAY, 0);
+                    cal.set(Calendar.MINUTE, 0);
+                    cal.set(Calendar.SECOND, 0);
+                    cal.set(Calendar.MILLISECOND, 0);
+                    Date dateWithoutTime = cal.getTime();
+
+                    if (disabledDates.contains(dateWithoutTime)) {
                         dayTextView.setEnabled(false);
                         dayTextView.setTextColor(getResources().getColor(android.R.color.darker_gray));
                     } else {
@@ -64,7 +76,6 @@ public class CustomCalendarView extends CalendarView {
                         dayTextView.setTextColor(getResources().getColor(android.R.color.black));
                     }
                 }
-            }
-        }
+            }}
     }
 }

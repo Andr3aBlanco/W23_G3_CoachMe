@@ -314,8 +314,8 @@ public class OrderPaymentOptionsFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
+                params.put("amount",Integer.toString((int)(totalAmount * 100)));
                 params.put("customer",customerID);
-                params.put("amount",Double.toString(totalAmount).replace(".",""));
                 params.put("currency","usd");
                 params.put("automatic_payment_methods[enabled]","true");
 

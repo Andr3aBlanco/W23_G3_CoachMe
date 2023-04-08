@@ -117,21 +117,20 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                     databaseRef.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                         String  firstName = snapshot.child("firstName").getValue(String.class);
+                            String  firstName = snapshot.child("firstName").getValue(String.class);
                             String  lastName = snapshot.child("lastName").getValue(String.class);
                             String  email = snapshot.child("email").getValue(String.class);
                             String address = snapshot.child("address").getValue(String.class);
                             String mobile = snapshot.child("phoneNumber").getValue(String.class);
                             // Update TextViews with user data
-                            UserSingleton.getInstance().setUserId(current_User);
+                            UserSingleton.getInstance().setUserId(current_User); // chnage back to current_user
+                            System.out.println("CURRENT USER " + current_User );
                             UserSingleton.getInstance().setFirstName(firstName);
                             UserSingleton.getInstance().setLastName(lastName);
                             UserSingleton.getInstance().setAddress(address);
                             UserSingleton.getInstance().setEmail(email);
                             UserSingleton.getInstance().setPhoneNumber(mobile);
                             UserSingleton.getInstance().setUserDeviceToken(token);
-
                         }
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
@@ -140,7 +139,6 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                     });
                     databaseRef.child("deviceToken").setValue(token);
                     //setting up user singleton
-
 
                     DBHelper dbHelper = new DBHelper(this);
                     SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -157,6 +155,7 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                         StorageReference csvFileTrainerService = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_TRAINERSERVICE_TABLE);
                         StorageReference csvFileSchedule = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_TRAINER_OPEN_SCHEDULE_TABLE);
                         StorageReference csvFileAppointments = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_APPOINTMENTS_TABLE);
+                        StorageReference csvFileTrainerBio = storage.getReferenceFromUrl(dbHelper.URL_FIRESTORE_TRAINERBIO_TABLE);
 
                         List<Task<byte[]>> downloadTasks = new ArrayList<>();
                         downloadTasks.add(csvFileWp.getBytes(Long.MAX_VALUE));
@@ -167,6 +166,7 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                         downloadTasks.add(csvFileTrainerService.getBytes(Long.MAX_VALUE));
                         downloadTasks.add(csvFileSchedule.getBytes(Long.MAX_VALUE));
                         downloadTasks.add(csvFileAppointments.getBytes(Long.MAX_VALUE));
+                        downloadTasks.add(csvFileTrainerBio.getBytes(Long.MAX_VALUE));
 
                         txtViewLoadingText.setText("Downloading Datasets...");
                         // Wait for all Tasks to complete
@@ -183,20 +183,18 @@ public class LoadingDBSplashActivity extends AppCompatActivity {
                                 byte[] csvFileTrainerServiceByte = task.getResult().get(5);
                                 byte[] csvScheduleByte = task.getResult().get(6);
                                 byte[] csvAppointmentByte = task.getResult().get(7);
+                                byte[] csvTrainerBioByte = task.getResult().get(8);
 
                                 dbHelper.uploadSelfWorkoutPlans(csvFileWpByte);
                                 dbHelper.uploadSelfWorkoutSessionTypes(csvFileWSTByte);
                                 dbHelper.uploadSelfWorkoutPlanExercises(csvFileExByte);
                                 dbHelper.uploadTrainers(csvFileTrainerByte);
 
-                                // do there the trainers
                                 dbHelper.uploadRatings(csvFileRatingsByte);
                                 dbHelper.uploadTrainerService(csvFileTrainerServiceByte);
                                 dbHelper.uploadTrainerSchedule(csvScheduleByte);
-                                dbHelper.uploadAppointments(csvAppointmentByte);
-                                //some dump data
-                                dbHelper.uploadSampleAppointment();
-                                //dbHelper.uploadSampleWorkoutPlanByUser();
+                                //dbHelper.uploadAppointments(csvAppointmentByte);
+                                dbHelper.uploadTrainerBio(csvTrainerBioByte);
 
                                 moveToMainActivity();
                             }
