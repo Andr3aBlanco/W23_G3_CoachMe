@@ -9,9 +9,13 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.View;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -35,6 +39,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Class: MainActivity.java
  *
@@ -51,6 +58,7 @@ import com.google.firebase.database.ValueEventListener;
 public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
+    private static final int NOTIFICATION_PERMISSION_CODE = 123;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
     private LocationManager locationManager;
@@ -68,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     String current_User;
     DatabaseReference databaseRef;
     private String myDeviceId;
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,57 +85,31 @@ public class MainActivity extends AppCompatActivity {
         replaceFragment(new HomeFragment());
         fragmentBinding();
 
-        // FROM HERE
-        // Check if the app has permission to access location information
-        if (ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Request the permission if it hasn't been granted
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_LOCATION);
+        // Requesting permissions (LOCATION and POST NOTIFICATIONS)
+        List<String> requestPermissions = new ArrayList<>();
 
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            requestPermissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            Log.d("Permissions","Location is required");
         }
 
-//
-//        // Get the location manager and provider
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-//        }
-//        provider = LocationManager.GPS_PROVIDER;
-//
-//        // Request location updates
-//        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//
-//            ActivityCompat.requestPermissions(this,
-//                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-//                    MY_PERMISSIONS_REQUEST_LOCATION);
-//
-//        } else {
-//
-//            // Get the location manager and provider
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-//            }
-//            provider = LocationManager.GPS_PROVIDER;
-//
-//            try {
-////                locationManager.requestLocationUpdates(provider, 400, 1, this);
-//
-//                // Get the last known location
-//                Location location = locationManager.getLastKnownLocation(provider);
-//                if (location != null) {
-//                    latitude = location.getLatitude();
-//                    longitude = location.getLongitude();
-//
-//                    System.out.println("IN THE ON CREATE IN THE TRAINER SEARCH latitude longitude " + latitude + " "+ longitude);
-//                }
-//            } catch(SecurityException e){
-//                e.printStackTrace();
-//            }
-//        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
+                PackageManager.PERMISSION_GRANTED) {
+            requestPermissions.add(Manifest.permission.POST_NOTIFICATIONS);
+            Log.d("Permissions","Post Notifications is required");
+        }
 
-        // TO HERE
+        if (requestPermissions.size() > 0){
+            Log.d("Permissions","We required at least 1 permission");
+            //let's ask for the permissions
+            ActivityCompat.requestPermissions(this,
+                    requestPermissions.toArray(new String[requestPermissions.size()]),
+                    PERMISSIONS_REQUEST_LOCATION);
+        }
+
     }
 
     private void fragmentBinding(){
