@@ -25,7 +25,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
+/**
+ * Clsss: GoogleSignInActivity.java
+ * class which extends LoginActivity.class and it will helps user to get register or login easily with the google accounts
+ and save data to the firebase
+ * @author Jaydip mulani
+ * @version 1.0
+ */
 public class GoogleSignInActivity extends LoginActivity {
     private static final int RC_SIGN_IN = 101;
     GoogleSignInClient mGoogleSignInClient;
