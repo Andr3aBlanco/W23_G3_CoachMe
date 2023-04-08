@@ -31,6 +31,7 @@ import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bawp.coachme.R;
 import com.bawp.coachme.model.Trainer;
@@ -53,13 +54,18 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link TrainerSearchFragment#newInstance} factory method to
- * create an instance of this fragment.
+* Class TrainerSearchFragment.java
+ *
+ * Fragment that contains the logic to retrieve the trainers
+ * and pass them to TrainerMapFragment or to the TrainerListFragment
+ * It also get the options from the search filter and passes it to
+ * the TrainerListFragment
+ *
+ * @author Andrea Blanco
  */
 public class TrainerSearchFragment extends Fragment implements LocationListener {
 
-
+//
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
@@ -132,6 +138,8 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
 
         dbHelper = new DBHelper(getContext());
 
+        // this whole block of code is necessary to pass the location to the trainer search fragment
+
         // Check if the app has permission to access location information
         if (ContextCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -140,7 +148,52 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
             ActivityCompat.requestPermissions(getActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_LOCATION);
+
         }
+
+
+
+        // Get the location manager and provider
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        }
+        provider = LocationManager.GPS_PROVIDER;
+
+        // Request location updates
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_LOCATION);
+
+        } else {
+
+            // Get the location manager and provider
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            }
+            provider = LocationManager.GPS_PROVIDER;
+
+            try {
+                locationManager.requestLocationUpdates(provider, 400, 1, this);
+
+                // Get the last known location
+                Location location = locationManager.getLastKnownLocation(provider);
+                if (location != null) {
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+
+                    // save location to shared preferences
+//                    SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", MODE_PRIVATE);
+
+
+                    System.out.println("IN THE ON CREATE IN THE TRAINER SEARCH latitude longitude " + latitude + " "+ longitude);
+                }
+            } catch(SecurityException e){
+                e.printStackTrace();
+            }
+        }
+
     }
 
 
@@ -205,46 +258,11 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
             }
         });
 
-        // Get the location manager and provider
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        }
-        provider = LocationManager.GPS_PROVIDER;
-
-        // Request location updates
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_LOCATION);
-
-        } else {
-
-            // Get the location manager and provider
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-            }
-            provider = LocationManager.GPS_PROVIDER;
-
-            try {
-                locationManager.requestLocationUpdates(provider, 400, 1, this);
-
-                // Get the last known location
-                Location location = locationManager.getLastKnownLocation(provider);
-                if (location != null) {
-                    latitude = location.getLatitude();
-                    longitude = location.getLongitude();
-                    Log.d("TrainerSearch", "Latitude: " + latitude + ", Longitude: " + longitude); //My location ok :)
-                }
-            } catch(SecurityException e){
-                e.printStackTrace();
-            }
-        }
 
 
 
         // In the first load -> map selected
-
+        System.out.println("RIGHT BEFORE GENERATING MAP FOR THE FIRST TIME latitude longitude " + latitude + " " + longitude);
                 //Pass the data to MapSearchFragment
                 TrainerMapFragment childMapFragment = new TrainerMapFragment();
                 Bundle args = new Bundle();
@@ -360,22 +378,16 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
 
                 if (crossfit.isChecked()) {
                     selectedServices.add("Crossfit");
-                    Log.d("Andrea", "Checkbox selected");
                 }
                 if (yoga.isChecked()) {
                     selectedServices.add("Yoga");
-                    Log.d("Andrea", "Checkbox selected");
                 }
                 if (pilates.isChecked()) {
                     selectedServices.add("Pilates");
-                    Log.d("Andrea", "Checkbox selected");
                 }
                 if (martials.isChecked()) {
                     selectedServices.add("Martials");
-                    Log.d("Andrea", "Checkbox selected");
                 }
-
-                Log.d("Andrea", "Inside click search  this is the end time " + endDate + "initial date: " + initialDate);
 
                 // On search - dates and services migh change or not
                 filteredTrainersList = dbHelper.getTrainersByServicesAndDate(selectedServices, initialDate, endDate); // Filter ok
@@ -406,9 +418,25 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
 
                    case R.id.rbMapView:
 
+//                       TrainerMapFragment childMapFragment = new TrainerMapFragment();
+//                       Bundle args = new Bundle();
+//                       args.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
+//
+
+                       // FROM HERE
                        TrainerMapFragment childMapFragment = new TrainerMapFragment();
                        Bundle args = new Bundle();
                        args.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
+                       args.putDouble("LONGITUDE", longitude);
+                       args.putDouble("LATITUDE", latitude);
+                       //sort before pass
+                       childMapFragment.setArguments(args);
+
+                       //At the beginning replace for TrainerMapFragment
+                       replaceFragment(childMapFragment);
+
+
+                       // TO HERE
 
                        //sort before pass
                        childMapFragment.setArguments(args);
@@ -462,13 +490,13 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
     public void onStatusChanged(String provider, int status, Bundle extras) {
         switch (status) {
             case LocationProvider.OUT_OF_SERVICE:
-                System.out.println("OUT OF SERVICE ");
+                Toast.makeText(getContext(),"LOCATION SERVICES : OUT OF SERVICE ", Toast.LENGTH_SHORT ).show();
                 break;
             case LocationProvider.TEMPORARILY_UNAVAILABLE:
-                System.out.println("UNAVAILABLE ");
+                Toast.makeText(getContext(),"LOCATION SERVICES : TEMPORARILY UNAVAILABLE ", Toast.LENGTH_SHORT ).show();
                 break;
             case LocationProvider.AVAILABLE:
-                System.out.println("AVAILABLE ");
+                Toast.makeText(getContext(),"LOCATION SERVICES : AVAILABLE ", Toast.LENGTH_SHORT ).show();
                 break;
         }
     }
@@ -495,14 +523,12 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                             //Fix start date in miliseconds
                             Calendar calendar = Calendar.getInstance();
                             calendar.set(year1, monthOfYear, dayOfMonth, 0, 0, 0);
-                            Log.d("Andrea", "This is the date picked " + calendar.getTime() + " " + calendar.getTime().getTime());
                             initialDate = calendar.getTime().getTime();
 
                         } else {
                             //fix end date in miliseconds
                             Calendar calendar = Calendar.getInstance();
                             calendar.set(year1, monthOfYear, dayOfMonth, 23, 59, 59);
-                            Log.d("Andrea", "This is the date picked" + calendar.getTime().getTime());
                             endDate = calendar.getTime().getTime();
                         }
                         String selectedDate = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year1;

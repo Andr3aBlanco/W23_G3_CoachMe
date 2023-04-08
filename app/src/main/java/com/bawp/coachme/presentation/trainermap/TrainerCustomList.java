@@ -1,5 +1,14 @@
 package com.bawp.coachme.presentation.trainermap;
 
+/**
+ * Custom adapter for available hours for each day
+ * To be used in the Trainer Search Recycler Adapter
+ * and in the Trainer Details Fragment
+ *
+ * @author Andrea Blanco
+ * @version 1.0
+ * **/
+
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -86,7 +95,7 @@ public class TrainerCustomList extends BaseAdapter {
 
         if(selectedHour == position) {
 
-            textView.setBackgroundColor(Color.GRAY);
+            textView.setBackgroundColor(Color.LTGRAY);
 
         } else{
 

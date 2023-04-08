@@ -1,5 +1,14 @@
 package com.bawp.coachme.model;
 
+
+/**
+ * Class TrainerBio.java
+ *
+ * class associated with the table trainerbio
+ *
+ * @author Andrea Blanco
+ *
+ * **/
 public class TrainerBio {
 
     String trainerId;

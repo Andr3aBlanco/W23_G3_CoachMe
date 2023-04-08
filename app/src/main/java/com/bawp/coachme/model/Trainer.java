@@ -2,6 +2,13 @@ package com.bawp.coachme.model;
 
 import java.io.Serializable;
 
+/**
+ * Class Trainer.java
+ *
+ * Class associated with the table trainers
+ *
+ * @author Andrea Blanco
+ * **/
 public class Trainer implements Serializable {
 
     private String id;

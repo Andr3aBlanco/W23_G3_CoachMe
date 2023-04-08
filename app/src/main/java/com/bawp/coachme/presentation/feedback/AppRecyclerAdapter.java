@@ -1,5 +1,13 @@
 package com.bawp.coachme.presentation.feedback;
 
+/**
+ * Class AppRecyclerAdapter.java
+ *
+ * This fragment contains the logic for displaying the past appointments
+ * and allows the user to rate the past appointments and leave a comment
+ * **/
+
+
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -94,14 +102,14 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.app_history_item, parent, false);
         AppointmentHolder holder = new AppointmentHolder(itemView);
 
-        dbHelper = new DBHelper(parent.getContext()); // Check this and change if necessary
+        dbHelper = new DBHelper(parent.getContext());
 
         holder.ratingFive.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
 
                 newRating = ratingBar.getRating();
-                System.out.println("NEW RATING " + newRating);
+
             }
         });
 
@@ -119,8 +127,6 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
                     Toast.makeText(parent.getContext(),"You have already rated this session. ", Toast.LENGTH_SHORT).show();
                 }
 
-
-                System.out.println("This is the current position " + currentPosition);
             }
         });
 
@@ -128,7 +134,6 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
             @Override
             public void onClick(View v) {
 
-                System.out.print("NEW RATING ON SUBMIT " + newRating);
                 if(TextUtils.isEmpty(holder.txtComment.getText())){
 
                     Toast.makeText(parent.getContext(), "Please leave us a comment ", Toast.LENGTH_SHORT).show();
@@ -177,8 +182,6 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
         String formattedDate = sdf.format(new Date(pastAppointments.get(position).getBookedDate()));
 
-        System.out.println("Rating for " + pastAppointments.get(position).getRating());
-
         // rated or not yet
         if(pastAppointments.get(position).getRating() == 0) {
 
@@ -186,9 +189,6 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
                     currentTrainer.getFirstName() + "</b> on the <b>" + formattedDate + "</b>";
 
             holder.message.setText(HtmlCompat.fromHtml(toDisplay,  HtmlCompat.FROM_HTML_MODE_LEGACY));
-
-
-//            System.out.println("rating for position " + position + " is " + pastAppointments.get(position).getRating());
 
             holder.ratingOne.setRating((float)pastAppointments.get(position).getRating()/5);
 
@@ -198,11 +198,9 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
             String toDisplay = "Your <b>" + pastAppointments.get(position).getServiceType() + "</b> session with <b>" +
                     currentTrainer.getFirstName() + "</b> on the " + formattedDate + " was <b>" + pastAppointments.get(position).getComment() + "</b>";
 
-
             holder.message.setText(HtmlCompat.fromHtml(toDisplay,  HtmlCompat.FROM_HTML_MODE_LEGACY));
             // fill the star depending on the value
             holder.ratingOne.setRating((float)pastAppointments.get(position).getRating()/5);
-//            Log.d("ANDREA", "This is the rating for appointment in " + position + " " +pastAppointments.get(position).getRating() );
         }
 
 
@@ -232,20 +230,18 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
             super(itemView);
 
             message = itemView.findViewById(R.id.txtTrainerNameAppRV);
-//            trainerDate = itemView.findViewById(R.id.txtTrainerNameDate);
-//            comment = itemView.findViewById(R.id.txtRatingComment);
             ratingOne = itemView.findViewById(R.id.ratingOne);
             ratingFive = itemView.findViewById(R.id.ratingFive);
             ratingCard = itemView.findViewById(R.id.ratingCard);
             starButton = itemView.findViewById(R.id.btnCoverStar);
-            txtComment = itemView.findViewById(R.id.txtAppDateRV); // comment
+            txtComment = itemView.findViewById(R.id.txtAppDateRV);
             btnSubmitReview = itemView.findViewById(R.id.btnSubmitReview);
 
         }
     }
 
     public interface OnItemClickListener {
-        public void onItemClick(int i);  // where does this come from
+        public void onItemClick(int i);
 
     }
 }
