@@ -1,5 +1,11 @@
-package com.bawp.coachme.presentation.userAuthentication;
-
+package com.bawp.coachme.presentation.userAuthantication;
+/**
+ * Clsss: RegisterActivity.java
+ * class which which let user to get register their account and save the data to the firebase
+ *
+ * @author Jaydip mulani
+ * @version 1.0
+ */
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -68,14 +74,13 @@ TextView alreadyHaveAccount;
                     return;
                 }
 
-
+//creting user in user table of firebase and saving data to the single ton
                 mAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
                                     // Sign in success, update UI with the signed-in user's information
-                                    Toast.makeText(RegisterActivity.this, "User created", Toast.LENGTH_SHORT).show();
                                     Intent regIntent=new Intent(getApplicationContext(), NewUserForm.class);
                                     startActivity(regIntent);
                                     return;

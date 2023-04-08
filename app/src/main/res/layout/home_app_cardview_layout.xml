@@ -83,23 +83,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
-        android:visibility="gone">
+        android:visibility="visible">
 
 
-        <FrameLayout
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/mapViewAppLocation"
             android:layout_width="300dp"
             android:layout_height="300dp"
-            android:layout_margin="2dp"
+            android:apiKey="AIzaSyAkm-OeCK3xywaBvOeRGWOGxHF-4iyGfY8"
+            android:clickable="true"
+            android:contentDescription="@string/NoSpeakableText"
+            android:enabled="true"
             android:layout_centerHorizontal="true"
-            android:id="@+id/frameMapAddDetails">
+            android:focusable="true"/>
 
-        </FrameLayout>
+<!--        <FrameLayout-->
+<!--            android:layout_width="300dp"-->
+<!--            android:layout_height="300dp"-->
+<!--            android:layout_margin="2dp"-->
+<!--            android:layout_centerHorizontal="true"-->
+<!--            android:id="@+id/frameMapAddDetails">-->
+
+<!--        </FrameLayout>-->
 
         <Button
             android:id="@+id/btnCancelApp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/frameMapAddDetails"
+            android:layout_below="@+id/mapViewAppLocation"
             android:layout_centerHorizontal="true"
             android:backgroundTint="@color/cancel_red"
             android:fontFamily="@font/poppins_bold"

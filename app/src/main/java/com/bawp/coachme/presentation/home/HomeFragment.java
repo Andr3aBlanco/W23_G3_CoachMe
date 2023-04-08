@@ -1,6 +1,7 @@
 package com.bawp.coachme.presentation.home;
 
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -79,6 +80,13 @@ public class HomeFragment extends Fragment {
         int[] statusList = new int[]{3,4};
         List<Appointment> activeAppointments = dbHelper.getAppointmentsByStatusList(statusList);
         RecyclerView homeAppRecyclerView = view.findViewById(R.id.homeAppRecyclerView);
+
+
+        //
+        Debug.MemoryInfo memoryInfo = new Debug.MemoryInfo();
+        Debug.getMemoryInfo(memoryInfo);
+        Log.d("RAM", "Total memory used: " + memoryInfo.getTotalPss() + " KB");
+
 
         if (activeAppointments.size()>0){
             homeAppRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

@@ -6,16 +6,19 @@ package com.bawp.coachme.presentation.home;
  * Recycler View Adapter that will handle all the generation of each current
  * appointment a user has purchased and didn't occur yet.
  *
- * @author Luis Miguel Miranda
+ * @author Luis Miguel Miranda / Andrea Blanco
  * @version 1.0
  */
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Debug;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -23,7 +26,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,10 +37,12 @@ import com.bawp.coachme.model.Appointment;
 import com.bawp.coachme.model.Trainer;
 import com.bawp.coachme.utils.DBHelper;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.storage.FirebaseStorage;
@@ -52,6 +59,10 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
     Context context;
     SetOnItemClickListener listener;
     DBHelper dbHelper;
+    int currentCard = -1;
+
+     MapView mapView;
+
 
     public List<Appointment> getAppointmentList() {
         return appointmentList;
@@ -72,6 +83,7 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
     @NonNull
     @Override
     public HomeAppViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.home_app_cardview_layout, parent, false);
@@ -83,30 +95,20 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
             public void onClick(View v) {
 
                 //Click listener for see appointment details button
-                int position = holder.getBindingAdapterPosition();
-                System.out.println("POSITION IN ON CREATE IN HOME ADAPTER " + position);
+                if(currentCard != holder.getBindingAdapterPosition()){
 
-                Trainer trainer = dbHelper.getTrainerById(appointmentList.get(position).getTrainerId());
-                double latitude = trainer.getLatitudeCoord();
-                double longitude = trainer.getLongitudeCoord();
-
-                if(holder.rlMapApppDetails.getVisibility() == View.GONE){
-                    holder.rlMapApppDetails.setVisibility(View.VISIBLE);
-
-                    HomeMapAddDetails mapAddDetails = new HomeMapAddDetails();
-                    Bundle args = new Bundle();
-                    args.putDouble("LATITUDE", latitude);
-                    args.putDouble("LONGITUDE", longitude);
-                    mapAddDetails.setArguments(args);
-
-                    FragmentTransaction transaction = ((FragmentActivity)context).getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.frameMapAddDetails, mapAddDetails);
-                    transaction.addToBackStack(null);
-                    transaction.commit();
+                    currentCard = holder.getBindingAdapterPosition();
+                    notifyDataSetChanged();
 
                 }else{
-                    holder.rlMapApppDetails.setVisibility(View.GONE);
+                    currentCard = -1;
+                    notifyDataSetChanged();
+
                 }
+
+//                Debug.MemoryInfo memoryInfo = new Debug.MemoryInfo();
+//                Debug.getMemoryInfo(memoryInfo);
+//                Log.d("RAM", "Total memory used: " + memoryInfo.getTotalPss() + " KB");
 
             }
         });
@@ -125,6 +127,8 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
 
             }
         });
+
+
 
         return holder;
     }
@@ -161,6 +165,53 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
 
 
 
+
+        if(position == currentCard){
+
+            holder.rlMapApppDetails.setVisibility(View.VISIBLE);
+
+            double latitude = trainer.getLatitudeCoord();
+            double longitude = trainer.getLongitudeCoord();
+
+
+
+
+
+            holder.mapView.onCreate(null);
+            holder.mapView.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(@NonNull GoogleMap googleMap) {
+
+                    LatLng center = new LatLng(latitude, longitude);
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(center, 10f);
+                    googleMap.moveCamera(cameraUpdate);
+
+                    MarkerOptions markerOptions = new MarkerOptions()
+                            .position(new LatLng(latitude, longitude))
+                            .title(trainer.getFirstName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
+
+                    googleMap.addMarker(markerOptions);
+                    googleMap.getUiSettings().setZoomControlsEnabled(true);
+
+                    if(holder.mapView != null ){
+
+                        holder.mapView.onResume();
+                        holder.mapView.onDestroy();
+                        holder.mapView.onLowMemory();
+
+                    }
+                }
+            });
+
+
+        }else{
+
+            holder.rlMapApppDetails.setVisibility(View.GONE);
+
+        }
+
+
+
     }
 
     @Override
@@ -179,7 +230,9 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
 
         RelativeLayout rlMapApppDetails;
         Button cancelApp;
+        FrameLayout mapFrame;
 
+        MapView mapView;
 
         public HomeAppViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -190,14 +243,20 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
             btnAppDetails = itemView.findViewById(R.id.btnCheckAppointmentHome);
             rlMapApppDetails = itemView.findViewById(R.id.rlAappAddDetails);
             cancelApp = itemView.findViewById(R.id.btnCancelApp);
+//            mapFrame = itemView.findViewById(R.id.mapViewAppLocation);
 
+            mapView = itemView.findViewById(R.id.mapViewAppLocation);
 
         }
+
+
+
     }
 
     public interface SetOnItemClickListener{
         public void setOnItemClick(int i);
     }
+
 
 
 

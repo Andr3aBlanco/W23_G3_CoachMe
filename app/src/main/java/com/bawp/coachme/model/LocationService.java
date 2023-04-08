@@ -4,6 +4,13 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 
+/**
+ * Class Location.java
+ *
+ * Class for location services used in the map
+ *
+ * **/
+
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.common.api.GoogleApiClient;

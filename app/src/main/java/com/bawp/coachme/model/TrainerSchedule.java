@@ -2,6 +2,15 @@ package com.bawp.coachme.model;
 
 import java.util.Date;
 
+
+/**
+ * Class TrainerSchedule.java
+ *
+ * Class associated with the table trainer schedule
+ *
+ * @author Andrea Blanco
+ *
+ * **/
 public class TrainerSchedule {
 
     private Date time;
