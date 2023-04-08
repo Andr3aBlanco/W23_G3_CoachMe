@@ -1,4 +1,11 @@
 package com.bawp.coachme.presentation.user;
+/**
+ * Clsss: ProfileFragment.java
+ * class which shows user their personal data
+ *
+ * @author Jaydip mulani
+ * @version 1.0
+ */
 
 import android.content.Intent;
 import android.os.Bundle;

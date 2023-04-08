@@ -1,5 +1,11 @@
 package com.bawp.coachme.presentation.userAuthantication;
-
+/**
+ * Clsss: FacebookSignInActivity.java
+ * class which extends LoginActivity.class and it will helps user to get register or login easily with the facebook
+    and save data to the firebase
+ * @author Jaydip mulani
+ * @version 1.0
+ */
 import androidx.annotation.NonNull;
 
 import android.content.Intent;

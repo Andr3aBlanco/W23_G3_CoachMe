@@ -1,4 +1,11 @@
 package com.bawp.coachme.presentation.userAuthantication;
+/**
+ * Clsss: ResetPasswordActivity.java
+ * class which let user to reset their forgotten password and let them set new password using firebase forgot password function
+ *
+ * @author Jaydip mulani
+ * @version 1.0
+ */
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;

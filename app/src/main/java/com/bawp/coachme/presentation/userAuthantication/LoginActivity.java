@@ -34,11 +34,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
+/**
+ * Clsss: LoginActivity.java
+ * class which let user login to their existing account and verify credentials with firebase
+ * @author Jaydip mulani
+ * @version 1.0
+ */
 public class LoginActivity extends AppCompatActivity {
     String myDeviceId;
     Button logInBtn;
-    CountDownTimer countDownTimer;
+
     FirebaseAuth mAuth;
     ImageView googleLoginBtn;
     ImageView fbLoginBtn;
@@ -47,9 +52,9 @@ public class LoginActivity extends AppCompatActivity {
     EditText passwordtxt;
     TextView goToRegister, txtforgotpass;
     ProgressBar porgBar;
-    private String myDeviceToken;
+
     FirebaseUser user;
-    String current_User;
+
     DatabaseReference databaseRef;
 
     @Override

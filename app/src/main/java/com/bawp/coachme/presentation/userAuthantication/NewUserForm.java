@@ -1,5 +1,10 @@
 package com.bawp.coachme.presentation.userAuthantication;
-
+/**
+ * Clsss: NewUserForm.java
+ * class which helps user to fill out their personal information and store them to firebase user table and user singleton
+ * @author Jaydip mulani
+ * @version 1.0
+ */
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 import androidx.annotation.NonNull;
@@ -20,6 +25,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -80,7 +86,7 @@ TextView btnCurrent_location;
 
         current_User=user.getUid();
         databaseRef = FirebaseDatabase.getInstance().getReference().child("users").child(current_User);
-
+//Checking in the data base that if user's first name is present in the table meant user already have submitted his data
         databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
@@ -95,7 +101,6 @@ TextView btnCurrent_location;
                      finish();
                 }
             };
-
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -131,7 +136,6 @@ TextView btnCurrent_location;
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
             finish();
-
         }
        //getting current location
         btnCurrent_location.setOnClickListener((View v)-> {
@@ -139,7 +143,6 @@ TextView btnCurrent_location;
         });
         confirmDataBtn.setOnClickListener((View v) -> {
             String dbFirstname, dbLastname, dbAddress, dbPhoneNumber,dbEmail;
-
             // creating role as a customer ID=1 and role customer
             Role newRole = new Role(1, "Customer");
             dbFirstname = String.valueOf(firstNameTxt.getText());
@@ -155,6 +158,11 @@ TextView btnCurrent_location;
                 Toast.makeText(NewUserForm.this, "Please Enter Email", Toast.LENGTH_SHORT).show();
                 return;
             }
+            if(!Patterns.EMAIL_ADDRESS.matcher (dbEmail).matches()) {
+
+                Toast.makeText(NewUserForm.this, "Please provide a valid Email", Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (TextUtils.isEmpty(dbLastname)) {
                 Toast.makeText(NewUserForm.this, "Please Enter last name", Toast.LENGTH_SHORT).show();
                 return;
@@ -166,7 +174,7 @@ TextView btnCurrent_location;
                 return;
             }
 
-           //creating user object to store in firebase
+           //creating user object to store in firebase realtime database
          User newUser= new User(dbFirstname,dbLastname,dbEmail,dbAddress,dbPhoneNumber);
 
 
@@ -189,6 +197,7 @@ TextView btnCurrent_location;
 
 
     }
+    //making sure that user has enabled access to the location
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -221,7 +230,7 @@ TextView btnCurrent_location;
             }
         }
     }
-
+//getting current location for the user
     private void getCurrentLocation() {
 
 
@@ -267,10 +276,8 @@ TextView btnCurrent_location;
             }
         }
     }
-
+//creating popup for asking permission to allow user for current location
     private void turnOnGPS() {
-
-
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest);
@@ -309,7 +316,7 @@ TextView btnCurrent_location;
         });
 
     }
-
+// checking   that gps is enabled or not
     private boolean isGPSEnabled() {
         LocationManager locationManager = null;
         boolean isEnabled = false;

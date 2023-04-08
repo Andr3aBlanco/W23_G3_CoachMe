@@ -1,4 +1,11 @@
 package com.bawp.coachme.presentation.userAuthantication;
+/**
+ * Clsss: EditUserProfileFragment.java
+ * class that will gets the data from user account and will let them to modify their personal data
+ *
+ * @author Jaydip mulani
+ * @version 1.0
+ */
 
 import android.os.Bundle;
 
