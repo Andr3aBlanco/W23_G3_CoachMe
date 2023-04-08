@@ -25,3 +25,7 @@ The app is designed to make it convenient for users to reach their fitness goals
 
 To review the contribution's report, please click on the following link:
 [Contribution's Report Link](https://collegedouglas.sharepoint.com/:x:/s/3175_FinalProject/ERSkxYFRu79Oj33VS1RPd-MBDqUkiF_rA4XIvLLIGqQFaQ?email=kandhadaip%40douglascollege.ca&e=Cymi9U)
+
+<br/>
+We recommend to set the location of your emulator as per the following image 
+![Test Location](./testuserlocation.png "Test User Location")
