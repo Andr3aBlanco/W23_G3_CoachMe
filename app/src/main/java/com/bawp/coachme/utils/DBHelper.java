@@ -785,7 +785,7 @@ public class DBHelper extends SQLiteOpenHelper {
         // Close the database connection
         db.close();
 
-        if (status == 3){
+        if (status == 2){
             Appointment appointment = getAppointmentById(appointmentId);
             insertSchedule(appointment.getBookedDate(),appointment.getTrainerId());
         }
@@ -1925,11 +1925,12 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     // Update rating -> initial zero for validation purposes valid values from 1 - 5
-    public int updateAppointmentRating(String appId, int rating){
+    public int updateAppointmentRating(String appId, int rating, String comment){
         SQLiteDatabase db = getReadableDatabase();
         ContentValues values = new ContentValues();
 
         values.put("rating", rating);
+        values.put("comment", comment);
 
         int numRowsUpdated = db.update("appointments", values, "_id=?", new String[] {appId});
 

@@ -1,4 +1,4 @@
-package com.bawp.coachme.presentation.userAuthantication;
+package com.bawp.coachme.presentation.userAuthentication;
 /**
  * Clsss: ResetPasswordActivity.java
  * class which let user to reset their forgotten password and let them set new password using firebase forgot password function

@@ -1,4 +1,4 @@
-package com.bawp.coachme.presentation.userAuthantication;
+package com.bawp.coachme.presentation.userAuthentication;
 /**
  * Clsss: EditUserProfileFragment.java
  * class that will gets the data from user account and will let them to modify their personal data
@@ -22,7 +22,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bawp.coachme.presentation.user.ProfileFragment;
+import com.bawp.coachme.presentation.userAuthentication.ProfileFragment;
 import com.bawp.coachme.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -116,21 +116,22 @@ public class EditUserProfileFragment extends Fragment {
             // Commit the transaction
             fragmentTransaction.commit();
         });
-btnCancle.setOnClickListener((View v)->{
-    ProfileFragment profileFragment = new ProfileFragment();
 
-    FragmentManager fm = getParentFragmentManager();
-    FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        btnCancle.setOnClickListener((View v)->{
+            ProfileFragment profileFragment = new ProfileFragment();
 
-    // Replace the current fragment with the new one
-    fragmentTransaction.replace(R.id.barFrame, profileFragment);
+            FragmentManager fm = getParentFragmentManager();
+            FragmentTransaction fragmentTransaction = fm.beginTransaction();
 
-    // Add the transaction to the back stack
-    fragmentTransaction.addToBackStack(null);
+            // Replace the current fragment with the new one
+            fragmentTransaction.replace(R.id.barFrame, profileFragment);
 
-    // Commit the transaction
-    fragmentTransaction.commit();
-});
+            // Add the transaction to the back stack
+            fragmentTransaction.addToBackStack(null);
+
+            // Commit the transaction
+            fragmentTransaction.commit();
+        });
        return view;
     }
 }

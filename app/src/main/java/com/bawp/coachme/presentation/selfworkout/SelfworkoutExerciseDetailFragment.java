@@ -110,6 +110,8 @@ public class SelfworkoutExerciseDetailFragment extends Fragment {
         //Downloading image from Firebase Storage
         FirebaseStorage storage = FirebaseStorage.getInstance();
 
+        Log.d("HELLO",exercise.getExerciseImageURLFirestore());
+
         //Setting the image of the workout plan
         StorageReference imageRef = storage.getReferenceFromUrl(exercise.getExerciseImageURLFirestore());
         Glide.with(getContext())

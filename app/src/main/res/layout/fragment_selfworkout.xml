@@ -165,7 +165,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="0.35"
                             android:textSize="14dp"
-                            android:text="Total of weeks:"
+                            android:text="Total of days:"
                             android:fontFamily="@font/poppins_bold"
                             android:gravity="center|right"/>
                         <TextView

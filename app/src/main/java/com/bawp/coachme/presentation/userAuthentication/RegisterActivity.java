@@ -1,4 +1,4 @@
-package com.bawp.coachme.presentation.userAuthantication;
+package com.bawp.coachme.presentation.userAuthentication;
 /**
  * Clsss: RegisterActivity.java
  * class which which let user to get register their account and save the data to the firebase

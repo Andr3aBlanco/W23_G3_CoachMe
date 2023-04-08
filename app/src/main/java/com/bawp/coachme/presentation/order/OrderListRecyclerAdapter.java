@@ -164,7 +164,7 @@ public class OrderListRecyclerAdapter extends RecyclerView.Adapter<OrderListRecy
             //Here we have to make 2 updates, first locally in SQL and into Firebase Database,
             //to have both databases available and let free 1 spot of the trainer
 
-            int numRowsUpdated = dbHelper.updateAppointmentStatus(orderId,3);
+            int numRowsUpdated = dbHelper.updateAppointmentStatus(orderId,2);
 
             if (numRowsUpdated>0){
                 FirebaseDatabase CoachMeDatabaseInstance = FirebaseDatabase.getInstance();

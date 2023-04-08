@@ -1,4 +1,4 @@
-package com.bawp.coachme.presentation.userAuthantication;
+package com.bawp.coachme.presentation.userAuthentication;
 /**
  * Clsss: NewUserForm.java
  * class which helps user to fill out their personal information and store them to firebase user table and user singleton

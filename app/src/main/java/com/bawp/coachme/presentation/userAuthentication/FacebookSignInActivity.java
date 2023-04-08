@@ -1,4 +1,4 @@
-package com.bawp.coachme.presentation.userAuthantication;
+package com.bawp.coachme.presentation.userAuthentication;
 /**
  * Clsss: FacebookSignInActivity.java
  * class which extends LoginActivity.class and it will helps user to get register or login easily with the facebook

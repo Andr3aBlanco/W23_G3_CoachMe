@@ -152,7 +152,7 @@ public class AppRecyclerAdapter extends RecyclerView.Adapter<AppRecyclerAdapter.
                         // get the current appointment and save the new rating and save to trainer
                         pastAppointments.get(currentPosition).setRating((int)newRating); // nor refreshing
                         pastAppointments.get(currentPosition).setComment(newComment);
-                        dbHelper.updateAppointmentRating(pastAppointments.get(currentPosition).getId(),(int)newRating);
+                        dbHelper.updateAppointmentRating(pastAppointments.get(currentPosition).getId(),(int)newRating, newComment);
                         dbHelper.updateTrainerRating(pastAppointments.get(currentPosition).getTrainerId());
 
                         holder.ratingOne.setRating(newRating/5);
