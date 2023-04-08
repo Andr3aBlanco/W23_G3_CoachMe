@@ -1790,17 +1790,19 @@ public class DBHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getReadableDatabase();
 
+        long currentTimePlusOneHourMillis = System.currentTimeMillis() + 3600000L; // 1 hour = 3600000 milliseconds
+
         Cursor cursor = db.rawQuery("SELECT * FROM schedule " +
                 "JOIN trainers ON trainers._id = schedule.trainerID " +
-                "WHERE trainerID =  '"+trainerId+"'", null);
+                "WHERE trainerID = '" + trainerId + "' AND time > " + currentTimePlusOneHourMillis, null);
 
         List<Long> times = new ArrayList<>();
 
-        if(cursor.moveToFirst()){
-            do{
+        if (cursor.moveToFirst()) {
+            do {
                 times.add(cursor.getLong(cursor.getColumnIndex("time")));
 
-            }while(cursor.moveToNext());
+            } while (cursor.moveToNext());
         }
         db.close();
         return times;

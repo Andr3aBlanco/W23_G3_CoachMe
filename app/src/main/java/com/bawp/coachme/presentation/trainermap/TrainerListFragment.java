@@ -225,6 +225,11 @@ public class TrainerListFragment extends Fragment {
         @Override
         public TrainerListFragment.TrainerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(getActivity());
+//
+//            View itemView = LayoutInflater.from(getActivity()).inflate(R.layout.trainer_list_fragment, parent, false);
+//            TrainerViewHolder holder = new TrainerViewHolder(itemView);
+//
+
             return new TrainerListFragment.TrainerViewHolder(inflater, parent);
         }
 

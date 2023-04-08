@@ -6,7 +6,7 @@ package com.bawp.coachme.presentation.home;
  * Recycler View Adapter that will handle all the generation of each current
  * appointment a user has purchased and didn't occur yet.
  *
- * @author Luis Miguel Miranda
+ * @author Luis Miguel Miranda / Andrea Blanco
  * @version 1.0
  */
 
