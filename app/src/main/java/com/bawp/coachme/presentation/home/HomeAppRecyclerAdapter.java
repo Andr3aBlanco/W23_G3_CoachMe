@@ -175,8 +175,6 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
 
 
 
-
-
             holder.mapView.onCreate(null);
             holder.mapView.getMapAsync(new OnMapReadyCallback() {
                 @Override
@@ -195,9 +193,10 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
 
                     if(holder.mapView != null ){
 
+                        holder.mapView.onLowMemory();
                         holder.mapView.onResume();
                         holder.mapView.onDestroy();
-                        holder.mapView.onLowMemory();
+
 
                     }
                 }
