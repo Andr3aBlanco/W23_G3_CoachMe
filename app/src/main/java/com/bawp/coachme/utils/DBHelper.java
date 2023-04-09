@@ -540,22 +540,26 @@ public class DBHelper extends SQLiteOpenHelper {
             String[] nextLine;
             while ((nextLine = reader.readNext()) != null) {
 
-                ContentValues appointmentscontents = new ContentValues();
-                appointmentscontents.put("_id",nextLine[0]);
-                appointmentscontents.put("bookedDate",nextLine[1]);
-                appointmentscontents.put("registeredDate",nextLine[2]);
-                appointmentscontents.put("serviceType",nextLine[3]);
-                appointmentscontents.put("status",nextLine[4]);
-                appointmentscontents.put("totalPrice",nextLine[5]);
-                appointmentscontents.put("location",nextLine[6]);
-                appointmentscontents.put("trainerId",nextLine[7]);
-                appointmentscontents.put("customerId",nextLine[8]);
-                appointmentscontents.put("paymentId",nextLine[9]);
-                appointmentscontents.put("paymentDate",nextLine[10]);
-                appointmentscontents.put("deviceToken",nextLine[11]);
-                appointmentscontents.put("rating",nextLine[12]);
-                appointmentscontents.put("comment",nextLine[13]);
-                db.insert("appointments", null, appointmentscontents);
+                String customerId = nextLine[8];
+
+                if (customerId.equals(UserSingleton.getInstance().getUserId())){
+                    ContentValues appointmentscontents = new ContentValues();
+                    appointmentscontents.put("_id",nextLine[0]);
+                    appointmentscontents.put("bookedDate",nextLine[1]);
+                    appointmentscontents.put("registeredDate",nextLine[2]);
+                    appointmentscontents.put("serviceType",nextLine[3]);
+                    appointmentscontents.put("status",nextLine[4]);
+                    appointmentscontents.put("totalPrice",nextLine[5]);
+                    appointmentscontents.put("location",nextLine[6]);
+                    appointmentscontents.put("trainerId",nextLine[7]);
+                    appointmentscontents.put("customerId",customerId);
+                    appointmentscontents.put("paymentId",nextLine[9]);
+                    appointmentscontents.put("paymentDate",nextLine[10]);
+                    appointmentscontents.put("deviceToken",nextLine[11]);
+                    appointmentscontents.put("rating",nextLine[12]);
+                    appointmentscontents.put("comment",nextLine[13]);
+                    db.insert("appointments", null, appointmentscontents);
+                }
 
             }
 
