@@ -28,5 +28,6 @@ To review the contribution's report, please click on the following link:
 
 ### To test the app
 <br/>
-We recommend to set the location of your emulator as per the following image 
+We recommend to set the location of your emulator as per the following image: 
+
 ![Test Location](./testuserlocation.png "Test User Location") 
