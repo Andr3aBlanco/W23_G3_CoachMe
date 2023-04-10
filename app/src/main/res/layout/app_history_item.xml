@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rlAppHistoryFeedback"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="100dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="8dp"
+    app:strokeColor="#6B66C7"
+    app:strokeWidth="2dp"
+    android:layout_margin="10dp"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:minWidth="100dp"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:id="@+id/txtTrainerNameAppRV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="100dp"
+            android:text="TextView"
+            android:textSize="16sp" />
+
+
+
+
+        <RatingBar
+            android:id="@+id/ratingOne"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:foregroundGravity="center_vertical"
+            android:numStars="1"
+            android:stepSize="0.2"
+            android:clickable="true"
+            android:focusable="true"
+            android:isIndicator="true"
+            android:backgroundTint="@color/teal_200"
+            android:background="@color/transparent"
+            />
+
+        <Button
+            android:id="@+id/btnCoverStar"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="18dp"
+            android:background="@color/transparent"
+
+            />
+
+    </RelativeLayout>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/ratingCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        app:cardElevation="8dp"
+        app:strokeColor="#6B66C7"
+        app:strokeWidth="2dp"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <RatingBar
+            android:id="@+id/ratingFive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:isIndicator="false"
+            android:numStars="5"
+            android:rating="0"
+            android:stepSize="1"
+            android:backgroundTint="@color/teal_200"
+            android:background="@color/transparent" />
+
+        <EditText
+            android:id="@+id/txtAppDateRV"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="10dp"
+            android:layout_below="@id/ratingFive"
+            android:layout_gravity="center_vertical|left"
+            android:text=""
+            android:background="@color/white"
+            android:hint="My session was ..."/>
+
+
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/filledButtonCM"
+            android:id="@+id/btnSubmitReview"
+            android:layout_height="40dp"
+            android:layout_width="120dp"
+            android:layout_below="@id/txtAppDateRV"
+            android:layout_margin="4dp"
+            android:layout_centerHorizontal="true"
+            app:cornerRadius="4dp"
+            android:textSize="12dp"
+            android:text="SUBMIT"
+            />
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</com.google.android.material.card.MaterialCardView>

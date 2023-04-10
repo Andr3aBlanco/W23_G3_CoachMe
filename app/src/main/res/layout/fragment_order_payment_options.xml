@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#F9F9F9"
+    tools:context=".presentation.order.OrderPaymentOptionsFragment">
+
+    <!--
+        Progress Bar to change the visibility of the detail
+        while we are retrieving the data from Firebase
+    -->
+    <ProgressBar
+        android:id="@+id/pbPaymentOption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        />
+
+    <!--
+        Main Layout for the Shopping Cart
+    -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/llOrderLayoutPaymentOption">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="100dp"
+            android:textSize="22dp"
+            android:textColor="#200E32"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="Select a Payment Option"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvStripePaymentOption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp"
+            app:cardCornerRadius="10dp"
+            android:background="#F0F0F0"
+            app:strokeWidth="2dp"
+            app:strokeColor="#6B66C7"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="0.2"
+                    android:layout_margin="10dp"
+                    android:src="@drawable/stripe_logo"
+                    ></ImageView>
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="0.8"
+                    android:layout_margin="10dp"
+                    android:src="@drawable/stripe_logo_text"
+                    ></ImageView>
+
+
+            </LinearLayout>
+
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/bg_halfbackground2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.userAuthentication.EditUserProfileFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:background="@drawable/bg_halfbackground2">
+
+            <ImageView
+                android:id="@+id/imageView_profile_dp"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/ic_bart"
+
+                android:shape="ring"
+
+                android:thicknessRatio="1.9" />
+
+            <TextView
+                android:id="@+id/textView_show_fullName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/imageView_profile_dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp"
+                android:hint="Loading..."
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textColor="@color/white" />
+        </RelativeLayout>
+        <!--first name-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="15dp"
+            android:layout_margin="15dp"
+            android:background="@color/white">
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/editText_Edit_first_name"
+                android:hint="Loading"
+                android:drawableLeft="@drawable/baseline_person_profile_24"
+                android:drawablePadding="10dp"
+                android:layout_marginStart="20dp"
+                android:textSize="18sp"/>
+            <!--last name-->
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="15dp"
+            android:layout_margin="15dp"
+            android:background="@color/white">
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/editText_Edit_last_name"
+                android:hint="Loading"
+                android:layout_marginStart="20dp"
+                android:drawableLeft="@drawable/baseline_person_profile_24"
+                android:drawablePadding="10dp"
+                android:textSize="18sp"/>
+
+        </RelativeLayout>
+        <!--        email-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="15dp"
+            android:layout_margin="15dp"
+            android:background="@color/white">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/editText_Edit_email"
+                android:hint="Loading"
+                android:layout_marginStart="20dp"
+                android:drawableLeft="@drawable/baseline_email_24"
+                android:drawablePadding="10dp"
+                android:textSize="18sp"/>
+
+        </RelativeLayout>
+        <!--        address-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="15dp"
+            android:background="@color/white"
+            android:padding="15dp">
+
+            <EditText
+                android:id="@+id/editText_Edit_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/baseline_house_24"
+                android:drawablePadding="10dp"
+                android:layout_marginStart="20dp"
+                android:hint="Loading"
+                android:textSize="18sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="15dp"
+            android:layout_margin="15dp"
+            android:background="@color/white">
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/editText_Edit_phone_number"
+                android:hint="Phone Number"
+                android:drawableLeft="@drawable/baseline_phone_profile_24"
+                android:drawablePadding="10dp"
+                android:layout_marginStart="20dp"
+                android:textSize="18sp"/>
+
+        </RelativeLayout>>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="15dp"
+            android:layout_margin="15dp"
+            android:background="@color/white">
+
+            <Button
+                android:id="@+id/btnEditProfileSave"
+                android:layout_width="343dp"
+                android:backgroundTint="#8D82F6"
+                android:layout_height="wrap_content"
+                android:text="@string/btnSave" />
+        </RelativeLayout>>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="15dp"
+            android:layout_margin="15dp"
+            android:layout_marginBottom="55dp"
+            android:background="@color/white">
+
+            <Button
+                android:id="@+id/btnEditProfileCancle"
+                android:backgroundTint="#8D82F6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/btnCancle" />
+
+        </RelativeLayout>>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="15dp"
+            android:layout_margin="15dp"
+            android:layout_marginBottom="55dp">
+
+        </RelativeLayout>>
+
+    </LinearLayout>
+
+</ScrollView>

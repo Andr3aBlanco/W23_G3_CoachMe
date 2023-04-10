@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "171274271255",
+    "firebase_url": "https://w23-g3-coachme-default-rtdb.firebaseio.com",
+    "project_id": "w23-g3-coachme",
+    "storage_bucket": "w23-g3-coachme.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:171274271255:android:a031e4e7c2bd21c695ba52",
+        "android_client_info": {
+          "package_name": "com.bawp.coachme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "171274271255-dqvthp2jhvm8pemd4foitpdth49vaqno.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOHstXKFWQWx7rvCn_6p63-DyvsPuYOtY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "171274271255-dqvthp2jhvm8pemd4foitpdth49vaqno.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
