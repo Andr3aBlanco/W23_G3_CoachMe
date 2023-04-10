@@ -195,7 +195,7 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
 
                         holder.mapView.onLowMemory();
                         holder.mapView.onResume();
-                        holder.mapView.onDestroy();
+//                        holder.mapView.onDestroy();
 
 
                     }
