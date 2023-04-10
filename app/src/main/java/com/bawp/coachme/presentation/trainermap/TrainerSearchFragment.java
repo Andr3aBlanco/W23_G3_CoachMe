@@ -72,6 +72,8 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
     private static final int PERMISSIONS_REQUEST_LOCATION = 1;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
+    private static final double DEFAULT_LATITUDE = 49.2586;
+    private static final double DEFAULT_LONGITUDE = -123.0947;
 
 
     //Get Elements from the Layout
@@ -167,6 +169,9 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
                     if (location != null){
                         latitude = location.getLatitude();
                         longitude = location.getLongitude();
+                    }else{
+                        latitude = DEFAULT_LATITUDE;
+                        longitude = DEFAULT_LONGITUDE;
                     }
 
                     rgMapList = view.findViewById(R.id.rgMapListSelector);
