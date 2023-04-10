@@ -15,7 +15,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         Properties properties = new Properties()
-        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        properties.load(project.rootProject.file('gradle.properties').newDataInputStream())
 
         buildConfigField "String", "stripeSecretKey", "\"${properties.getProperty('stripeSecretKey')}\""
         buildConfigField "String", "stripePublishableKey", "\"${properties.getProperty('stripePublishableKey')}\""
