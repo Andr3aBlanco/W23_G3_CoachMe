@@ -163,17 +163,12 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
         String description = serviceType + " Session\n"+formattedBookedDate;
         holder.mTxtViewProductDetail.setText(description);
 
-
-
-
         if(position == currentCard){
 
             holder.rlMapApppDetails.setVisibility(View.VISIBLE);
 
             double latitude = trainer.getLatitudeCoord();
             double longitude = trainer.getLongitudeCoord();
-
-
 
             holder.mapView.onCreate(null);
             holder.mapView.getMapAsync(new OnMapReadyCallback() {
@@ -192,10 +187,10 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
                     googleMap.getUiSettings().setZoomControlsEnabled(true);
 
                     if(holder.mapView != null ){
-
+                        Log.d("Home Map View","Resuming Map View");
                         holder.mapView.onLowMemory();
                         holder.mapView.onResume();
-                        holder.mapView.onDestroy();
+                        //holder.mapView.onDestroy();
 
 
                     }
@@ -206,6 +201,17 @@ public class HomeAppRecyclerAdapter extends RecyclerView.Adapter<HomeAppRecycler
         }else{
 
             holder.rlMapApppDetails.setVisibility(View.GONE);
+
+            if(holder.mapView != null){
+                Log.d("Home Map View","Pausing Map View");
+                holder.mapView.getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(@NonNull GoogleMap googleMap) {
+                        holder.mapView.onLowMemory();
+                        holder.mapView.onPause();
+                    }
+                });
+            }
 
         }
 
