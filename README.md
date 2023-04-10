@@ -9,7 +9,7 @@
 | Name               | Student ID |
 |--------------------|------------|
 | Andrea Blanco      | 300352964  |
-| Luis Miranda       | 300363056  |
+| Luis Miranda       | 300363277  |
 | Jaydipkumar Mulani | 300353056  |
 
 <br/>
