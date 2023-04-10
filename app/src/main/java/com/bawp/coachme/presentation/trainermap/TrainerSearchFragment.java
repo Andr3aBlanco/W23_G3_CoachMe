@@ -38,6 +38,9 @@ import com.bawp.coachme.model.Trainer;
 import com.bawp.coachme.model.User;
 import com.bawp.coachme.presentation.order.OrdersFragment;
 import com.bawp.coachme.utils.DBHelper;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -138,62 +141,6 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
 
         dbHelper = new DBHelper(getContext());
 
-        // this whole block of code is necessary to pass the location to the trainer search fragment
-
-        // Check if the app has permission to access location information
-        if (ContextCompat.checkSelfPermission(getContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Request the permission if it hasn't been granted
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_LOCATION);
-
-        }
-
-
-
-        // Get the location manager and provider
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        }
-        provider = LocationManager.GPS_PROVIDER;
-
-        // Request location updates
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_LOCATION);
-
-        } else {
-
-            // Get the location manager and provider
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-            }
-            provider = LocationManager.GPS_PROVIDER;
-
-            try {
-                locationManager.requestLocationUpdates(provider, 400, 1, this);
-
-                // Get the last known location
-                Location location = locationManager.getLastKnownLocation(provider);
-                if (location != null) {
-                    latitude = location.getLatitude();
-                    longitude = location.getLongitude();
-
-                    // save location to shared preferences
-//                    SharedPreferences sharedPreferences = getSharedPreferences("myPrefs", MODE_PRIVATE);
-
-
-                    System.out.println("IN THE ON CREATE IN THE TRAINER SEARCH latitude longitude " + latitude + " "+ longitude);
-                }
-            } catch(SecurityException e){
-                e.printStackTrace();
-            }
-        }
-
     }
 
 
@@ -204,251 +151,267 @@ public class TrainerSearchFragment extends Fragment implements LocationListener 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.trainer_search_fragment, container, false);
 
-        rgMapList = view.findViewById(R.id.rgMapListSelector);
-        outletMapList = view.findViewById(R.id.searchOptContainer);
-        spinSort = view.findViewById(R.id.spinOrderByOptions);
-        dateFrom = view.findViewById(R.id.tvDateStart);
-        dateTo = view.findViewById(R.id.tvDateEnd);
-        search = view.findViewById(R.id.ivSearch);
-        crossfit = view.findViewById(R.id.cbCrossfit);
-        yoga = view.findViewById(R.id.cbYoga);
-        pilates = view.findViewById(R.id.cbPilates);
-        martials = view.findViewById(R.id.cbMartials);
+        //Using Fused Location Provider Client to get the Current Location
+        FusedLocationProviderClient fusedLocationClient;
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_LOCATION);
+        }else{
+            fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
 
-        //Initialize datePickers
-        // Get the current date
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH) + 1;
-        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+                    //getting latitude and longitude
+                    if (location != null){
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
+                    }
 
-        dateFrom.setText(dayOfMonth + "/" + month + "/" + year);
-        dateTo.setText(dayOfMonth + "/" + month + "/" + (year  + 1));
+                    rgMapList = view.findViewById(R.id.rgMapListSelector);
+                    outletMapList = view.findViewById(R.id.searchOptContainer);
+                    spinSort = view.findViewById(R.id.spinOrderByOptions);
+                    dateFrom = view.findViewById(R.id.tvDateStart);
+                    dateTo = view.findViewById(R.id.tvDateEnd);
+                    search = view.findViewById(R.id.ivSearch);
+                    crossfit = view.findViewById(R.id.cbCrossfit);
+                    yoga = view.findViewById(R.id.cbYoga);
+                    pilates = view.findViewById(R.id.cbPilates);
+                    martials = view.findViewById(R.id.cbMartials);
 
-        //set initial dates
-        calendar.set(year, month, dayOfMonth, 0, 0, 0);
-        initialDate = calendar.getTime().getTime();
-        calendar.set(year + 1, month, dayOfMonth, 23, 59, 59);
-        endDate = calendar.getTime().getTime();
+                    //Initialize datePickers
+                    // Get the current date
+                    Calendar calendar = Calendar.getInstance();
+                    int year = calendar.get(Calendar.YEAR);
+                    int month = calendar.get(Calendar.MONTH) + 1;
+                    int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
 
-        System.out.println("INSIDE THE TRAINER SEARCH from " + initialDate + "  to: " + endDate);
-        // Get the first round of trainers with list empty and current day today + 1 year
-        filteredTrainersList = dbHelper.getTrainersByServicesAndDate(selectedServices, initialDate, endDate);
+                    dateFrom.setText(dayOfMonth + "/" + month + "/" + year);
+                    dateTo.setText(dayOfMonth + "/" + month + "/" + (year  + 1));
 
-        // create the hashmap -> pass to map
-        for(Trainer trainer : filteredTrainersList){
+                    //set initial dates
+                    calendar.set(year, month, dayOfMonth, 0, 0, 0);
+                    initialDate = calendar.getTime().getTime();
+                    calendar.set(year + 1, month, dayOfMonth, 23, 59, 59);
+                    endDate = calendar.getTime().getTime();
 
-            filteredTrainersHM.put(trainer.getId(), trainer);
+                    System.out.println("INSIDE THE TRAINER SEARCH from " + initialDate + "  to: " + endDate);
+                    // Get the first round of trainers with list empty and current day today + 1 year
+                    filteredTrainersList = dbHelper.getTrainersByServicesAndDate(selectedServices, initialDate, endDate);
+
+                    // create the hashmap -> pass to map
+                    for(Trainer trainer : filteredTrainersList){
+
+                        filteredTrainersHM.put(trainer.getId(), trainer);
+                    }
+
+                    System.out.println("Total trainers found " + filteredTrainersHM.size());
+
+                    //Cick Listener for the date
+                    dateTo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            showDatePickerDialog(dateTo);
+                        }
+                    });
+
+                    dateFrom.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            showDatePickerDialog(dateFrom);
+                        }
+                    });
+
+                    // In the first load -> map selected
+                    System.out.println("RIGHT BEFORE GENERATING MAP FOR THE FIRST TIME latitude longitude " + latitude + " " + longitude);
+                    //Pass the data to MapSearchFragment
+                    TrainerMapFragment childMapFragment = new TrainerMapFragment();
+                    Bundle args = new Bundle();
+                    args.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
+                    args.putDouble("LATITUDE",latitude);
+                    args.putDouble("LONGITUDE",longitude);
+                    childMapFragment.setArguments(args);
+
+                    //At the beginning replace for TrainerMapFragment
+                    replaceFragment(childMapFragment);
+
+                    // Listener for the spinner
+
+                    spinSort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                            selectedValue = parent.getItemAtPosition(position).toString();
+
+                            switch (selectedValue){
+                                case "Rating":
+                                    sortingOption = 1;
+                                    break;
+
+                                case "Distance":
+                                    sortingOption = 2;
+                                    break;
+
+                                case "Price":
+                                    sortingOption = 3;
+                                    break;
+                                default:
+                                    sortingOption = 1;
+                                    break;
+                            }
+
+                            // If in list View generate the new view of the List parring the option
+                            // Get the selected raadio button  --> create new fragment with the new filtering options
+                            int selectedRb = rgMapList.getCheckedRadioButtonId();
+
+                            switch(selectedRb){
+                                case R.id.rbListView:
+                                    //Pass the data to MapSearchFragment
+                                    TrainerListFragment childMapFragment2 = new TrainerListFragment();
+                                    Bundle args2 = new Bundle();
+                                    args2.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
+                                    args2.putInt("SORTING_OPTION", sortingOption);
+                                    args2.putDouble("LATITUDE", latitude);
+                                    args2.putDouble("LONGITUDE",longitude);
+                                    childMapFragment2.setArguments(args2);
+
+                                    //At the beginning replace for TrainerMapFragment
+                                    replaceFragment(childMapFragment2);
+
+                                    break;
+
+                                case R.id.rbMapView:
+                                    //Do nothing
+                                    break;
+                            }
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+                            sortingOption = 1;
+                        }
+                    });
+
+                    rgMapList.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+
+                            switch (checkedId) {
+                                case R.id.rbMapView:
+                                    //Pass the data to MapSearchFragment
+                                    TrainerMapFragment childMapFragment = new TrainerMapFragment();
+                                    Bundle args = new Bundle();
+                                    args.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
+                                    args.putDouble("LONGITUDE", longitude);
+                                    args.putDouble("LATITUDE", latitude);
+                                    //sort before pass
+                                    childMapFragment.setArguments(args);
+
+                                    //At the beginning replace for TrainerMapFragment
+                                    replaceFragment(childMapFragment);
+                                    break;
+                                case R.id.rbListView:
+
+                                    //Pass the data to MapSearchFragment
+                                    TrainerListFragment childMapFragment2 = new TrainerListFragment();
+                                    Bundle args2 = new Bundle();
+                                    args2.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
+                                    args2.putInt("SORTING_OPTION", sortingOption);
+                                    childMapFragment2.setArguments(args2);
+
+                                    //At the beginning replace for TrainerMapFragment
+                                    replaceFragment(childMapFragment2);
+                                    break;
+                                default:
+                                    replaceFragment(new TrainerMapFragment());
+                                    break;
+                            }
+                        }
+                    });
+
+
+                    //Listener for the search button
+                    search.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            selectedServices = new ArrayList<>();
+                            // Reset the filtered list
+                            filteredTrainersHM = new HashMap<>();
+
+                            if (crossfit.isChecked()) {
+                                selectedServices.add("Crossfit");
+                            }
+                            if (yoga.isChecked()) {
+                                selectedServices.add("Yoga");
+                            }
+                            if (pilates.isChecked()) {
+                                selectedServices.add("Pilates");
+                            }
+                            if (martials.isChecked()) {
+                                selectedServices.add("Martials");
+                            }
+
+                            // On search - dates and services migh change or not
+                            filteredTrainersList = dbHelper.getTrainersByServicesAndDate(selectedServices, initialDate, endDate); // Filter ok
+
+                            // create the hashmap -> pass to map
+                            for(Trainer trainer : filteredTrainersList){
+
+                                filteredTrainersHM.put(trainer.getId(), trainer);
+                            }
+
+
+                            // Get the selected raadio button  --> create new fragment with the new filtering options
+                            int selectedRb = rgMapList.getCheckedRadioButtonId();
+
+                            switch(selectedRb){
+                                case R.id.rbListView:
+                                    //Pass the data to MapSearchFragment
+                                    TrainerListFragment childMapFragment2 = new TrainerListFragment();
+                                    Bundle args2 = new Bundle();
+                                    args2.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
+                                    args2.putInt("SORTING_OPTION", sortingOption);
+                                    childMapFragment2.setArguments(args2);
+
+                                    //At the beginning replace for TrainerMapFragment
+                                    replaceFragment(childMapFragment2);
+
+                                    break;
+
+                                case R.id.rbMapView:
+
+                                    TrainerMapFragment childMapFragment = new TrainerMapFragment();
+                                    Bundle args = new Bundle();
+                                    args.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
+                                    args.putDouble("LONGITUDE", longitude);
+                                    args.putDouble("LATITUDE", latitude);
+                                    //sort before pass
+                                    childMapFragment.setArguments(args);
+
+                                    //At the beginning replace for TrainerMapFragment
+                                    replaceFragment(childMapFragment);
+
+
+                                    // TO HERE
+
+                                    //sort before pass
+                                    childMapFragment.setArguments(args);
+
+                                    //At the beginning replace for TrainerMapFragment
+                                    replaceFragment(childMapFragment);
+
+
+                                    break;
+                            }
+                        }
+                    });
+                }
+            });
+
         }
 
-        System.out.println("Total trainers found " + filteredTrainersHM.size());
-
-        //Cick Listener for the date
-        dateTo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialog(dateTo);
-            }
-        });
-
-        dateFrom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialog(dateFrom);
-            }
-        });
-
-
-
-
-        // In the first load -> map selected
-        System.out.println("RIGHT BEFORE GENERATING MAP FOR THE FIRST TIME latitude longitude " + latitude + " " + longitude);
-                //Pass the data to MapSearchFragment
-                TrainerMapFragment childMapFragment = new TrainerMapFragment();
-                Bundle args = new Bundle();
-                args.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
-                childMapFragment.setArguments(args);
-
-                //At the beginning replace for TrainerMapFragment
-                replaceFragment(childMapFragment);
-
-        // Listener for the spinner
-
-        spinSort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                selectedValue = parent.getItemAtPosition(position).toString();
-
-                switch (selectedValue){
-                    case "Rating":
-                        sortingOption = 1;
-                        break;
-
-                    case "Distance":
-                        sortingOption = 2;
-                        break;
-
-                    case "Price":
-                        sortingOption = 3;
-                        break;
-                    default:
-                        sortingOption = 1;
-                        break;
-                }
-
-                // If in list View generate the new view of the List parring the option
-                // Get the selected raadio button  --> create new fragment with the new filtering options
-                int selectedRb = rgMapList.getCheckedRadioButtonId();
-
-                switch(selectedRb){
-                    case R.id.rbListView:
-                        //Pass the data to MapSearchFragment
-                        TrainerListFragment childMapFragment2 = new TrainerListFragment();
-                        Bundle args2 = new Bundle();
-                        args2.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
-                        args2.putInt("SORTING_OPTION", sortingOption);
-                        args2.putDouble("LATITUDE", latitude);
-                        args2.putDouble("LONGITUDE",longitude);
-                        childMapFragment2.setArguments(args2);
-
-                        //At the beginning replace for TrainerMapFragment
-                        replaceFragment(childMapFragment2);
-
-                        break;
-
-                    case R.id.rbMapView:
-                        //Do nothing
-                        break;
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                sortingOption = 1;
-            }
-        });
-
-        rgMapList.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-
-                switch (checkedId) {
-                    case R.id.rbMapView:
-                        //Pass the data to MapSearchFragment
-                        TrainerMapFragment childMapFragment = new TrainerMapFragment();
-                        Bundle args = new Bundle();
-                        args.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
-                        args.putDouble("LONGITUDE", longitude);
-                        args.putDouble("LATITUDE", latitude);
-                        //sort before pass
-                        childMapFragment.setArguments(args);
-
-                        //At the beginning replace for TrainerMapFragment
-                        replaceFragment(childMapFragment);
-                        break;
-                    case R.id.rbListView:
-
-                        //Pass the data to MapSearchFragment
-                        TrainerListFragment childMapFragment2 = new TrainerListFragment();
-                        Bundle args2 = new Bundle();
-                        args2.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
-                        args2.putInt("SORTING_OPTION", sortingOption);
-                        childMapFragment2.setArguments(args2);
-
-                        //At the beginning replace for TrainerMapFragment
-                        replaceFragment(childMapFragment2);
-                        break;
-                    default:
-                        replaceFragment(new TrainerMapFragment());
-                        break;
-                }
-            }
-        });
-
-
-        //Listener for the search button
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                selectedServices = new ArrayList<>();
-                // Reset the filtered list
-                filteredTrainersHM = new HashMap<>();
-
-                if (crossfit.isChecked()) {
-                    selectedServices.add("Crossfit");
-                }
-                if (yoga.isChecked()) {
-                    selectedServices.add("Yoga");
-                }
-                if (pilates.isChecked()) {
-                    selectedServices.add("Pilates");
-                }
-                if (martials.isChecked()) {
-                    selectedServices.add("Martials");
-                }
-
-                // On search - dates and services migh change or not
-                filteredTrainersList = dbHelper.getTrainersByServicesAndDate(selectedServices, initialDate, endDate); // Filter ok
-
-                // create the hashmap -> pass to map
-                for(Trainer trainer : filteredTrainersList){
-
-                    filteredTrainersHM.put(trainer.getId(), trainer);
-                }
-
-
-                // Get the selected raadio button  --> create new fragment with the new filtering options
-                int selectedRb = rgMapList.getCheckedRadioButtonId();
-
-               switch(selectedRb){
-                   case R.id.rbListView:
-                       //Pass the data to MapSearchFragment
-                       TrainerListFragment childMapFragment2 = new TrainerListFragment();
-                       Bundle args2 = new Bundle();
-                       args2.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
-                       args2.putInt("SORTING_OPTION", sortingOption);
-                       childMapFragment2.setArguments(args2);
-
-                       //At the beginning replace for TrainerMapFragment
-                       replaceFragment(childMapFragment2);
-
-                       break;
-
-                   case R.id.rbMapView:
-
-//                       TrainerMapFragment childMapFragment = new TrainerMapFragment();
-//                       Bundle args = new Bundle();
-//                       args.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
-//
-
-                       // FROM HERE
-                       TrainerMapFragment childMapFragment = new TrainerMapFragment();
-                       Bundle args = new Bundle();
-                       args.putSerializable("FILTERED_TRAINERS", filteredTrainersHM);  //how to update this
-                       args.putDouble("LONGITUDE", longitude);
-                       args.putDouble("LATITUDE", latitude);
-                       //sort before pass
-                       childMapFragment.setArguments(args);
-
-                       //At the beginning replace for TrainerMapFragment
-                       replaceFragment(childMapFragment);
-
-
-                       // TO HERE
-
-                       //sort before pass
-                       childMapFragment.setArguments(args);
-
-                       //At the beginning replace for TrainerMapFragment
-                       replaceFragment(childMapFragment);
-
-
-                       break;
-               }
-            }
-        });
 
         return view;
     }

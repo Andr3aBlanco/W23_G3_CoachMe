@@ -79,45 +79,6 @@ public class TrainerMapFragment extends Fragment {
           latitude = getArguments().getDouble("LATITUDE");
           longitude = getArguments().getDouble("LONGITUDE");
           System.out.println("LAT LONG ON CREATE TRAINER MAP " + latitude + " " + longitude);
-
-            // Get the location manager and provider
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-            }
-            provider = LocationManager.GPS_PROVIDER;
-
-            // Request location updates
-            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
-
-
-
-            } else {
-
-                // Get the location manager and provider
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-                }
-                provider = LocationManager.GPS_PROVIDER;
-
-                try {
-//                locationManager.requestLocationUpdates(provider,400,1,this);
-//
-                    // Get the last known location
-                    Location location = locationManager.getLastKnownLocation(provider);
-                    if (location != null) {
-                        latitude = location.getLatitude();
-                        longitude = location.getLongitude();
-
-                        System.out.println("INSIDE THE TRAINER MAP IN THE ON CREATE " + longitude + " " + latitude);
-                    }
-                } catch(SecurityException e){
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
