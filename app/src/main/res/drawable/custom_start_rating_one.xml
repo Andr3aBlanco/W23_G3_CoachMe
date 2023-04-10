@@ -1,0 +1,11 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/empty_star">
+        <bitmap android:src="@drawable/ic_star_gray" android:tint="@color/black" />
+    </item>
+    <item android:id="@+id/full_star">
+        <bitmap android:src="@drawable/ic_star_cyan" android:tint="@color/teal_200" />
+    </item>
+    <item android:id="@+id/star_mask">
+        <bitmap android:src="@drawable/ic_star_gray" />
+    </item>
+</layer-list>

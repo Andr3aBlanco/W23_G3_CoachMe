@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F9F9F9"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".presentation.selfworkout.SelfworkoutFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:id="@+id/pbSelfworkoutMain"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/llSelfworkoutMainLayout"
+            android:paddingBottom="100dp">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="100dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/selfworkout_topbar_image"/>
+
+                <TextView
+                    android:id="@+id/txtViewSelfworkoutName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="18dp"
+                    android:text="TextView"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/poppins_bold"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginBottom="10dp"
+                    />
+
+            </RelativeLayout>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="0dp"
+                android:layout_margin="20dp"
+                >
+
+                <ImageView
+                    android:id="@+id/imgViewSelfworkout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@mipmap/ic_coachme_logo" />
+
+            </androidx.cardview.widget.CardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvSelfworkoutDetail"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:orientation="vertical"
+                android:layout_marginHorizontal="20dp"
+                app:cardCornerRadius="10dp"
+                app:strokeColor="#6B66C7"
+                app:strokeWidth="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <!-- Layout for the detail information of the workout plan-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.25"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.35"
+                            android:text="Main Goals:"
+                            android:textSize="14dp"
+                            android:fontFamily="@font/poppins_bold"
+                            android:gravity="center|right"/>
+                        <TextView
+                            android:id="@+id/txtViewSelfworkoutMG"
+                            android:layout_width="0dp"
+                            android:textSize="14dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.65"
+                            android:gravity="center"/>
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.25"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.35"
+                            android:textSize="14dp"
+                            android:text="Difficulty:"
+                            android:fontFamily="@font/poppins_bold"
+                            android:gravity="center|right"/>
+                        <TextView
+                            android:id="@+id/txtViewSelfworkoutDifficulty"
+                            android:layout_width="0dp"
+                            android:textSize="14dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.65"
+                            android:gravity="center"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.25"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.35"
+                            android:text="Days Per Week:"
+                            android:textSize="14dp"
+                            android:fontFamily="@font/poppins_bold"
+                            android:gravity="center|right"/>
+                        <TextView
+                            android:id="@+id/txtViewSelfworkoutDpW"
+                            android:layout_width="0dp"
+                            android:textSize="14dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.65"
+                            android:gravity="center"/>
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.25"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.35"
+                            android:textSize="14dp"
+                            android:text="Total of days:"
+                            android:fontFamily="@font/poppins_bold"
+                            android:gravity="center|right"/>
+                        <TextView
+                            android:id="@+id/txtViewSelfworkoutTotalWeeks"
+                            android:layout_width="0dp"
+                            android:textSize="14dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.65"
+                            android:gravity="center"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginVertical="10dp"
+            >
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnStartResumeWorkout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_weight="0.5"
+                    android:backgroundTint="#6B66C7"
+                    android:drawableLeft="@drawable/baseline_fitness_center_36"
+                    android:fontFamily="@font/poppins_bold"
+                    android:text="Start Workout"
+                    android:textSize="12dp"
+                    app:cornerRadius="10dp" />
+
+                <com.google.android.material.button.MaterialButton
+
+                    android:id="@+id/btnRestartWorkout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_weight="0.5"
+                    android:backgroundTint="#6B66C7"
+                    android:drawableLeft="@drawable/baseline_restart_alt_36"
+                    android:fontFamily="@font/poppins_bold"
+                    android:text="Restart Workout"
+                    android:textSize="12dp"
+                    app:cornerRadius="10dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llTableSessionsDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="15dp"
+                android:layout_marginBottom="15dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@drawable/bg_border_bottom">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.3"
+                        android:text="Session Type"
+                        android:textSize="13dp"
+                        android:textColor="#200E32"
+                        android:fontFamily="@font/poppins_bold"
+                        android:gravity = "center"
+                        android:paddingLeft="10dp"
+                        />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.3"
+                        android:text="Date"
+                        android:textSize="13dp"
+                        android:textColor="#200E32"
+                        android:fontFamily="@font/poppins_bold"
+                        android:gravity = "center"
+                        android:paddingLeft="10dp"
+                        />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.3"
+                        android:text="Duration"
+                        android:textSize="13dp"
+                        android:textColor="#200E32"
+                        android:fontFamily="@font/poppins_bold"
+                        android:gravity = "center"
+                        android:paddingLeft="10dp"
+                        />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+</androidx.core.widget.NestedScrollView>
