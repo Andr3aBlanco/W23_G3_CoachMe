@@ -1,6 +1,6 @@
 # W23_G3_CoachMe
 
-## *CSIS 3175 Term Project*
+## *CSIS 3175 Term Project (Group 3)*
 <br/>
 
 ### **THE TEAM**
@@ -24,10 +24,13 @@ The app is designed to make it convenient for users to reach their fitness goals
 ### **TO TEST THE APP**
 <br/>
 
-#### **1. Updating GPS Location in Emulator**
+#### **1. SDK Location**
+This repository doesn't contain the `local.properties` file where the SDK location resides. Once this app is opened in Android Studio, be sure that it automatically creates this file with the correct SDK location. If not, you can do the following: File -> Project Structure -> Select the SDK Location -> Apply
+
+#### **2. Updating GPS Location in Emulator**
 We recommend to set the location of your emulator as per the following image: 
 
 ![Test Location](./testuserlocation.png "Test User Location")
 
-#### **2. Allow Location and Notification**
+#### **3. Allow Location and Notification**
 To allow booking appointments based on the geo-location and receive push notifications, we recommend to accept both permissions requests after log-in into the app.
