@@ -31,4 +31,3 @@ We recommend to set the location of your emulator as per the following image:
 
 #### **2. Allow Location and Notification**
 To allow booking appointments based on the geo-location and receive push notifications, we recommend to accept both permissions requests after log-in into the app.
-
