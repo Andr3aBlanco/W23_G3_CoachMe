@@ -142,12 +142,7 @@ public class TrainerListFragment extends Fragment {
         // constructor OK
         public TrainerViewHolder(@NonNull View itemView) {
             super(itemView);
-        }
 
-        public TrainerViewHolder(LayoutInflater inflater, ViewGroup container){
-            super(inflater.inflate(R.layout.trainer_details_fragment, container, false));
-
-            // Find the things from the layout TrainerDetails with logic
             tvName = itemView.findViewById(R.id.tvTrainerName);
             tvPrice = itemView.findViewById(R.id.tvPriceHour);
             tvBio = itemView.findViewById(R.id.tvTrainerBio);
@@ -162,7 +157,28 @@ public class TrainerListFragment extends Fragment {
             addCart = itemView.findViewById(R.id.btnAddCart);
             spinServices = itemView.findViewById(R.id.spinService);
 
+
         }
+
+//        public TrainerViewHolder(LayoutInflater inflater, ViewGroup container){
+//            super(inflater.inflate(R.layout.trainer_details_fragment, container, false));
+//
+//            // Find the things from the layout TrainerDetails with logic
+//            tvName = itemView.findViewById(R.id.tvTrainerName);
+//            tvPrice = itemView.findViewById(R.id.tvPriceHour);
+//            tvBio = itemView.findViewById(R.id.tvTrainerBio);
+//            tvRating  = itemView.findViewById(R.id.tvTrainerRating);
+//
+//            seeMore = itemView.findViewById(R.id.btnTrainerSeeAppTable);
+//            calendarLayout = itemView.findViewById(R.id.calLayout); //ok
+//            listViewHours = itemView.findViewById(R.id.lvTimes);
+//            calendarView = itemView.findViewById(R.id.cvDates);
+//
+//            closeCard = itemView.findViewById(R.id.btnCloseCard);
+//            addCart = itemView.findViewById(R.id.btnAddCart);
+//            spinServices = itemView.findViewById(R.id.spinService);
+//
+//        }
     }
 
     public class TrainerViewAdapter extends RecyclerView.Adapter<TrainerListFragment.TrainerViewHolder>{
@@ -224,13 +240,113 @@ public class TrainerListFragment extends Fragment {
         @NonNull
         @Override
         public TrainerListFragment.TrainerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            LayoutInflater inflater = LayoutInflater.from(getActivity());
-//
-//            View itemView = LayoutInflater.from(getActivity()).inflate(R.layout.trainer_list_fragment, parent, false);
-//            TrainerViewHolder holder = new TrainerViewHolder(itemView);
+//            LayoutInflater inflater = LayoutInflater.from(getActivity()); // THIS
 //
 
-            return new TrainerListFragment.TrainerViewHolder(inflater, parent);
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.trainer_details_fragment, parent, false);
+            TrainerListFragment.TrainerViewHolder holder = new TrainerListFragment.TrainerViewHolder(itemView);
+
+
+            holder.closeCard.setVisibility(View.INVISIBLE);
+
+
+            holder.seeMore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if(currentCard != holder.getBindingAdapterPosition() ) {
+                        currentCard = holder.getBindingAdapterPosition();
+                        notifyDataSetChanged();
+                    } else{
+                        currentCard = -1;
+                        notifyDataSetChanged();
+                    }
+
+
+                }
+            });
+
+
+            // Click listener for the ListView
+            holder.listViewHours.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    if(trainerCustomListAdapter.getSelectedHour() == position ){
+                        // If clicked is the same
+                        trainerCustomListAdapter.setSelectedHour(-1);
+                        trainerCustomListAdapter.notifyDataSetChanged();
+                        selectedHour = 100;
+
+                    } else
+                    {
+                        trainerCustomListAdapter.setSelectedHour(position);
+                        trainerCustomListAdapter.notifyDataSetChanged();
+
+
+                        String selectedItemText = parent.getItemAtPosition(position).toString();
+                        String timeString = selectedItemText.split(" ")[0]; // extract the time part
+                        int timeInt = Integer.parseInt(timeString); // parse the time to integer
+                        selectedHour = timeInt;
+                    }
+
+
+                }
+            });
+
+            holder.addCart.setOnClickListener((View v) -> {
+
+
+                if(selectedHour == 100 ){
+
+                    Toast.makeText(getContext(), "Select an appointment to add to Cart", Toast.LENGTH_SHORT).show();
+                } else {
+
+                    UUID uuid = UUID.randomUUID();
+
+                    customerId = UserSingleton.getInstance().getUserId();
+                    appId = uuid.toString();
+
+                    //Create the booked date
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(selectedYear, selectedMonth, selectedDay, selectedHour, 0, 0);
+                    bookedDate = calendar.getTimeInMillis();
+
+                    Date today = new Date();
+                    calendar.setTime(today);
+                    registeredDate = calendar.getTimeInMillis();
+
+                    location = unsortedTrainers.get(holder.getAdapterPosition()).getAddress();
+                    trainerId = unsortedTrainers.get(holder.getAdapterPosition()).getId();
+                    serviceType = holder.spinServices.getSelectedItem().toString();
+                    totalPrice = unsortedTrainers.get(holder.getAdapterPosition()).getFlatPrice();
+
+                    System.out.println("ADDED TO CART " + trainerId);
+
+                    // create query to delete appointment by time
+                    // find it by time
+                    long endOfHour = 0;
+                    calendar.set(selectedYear, selectedMonth, selectedDay, selectedHour, 59, 59);
+                    endOfHour = calendar.getTimeInMillis();
+
+                    dbHelper.removeFromSchedule(trainerId, bookedDate, endOfHour);
+                    String deviceToken = UserSingleton.getInstance().getUserDeviceToken();
+
+                    // Create query to add appointment by time
+                    dbHelper.addAppToCart(appId, bookedDate, registeredDate, serviceType, 1, totalPrice, location, trainerId, customerId, deviceToken);
+
+                    // call method to update the listHours and generate adapter
+                    int currentPosition = trainerCustomListAdapter.getSelectedHour();
+                    hourListOnAddCart.remove(currentPosition);
+                    trainerCustomListAdapter = new TrainerCustomList(hourListOnAddCart);
+                    holder.listViewHours.setAdapter(trainerCustomListAdapter);
+                    selectedHour = 100;
+                }
+            });
+
+//            return new TrainerListFragment.TrainerViewHolder(inflater, parent); // This
+
+            return holder;
         }
 
         @Override
@@ -298,7 +414,7 @@ public class TrainerListFragment extends Fragment {
 
 
             // Set the things in the layout with the holder
-            holder.closeCard.setVisibility(View.INVISIBLE);
+//            holder.closeCard.setVisibility(View.INVISIBLE);
             holder.tvName.setText(unsortedTrainers.get(position).getFirstName() + " " + unsortedTrainers.get(position).getLastName()); //Only one for testing
             holder.tvPrice.setText(formatter.format(unsortedTrainers.get(position).getFlatPrice()));
             holder.tvRating.setText(String.format("%.2f", unsortedTrainers.get(position).getRating())); //Ok
@@ -322,21 +438,21 @@ public class TrainerListFragment extends Fragment {
 
             holder.spinServices.setAdapter(adapter);
             //Here goes all the logic
-            holder.seeMore.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    if(currentCard != holder.getBindingAdapterPosition() ) {
-                        currentCard = holder.getBindingAdapterPosition();
-                        notifyDataSetChanged();
-                    } else{
-                        currentCard = -1;
-                        notifyDataSetChanged();
-                    }
-
-
-                }
-            });
+//            holder.seeMore.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//
+//                    if(currentCard != holder.getBindingAdapterPosition() ) {
+//                        currentCard = holder.getBindingAdapterPosition();
+//                        notifyDataSetChanged();
+//                    } else{
+//                        currentCard = -1;
+//                        notifyDataSetChanged();
+//                    }
+//
+//
+//                }
+//            });
 
 
 
@@ -383,80 +499,80 @@ public class TrainerListFragment extends Fragment {
                 }
             });
 
-            // Click listener for the ListView
-            holder.listViewHours.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    if(trainerCustomListAdapter.getSelectedHour() == position ){
-                        // If clicked is the same
-                        trainerCustomListAdapter.setSelectedHour(-1);
-                        trainerCustomListAdapter.notifyDataSetChanged();
-                        selectedHour = 100;
-
-                    } else
-                    {
-                        trainerCustomListAdapter.setSelectedHour(position);
-                        trainerCustomListAdapter.notifyDataSetChanged();
-
-
-                        String selectedItemText = parent.getItemAtPosition(position).toString();
-                        String timeString = selectedItemText.split(" ")[0]; // extract the time part
-                        int timeInt = Integer.parseInt(timeString); // parse the time to integer
-                        selectedHour = timeInt;
-                    }
-
-
-                }
-            });
-
-            holder.addCart.setOnClickListener((View v) -> {
-
-
-                if(selectedHour == 100 ){
-
-                    Toast.makeText(getContext(), "Select an appointment to add to Cart", Toast.LENGTH_SHORT).show();
-                } else {
-
-                    UUID uuid = UUID.randomUUID();
-
-                    customerId = UserSingleton.getInstance().getUserId();
-                    appId = uuid.toString();
-
-                    //Create the booked date
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(selectedYear, selectedMonth, selectedDay, selectedHour, 0, 0);
-                    bookedDate = calendar.getTimeInMillis();
-
-                    Date today = new Date();
-                    calendar.setTime(today);
-                    registeredDate = calendar.getTimeInMillis();
-
-                    location = unsortedTrainers.get(position).getAddress();
-                    trainerId = unsortedTrainers.get(position).getId();
-                    serviceType = holder.spinServices.getSelectedItem().toString();
-                    totalPrice = unsortedTrainers.get(position).getFlatPrice();
-
-                    // create query to delete appointment by time
-                    // find it by time
-                    long endOfHour = 0;
-                    calendar.set(selectedYear, selectedMonth, selectedDay, selectedHour, 59, 59);
-                    endOfHour = calendar.getTimeInMillis();
-
-                    dbHelper.removeFromSchedule(trainerId, bookedDate, endOfHour);
-                    String deviceToken = UserSingleton.getInstance().getUserDeviceToken();
-
-                    // Create query to add appointment by time
-                    dbHelper.addAppToCart(appId, bookedDate, registeredDate, serviceType, 1, totalPrice, location, trainerId, customerId, deviceToken);
-
-                    // call method to update the listHours and generate adapter
-                    int currentPosition = trainerCustomListAdapter.getSelectedHour();
-                    hourListOnAddCart.remove(currentPosition);
-                    trainerCustomListAdapter = new TrainerCustomList(hourListOnAddCart);
-                    holder.listViewHours.setAdapter(trainerCustomListAdapter);
-                    selectedHour = 100;
-                }
-            });
+//            // Click listener for the ListView
+//            holder.listViewHours.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                @Override
+//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//
+//                    if(trainerCustomListAdapter.getSelectedHour() == position ){
+//                        // If clicked is the same
+//                        trainerCustomListAdapter.setSelectedHour(-1);
+//                        trainerCustomListAdapter.notifyDataSetChanged();
+//                        selectedHour = 100;
+//
+//                    } else
+//                    {
+//                        trainerCustomListAdapter.setSelectedHour(position);
+//                        trainerCustomListAdapter.notifyDataSetChanged();
+//
+//
+//                        String selectedItemText = parent.getItemAtPosition(position).toString();
+//                        String timeString = selectedItemText.split(" ")[0]; // extract the time part
+//                        int timeInt = Integer.parseInt(timeString); // parse the time to integer
+//                        selectedHour = timeInt;
+//                    }
+//
+//
+//                }
+//            });
+//
+//            holder.addCart.setOnClickListener((View v) -> {
+//
+//
+//                if(selectedHour == 100 ){
+//
+//                    Toast.makeText(getContext(), "Select an appointment to add to Cart", Toast.LENGTH_SHORT).show();
+//                } else {
+//
+//                    UUID uuid = UUID.randomUUID();
+//
+//                    customerId = UserSingleton.getInstance().getUserId();
+//                    appId = uuid.toString();
+//
+//                    //Create the booked date
+//                    Calendar calendar = Calendar.getInstance();
+//                    calendar.set(selectedYear, selectedMonth, selectedDay, selectedHour, 0, 0);
+//                    bookedDate = calendar.getTimeInMillis();
+//
+//                    Date today = new Date();
+//                    calendar.setTime(today);
+//                    registeredDate = calendar.getTimeInMillis();
+//
+//                    location = unsortedTrainers.get(position).getAddress();
+//                    trainerId = unsortedTrainers.get(position).getId();
+//                    serviceType = holder.spinServices.getSelectedItem().toString();
+//                    totalPrice = unsortedTrainers.get(position).getFlatPrice();
+//
+//                    // create query to delete appointment by time
+//                    // find it by time
+//                    long endOfHour = 0;
+//                    calendar.set(selectedYear, selectedMonth, selectedDay, selectedHour, 59, 59);
+//                    endOfHour = calendar.getTimeInMillis();
+//
+//                    dbHelper.removeFromSchedule(trainerId, bookedDate, endOfHour);
+//                    String deviceToken = UserSingleton.getInstance().getUserDeviceToken();
+//
+//                    // Create query to add appointment by time
+//                    dbHelper.addAppToCart(appId, bookedDate, registeredDate, serviceType, 1, totalPrice, location, trainerId, customerId, deviceToken);
+//
+//                    // call method to update the listHours and generate adapter
+//                    int currentPosition = trainerCustomListAdapter.getSelectedHour();
+//                    hourListOnAddCart.remove(currentPosition);
+//                    trainerCustomListAdapter = new TrainerCustomList(hourListOnAddCart);
+//                    holder.listViewHours.setAdapter(trainerCustomListAdapter);
+//                    selectedHour = 100;
+//                }
+//            });
 
         }
 

@@ -11,6 +11,7 @@ package com.bawp.coachme.presentation.trainermap;
  *
  * @author Andrea Blanco
  * **/
+
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 import android.Manifest;
@@ -75,49 +76,10 @@ public class TrainerMapFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-          trainersMapFiltered = (HashMap<String, Trainer>) getArguments().getSerializable("FILTERED_TRAINERS");
-          latitude = getArguments().getDouble("LATITUDE");
-          longitude = getArguments().getDouble("LONGITUDE");
-          System.out.println("LAT LONG ON CREATE TRAINER MAP " + latitude + " " + longitude);
-
-            // Get the location manager and provider
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-            }
-            provider = LocationManager.GPS_PROVIDER;
-
-            // Request location updates
-            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
-
-
-
-            } else {
-
-                // Get the location manager and provider
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-                }
-                provider = LocationManager.GPS_PROVIDER;
-
-                try {
-//                locationManager.requestLocationUpdates(provider,400,1,this);
-//
-                    // Get the last known location
-                    Location location = locationManager.getLastKnownLocation(provider);
-                    if (location != null) {
-                        latitude = location.getLatitude();
-                        longitude = location.getLongitude();
-
-                        System.out.println("INSIDE THE TRAINER MAP IN THE ON CREATE " + longitude + " " + latitude);
-                    }
-                } catch(SecurityException e){
-                    e.printStackTrace();
-                }
-            }
+            trainersMapFiltered = (HashMap<String, Trainer>) getArguments().getSerializable("FILTERED_TRAINERS");
+            latitude = getArguments().getDouble("LATITUDE");
+            longitude = getArguments().getDouble("LONGITUDE");
+            System.out.println("LAT LONG ON CREATE TRAINER MAP " + latitude + " " + longitude);
         }
     }
 
@@ -135,7 +97,14 @@ public class TrainerMapFragment extends Fragment {
             @Override
             public void onMapReady(@NonNull GoogleMap map) {
                 googleMap = map;
-
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                            MY_PERMISSIONS_REQUEST_LOCATION);
+                }else{
+                    googleMap.setMyLocationEnabled(true);
+                }
+                
                 // Set the initial position and zoom level
                 LatLng initialPosition = new LatLng(latitude, longitude); // Vancouver Metro 49.18308405089783, -122.95854180247775
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 10f));
