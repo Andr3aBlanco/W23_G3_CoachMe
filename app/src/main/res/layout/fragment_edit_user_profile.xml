@@ -46,18 +46,14 @@
             android:layout_margin="15dp"
             android:background="@color/white">
 
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:id="@+id/ic_profile1"
-                android:background="@drawable/ic_profile"/>
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/editText_Edit_first_name"
-                android:layout_alignStart="@id/ic_profile1"
                 android:hint="Loading"
-                android:layout_marginStart="50dp"
+                android:drawableLeft="@drawable/baseline_person_profile_24"
+                android:drawablePadding="10dp"
+                android:layout_marginStart="20dp"
                 android:textSize="18sp"/>
             <!--last name-->
         </RelativeLayout>
@@ -68,18 +64,14 @@
             android:layout_margin="15dp"
             android:background="@color/white">
 
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:id="@+id/ic_profile2"
-                android:background="@drawable/ic_profile"/>
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/editText_Edit_last_name"
-                android:layout_alignStart="@id/ic_profile2"
                 android:hint="Loading"
-                android:layout_marginStart="50dp"
+                android:layout_marginStart="20dp"
+                android:drawableLeft="@drawable/baseline_person_profile_24"
+                android:drawablePadding="10dp"
                 android:textSize="18sp"/>
 
         </RelativeLayout>
@@ -91,18 +83,14 @@
             android:layout_margin="15dp"
             android:background="@color/white">
 
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:id="@+id/ic_email"
-                android:background="@drawable/ic_email"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/editText_Edit_email"
-                android:layout_alignStart="@id/ic_email"
                 android:hint="Loading"
-                android:layout_marginStart="50dp"
+                android:layout_marginStart="20dp"
+                android:drawableLeft="@drawable/baseline_email_24"
+                android:drawablePadding="10dp"
                 android:textSize="18sp"/>
 
         </RelativeLayout>
@@ -114,18 +102,13 @@
             android:background="@color/white"
             android:padding="15dp">
 
-            <ImageView
-                android:id="@+id/ic_address"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:background="@drawable/ic_address" />
-
             <EditText
                 android:id="@+id/editText_Edit_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignStart="@id/ic_address"
-                android:layout_marginStart="50dp"
+                android:drawableLeft="@drawable/baseline_house_24"
+                android:drawablePadding="10dp"
+                android:layout_marginStart="20dp"
                 android:hint="Loading"
                 android:textSize="18sp" />
 
@@ -138,18 +121,14 @@
             android:layout_margin="15dp"
             android:background="@color/white">
 
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:id="@+id/ic_phoneNumber"
-                android:background="@drawable/ic_phone"/>
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/editText_Edit_phone_number"
-                android:layout_alignStart="@id/ic_phoneNumber"
                 android:hint="Phone Number"
-                android:layout_marginStart="50dp"
+                android:drawableLeft="@drawable/baseline_phone_profile_24"
+                android:drawablePadding="10dp"
+                android:layout_marginStart="20dp"
                 android:textSize="18sp"/>
 
         </RelativeLayout>>
